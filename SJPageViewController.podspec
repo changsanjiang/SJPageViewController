@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SJPageViewController'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of SJPageViewController.'
+  s.version          = '0.0.1'
+  s.summary          = 'SJPageViewController.'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,25 +18,28 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+  A container view controller that manages navigation between pages of content, where each page is managed by a child view controller.
                        DESC
 
-  s.homepage         = 'https://github.com/changsanjiang@gmail.com/SJPageViewController'
+  s.homepage         = 'https://github.com/changsanjiang/SJPageViewController'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'changsanjiang@gmail.com' => 'changsanjiang@gmail.com' }
-  s.source           = { :git => 'https://github.com/changsanjiang@gmail.com/SJPageViewController.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/changsanjiang/SJPageViewController.git', :tag => s.version.to_s }
   # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'SJPageViewController/Classes/**/*'
+  s.default_subspec = 'Core'
   
-  # s.resource_bundles = {
-  #   'SJPageViewController' => ['SJPageViewController/Assets/*.png']
-  # }
-
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
-  # s.dependency 'AFNetworking', '~> 2.3'
+  s.source_files = 'SJPageViewController/*.{h,m}'
+  s.subspec 'Core' do |ss|
+      ss.source_files = 'SJPageViewController/Core/**/*.{h,m}'
+  end
+  
+  s.subspec 'ScrollToolbar' do |ss|
+      ss.source_files = 'SJPageViewController/ScrollToolbar/**/*.{h,m}'
+      ss.dependency 'Masonry'
+      ss.dependency 'SDWebImage'
+  end
 end

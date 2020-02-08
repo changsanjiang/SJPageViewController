@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0B714C2E3420B963B2837761 /* Pods_SJPageViewController_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D49ABE8C67AC05B3E4CE71 /* Pods_SJPageViewController_Tests.framework */; };
+		5F7A07D1A0D5F06583966E51 /* libPods-SJPageViewController_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 57E95035274866963702B880 /* libPods-SJPageViewController_Example.a */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -22,8 +22,14 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		7780233123EE843D00255BDD /* SJViewController00.m in Sources */ = {isa = PBXBuildFile; fileRef = 7780233023EE843D00255BDD /* SJViewController00.m */; };
+		7786E64F23EDD36200931805 /* SJViewController0.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E64E23EDD36200931805 /* SJViewController0.m */; };
+		7786E65223EDD51D00931805 /* SJDemoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65123EDD51D00931805 /* SJDemoTableViewController.m */; };
+		7786E65523EDD7B300931805 /* SJViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65423EDD7B300931805 /* SJViewController1.m */; };
+		7786E65823EDD85200931805 /* SJViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65623EDD85200931805 /* SJViewController2.m */; };
+		7786E65B23EDD97600931805 /* SJViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65A23EDD97600931805 /* SJViewController3.m */; };
+		7786E65E23EDDD7300931805 /* SJDemoTableViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65D23EDDD7300931805 /* SJDemoTableViewController1.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
-		C2F6B8A79496D44451C9DC96 /* Pods_SJPageViewController_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8400203FB404D46D1F64FF2B /* Pods_SJPageViewController_Example.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,7 +43,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0D010FCD7C4FE2046C93BA8F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		0D010FCD7C4FE2046C93BA8F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
+		57E95035274866963702B880 /* libPods-SJPageViewController_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJPageViewController_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A2ED5D565884501FAA971B2 /* libPods-SJPageViewController_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SJPageViewController_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58A195388D20070C39A /* SJPageViewController_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SJPageViewController_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -57,16 +65,26 @@
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
-		62D49ABE8C67AC05B3E4CE71 /* Pods_SJPageViewController_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJPageViewController_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8400203FB404D46D1F64FF2B /* Pods_SJPageViewController_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJPageViewController_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		8460BDAFBAF13AA3196C9D44 /* Pods-SJPageViewController_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJPageViewController_Tests.debug.xcconfig"; path = "Target Support Files/Pods-SJPageViewController_Tests/Pods-SJPageViewController_Tests.debug.xcconfig"; sourceTree = "<group>"; };
+		7780232F23EE843D00255BDD /* SJViewController00.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController00.h; sourceTree = "<group>"; };
+		7780233023EE843D00255BDD /* SJViewController00.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController00.m; sourceTree = "<group>"; };
+		7786E64D23EDD36200931805 /* SJViewController0.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController0.h; sourceTree = "<group>"; };
+		7786E64E23EDD36200931805 /* SJViewController0.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController0.m; sourceTree = "<group>"; };
+		7786E65023EDD51D00931805 /* SJDemoTableViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJDemoTableViewController.h; sourceTree = "<group>"; };
+		7786E65123EDD51D00931805 /* SJDemoTableViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJDemoTableViewController.m; sourceTree = "<group>"; };
+		7786E65323EDD7B300931805 /* SJViewController1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController1.h; sourceTree = "<group>"; };
+		7786E65423EDD7B300931805 /* SJViewController1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController1.m; sourceTree = "<group>"; };
+		7786E65623EDD85200931805 /* SJViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController2.m; sourceTree = "<group>"; };
+		7786E65723EDD85200931805 /* SJViewController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController2.h; sourceTree = "<group>"; };
+		7786E65923EDD97600931805 /* SJViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController3.h; sourceTree = "<group>"; };
+		7786E65A23EDD97600931805 /* SJViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController3.m; sourceTree = "<group>"; };
+		7786E65C23EDDD7300931805 /* SJDemoTableViewController1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJDemoTableViewController1.h; sourceTree = "<group>"; };
+		7786E65D23EDDD7300931805 /* SJDemoTableViewController1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDemoTableViewController1.m; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		8E0368809EF6BD537544D9A4 /* SJPageViewController.podspec */ = {isa = PBXFileReference; includeInIndex = 1; name = SJPageViewController.podspec; path = ../SJPageViewController.podspec; sourceTree = "<group>"; };
+		8E0368809EF6BD537544D9A4 /* SJPageViewController.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = SJPageViewController.podspec; path = ../SJPageViewController.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A4347EFE738D9C0EF07061BB /* Pods-SJPageViewController_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJPageViewController_Example.release.xcconfig"; path = "Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example.release.xcconfig"; sourceTree = "<group>"; };
-		CF218D26FF4E7F59ADC31A95 /* Pods-SJPageViewController_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJPageViewController_Tests.release.xcconfig"; path = "Target Support Files/Pods-SJPageViewController_Tests/Pods-SJPageViewController_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		EA420F02DEC3B4A8A0ABFD69 /* Pods-SJPageViewController_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SJPageViewController_Example.debug.xcconfig"; path = "Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		F1F3E751A5FF931917B17A06 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
+		F1F3E751A5FF931917B17A06 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,7 +95,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				C2F6B8A79496D44451C9DC96 /* Pods_SJPageViewController_Example.framework in Frameworks */,
+				5F7A07D1A0D5F06583966E51 /* libPods-SJPageViewController_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,7 +106,6 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				0B714C2E3420B963B2837761 /* Pods_SJPageViewController_Tests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,10 +117,7 @@
 			children = (
 				EA420F02DEC3B4A8A0ABFD69 /* Pods-SJPageViewController_Example.debug.xcconfig */,
 				A4347EFE738D9C0EF07061BB /* Pods-SJPageViewController_Example.release.xcconfig */,
-				8460BDAFBAF13AA3196C9D44 /* Pods-SJPageViewController_Tests.debug.xcconfig */,
-				CF218D26FF4E7F59ADC31A95 /* Pods-SJPageViewController_Tests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -135,8 +149,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				8400203FB404D46D1F64FF2B /* Pods_SJPageViewController_Example.framework */,
-				62D49ABE8C67AC05B3E4CE71 /* Pods_SJPageViewController_Tests.framework */,
+				57E95035274866963702B880 /* libPods-SJPageViewController_Example.a */,
+				5A2ED5D565884501FAA971B2 /* libPods-SJPageViewController_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -149,6 +163,7 @@
 				873B8AEA1B1F5CCA007FD442 /* Main.storyboard */,
 				6003F5A5195388D20070C39A /* SJViewController.h */,
 				6003F5A6195388D20070C39A /* SJViewController.m */,
+				7786E64C23EDD34600931805 /* Demo */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -197,6 +212,27 @@
 			name = "Podspec Metadata";
 			sourceTree = "<group>";
 		};
+		7786E64C23EDD34600931805 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				7780232F23EE843D00255BDD /* SJViewController00.h */,
+				7780233023EE843D00255BDD /* SJViewController00.m */,
+				7786E64D23EDD36200931805 /* SJViewController0.h */,
+				7786E64E23EDD36200931805 /* SJViewController0.m */,
+				7786E65323EDD7B300931805 /* SJViewController1.h */,
+				7786E65423EDD7B300931805 /* SJViewController1.m */,
+				7786E65723EDD85200931805 /* SJViewController2.h */,
+				7786E65623EDD85200931805 /* SJViewController2.m */,
+				7786E65923EDD97600931805 /* SJViewController3.h */,
+				7786E65A23EDD97600931805 /* SJViewController3.m */,
+				7786E65023EDD51D00931805 /* SJDemoTableViewController.h */,
+				7786E65123EDD51D00931805 /* SJDemoTableViewController.m */,
+				7786E65C23EDDD7300931805 /* SJDemoTableViewController1.h */,
+				7786E65D23EDDD7300931805 /* SJDemoTableViewController1.m */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -208,7 +244,7 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				7F248E2486BEDF3276A23FAB /* [CP] Embed Pods Frameworks */,
+				956750BDEB3773B946BADA05 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -223,7 +259,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6003F5C2195388D20070C39A /* Build configuration list for PBXNativeTarget "SJPageViewController_Tests" */;
 			buildPhases = (
-				8AF362D366E3DCA622C65889 /* [CP] Check Pods Manifest.lock */,
 				6003F5AA195388D20070C39A /* Sources */,
 				6003F5AB195388D20070C39A /* Frameworks */,
 				6003F5AC195388D20070C39A /* Resources */,
@@ -248,6 +283,9 @@
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "changsanjiang@gmail.com";
 				TargetAttributes = {
+					6003F589195388D20070C39A = {
+						DevelopmentTeam = U5A7L7SMNP;
+					};
 					6003F5AD195388D20070C39A = {
 						TestTargetID = 6003F589195388D20070C39A;
 					};
@@ -258,6 +296,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -295,44 +334,22 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		7F248E2486BEDF3276A23FAB /* [CP] Embed Pods Frameworks */ = {
+		956750BDEB3773B946BADA05 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/SJPageViewController/SJPageViewController.framework",
+				"${PODS_ROOT}/Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example-resources.sh",
+				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
 			);
-			name = "[CP] Embed Pods Frameworks";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SJPageViewController.framework",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8AF362D366E3DCA622C65889 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-SJPageViewController_Tests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D8072325879E9EF5644795A4 /* [CP] Check Pods Manifest.lock */ = {
@@ -365,8 +382,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
+				7786E65823EDD85200931805 /* SJViewController2.m in Sources */,
 				6003F5A7195388D20070C39A /* SJViewController.m in Sources */,
+				7786E64F23EDD36200931805 /* SJViewController0.m in Sources */,
+				7786E65223EDD51D00931805 /* SJDemoTableViewController.m in Sources */,
+				7786E65B23EDD97600931805 /* SJViewController3.m in Sources */,
+				7786E65E23EDDD7300931805 /* SJDemoTableViewController1.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
+				7786E65523EDD7B300931805 /* SJViewController1.m in Sources */,
+				7780233123EE843D00255BDD /* SJViewController00.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -494,6 +518,7 @@
 			baseConfigurationReference = EA420F02DEC3B4A8A0ABFD69 /* Pods-SJPageViewController_Example.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = U5A7L7SMNP;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJPageViewController/SJPageViewController-Prefix.pch";
 				INFOPLIST_FILE = "SJPageViewController/SJPageViewController-Info.plist";
@@ -510,6 +535,7 @@
 			baseConfigurationReference = A4347EFE738D9C0EF07061BB /* Pods-SJPageViewController_Example.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = U5A7L7SMNP;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "SJPageViewController/SJPageViewController-Prefix.pch";
 				INFOPLIST_FILE = "SJPageViewController/SJPageViewController-Info.plist";
@@ -523,7 +549,6 @@
 		};
 		6003F5C3195388D20070C39A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8460BDAFBAF13AA3196C9D44 /* Pods-SJPageViewController_Tests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -548,7 +573,6 @@
 		};
 		6003F5C4195388D20070C39A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CF218D26FF4E7F59ADC31A95 /* Pods-SJPageViewController_Tests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				FRAMEWORK_SEARCH_PATHS = (
