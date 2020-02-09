@@ -39,6 +39,8 @@
     _pageViewController.delegate = self;
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
+    _pageViewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    _pageViewController.view.frame = self.view.bounds;
     [_pageViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
         make.edges.offset(0);
     }];
