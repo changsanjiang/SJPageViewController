@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SJPageViewController'
-  s.version          = '0.0.1'
+  s.version          = '0.0.2'
   s.summary          = 'SJPageViewController.'
 
 # This description is used to generate tags and improve search results.
@@ -30,16 +30,26 @@ Pod::Spec.new do |s|
 
   s.ios.deployment_target = '8.0'
 
-  s.default_subspec = 'Core'
+  s.default_subspec = 'ObjC'
   
-  s.source_files = 'SJPageViewController/*.{h,m}'
-  s.subspec 'Core' do |ss|
-      ss.source_files = 'SJPageViewController/Core/**/*.{h,m}'
+  s.subspec 'ObjC' do |ss|
+    ss.source_files = 'SJPageViewController/ObjC/*.{h,m}'
+    ss.subspec 'Core' do |sss|
+        sss.source_files = 'SJPageViewController/ObjC/Core/**/*.{h,m}'
+    end
+    
+    ss.subspec 'ScrollToolbar' do |sss|
+        sss.source_files = 'SJPageViewController/ObjC/ScrollToolbar/**/*.{h,m}'
+        sss.dependency 'Masonry'
+        sss.dependency 'SDWebImage'
+    end
   end
   
-  s.subspec 'ScrollToolbar' do |ss|
-      ss.source_files = 'SJPageViewController/ScrollToolbar/**/*.{h,m}'
-      ss.dependency 'Masonry'
-      ss.dependency 'SDWebImage'
+  s.subspec 'Swift' do |ss|
+    s.swift_versions = "5"
+    ss.source_files = 'SJPageViewController/Swift/*.swift'
+    ss.subspec 'Core' do |sss|
+        sss.source_files = 'SJPageViewController/Swift/Core/**/*.swift'
+    end
   end
 end

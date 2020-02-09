@@ -1,0 +1,38 @@
+PODS:
+  - Masonry (1.1.0)
+  - MJRefresh (3.1.17)
+  - SDWebImage (5.5.2):
+    - SDWebImage/Core (= 5.5.2)
+  - SDWebImage/Core (5.5.2)
+  - SJPageViewController/ObjC (0.0.2):
+    - SJPageViewController/ObjC/Core (= 0.0.2)
+    - SJPageViewController/ObjC/ScrollToolbar (= 0.0.2)
+  - SJPageViewController/ObjC/Core (0.0.2)
+  - SJPageViewController/ObjC/ScrollToolbar (0.0.2):
+    - Masonry
+    - SDWebImage
+
+DEPENDENCIES:
+  - Masonry
+  - MJRefresh (= 3.1.17)
+  - SJPageViewController/ObjC (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+    - MJRefresh
+    - SDWebImage
+
+EXTERNAL SOURCES:
+  SJPageViewController:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MJRefresh: ee5b68f639775462faba4db0fd243baf4d42c2cf
+  SDWebImage: 4d5c027c935438f341ed33dbac53ff9f479922ca
+  SJPageViewController: 405b3499033e3fdaab031f811a84d8c2fb1fc096
+
+PODFILE CHECKSUM: 1604b0509112599007c348862d1618130442ec7b
+
+COCOAPODS: 1.8.4

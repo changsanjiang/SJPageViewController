@@ -1,0 +1,5 @@
+use_frameworks!
+
+target 'SJPageViewControllerswift_Example' do
+  pod 'SJPageViewController/Swift', :path => '../'
+end

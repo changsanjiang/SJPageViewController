@@ -1,0 +1,6 @@
+framework module SJPageViewController {
+  umbrella header "SJPageViewController-umbrella.h"
+
+  export *
+  module * { export * }
+}
