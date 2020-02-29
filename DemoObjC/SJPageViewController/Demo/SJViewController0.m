@@ -10,7 +10,7 @@
 #import <SJPageViewController/SJPageViewController.h>
 #import <Masonry/Masonry.h>
 #import <MJRefresh/MJRefresh.h>
-#import "SJDemoTableViewController.h"
+#import "SJTestViewController1.h"
 
 @interface SJViewController0 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource>
 @property (nonatomic, strong) SJPageViewController *pageViewController;
@@ -49,7 +49,7 @@
 }
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
-    SJDemoTableViewController *vc = SJDemoTableViewController.new;
+    SJTestViewController1 *vc = SJTestViewController1.new;
     vc.tableView.mj_header.ignoredScrollViewContentInsetTop = [self heightForHeaderBoundsWithPageViewController:pageViewController];
     return vc;
 }

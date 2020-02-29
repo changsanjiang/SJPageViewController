@@ -23,33 +23,51 @@
   "subspecs": [
     {
       "name": "ObjC",
-      "source_files": "SJPageViewController/ObjC/*.{h,m}",
       "subspecs": [
         {
-          "name": "Core",
-          "source_files": "SJPageViewController/ObjC/Core/**/*.{h,m}"
+          "name": "PageViewController",
+          "source_files": "SJPageViewController/ObjC/PageViewController/*.{h,m}",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/ObjC/PageViewController/Core/**/*.{h,m}"
+            }
+          ]
         },
         {
-          "name": "ScrollToolbar",
-          "source_files": "SJPageViewController/ObjC/ScrollToolbar/**/*.{h,m}",
-          "dependencies": {
-            "Masonry": [
-
-            ],
-            "SDWebImage": [
-
-            ]
-          }
+          "name": "PageMenuBar",
+          "source_files": "SJPageViewController/ObjC/PageMenuBar/*.{h,m}",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/ObjC/PageMenuBar/Core/**/*.{h,m}"
+            }
+          ]
         }
       ]
     },
     {
       "name": "Swift",
-      "source_files": "SJPageViewController/Swift/*.swift",
       "subspecs": [
         {
-          "name": "Core",
-          "source_files": "SJPageViewController/Swift/Core/**/*.swift"
+          "name": "PageViewController",
+          "source_files": "SJPageViewController/Swift/PageViewController/*.swift",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/Swift/PageViewController/Core/**/*.swift"
+            }
+          ]
+        },
+        {
+          "name": "PageMenuBar",
+          "source_files": "SJPageViewController/Swift/PageMenuBar/*.swift",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/Swift/PageMenuBar/Core/**/*.swift"
+            }
+          ]
         }
       ]
     }

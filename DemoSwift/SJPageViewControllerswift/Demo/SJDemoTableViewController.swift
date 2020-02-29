@@ -17,6 +17,7 @@ class SJDemoTableViewController: UIViewController {
         tableView.estimatedSectionFooterHeight = 0
         tableView.estimatedSectionHeaderHeight = 0
         tableView.rowHeight = 44
+        tableView.sectionHeaderHeight = 60
         tableView.dataSource = self
         tableView.delegate = self
         return tableView
@@ -42,5 +43,9 @@ extension SJDemoTableViewController: UITableViewDataSource, UITableViewDelegate 
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         cell.textLabel?.text = "\(indexPath.row)"
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return String.init(section)
     }
 }

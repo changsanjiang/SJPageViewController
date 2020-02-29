@@ -1,7 +1,13 @@
 PODS:
   - SJPageViewController/Swift (0.0.2):
-    - SJPageViewController/Swift/Core (= 0.0.2)
-  - SJPageViewController/Swift/Core (0.0.2)
+    - SJPageViewController/Swift/PageMenuBar (= 0.0.2)
+    - SJPageViewController/Swift/PageViewController (= 0.0.2)
+  - SJPageViewController/Swift/PageMenuBar (0.0.2):
+    - SJPageViewController/Swift/PageMenuBar/Core (= 0.0.2)
+  - SJPageViewController/Swift/PageMenuBar/Core (0.0.2)
+  - SJPageViewController/Swift/PageViewController (0.0.2):
+    - SJPageViewController/Swift/PageViewController/Core (= 0.0.2)
+  - SJPageViewController/Swift/PageViewController/Core (0.0.2)
 
 DEPENDENCIES:
   - SJPageViewController/Swift (from `../`)
@@ -11,7 +17,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SJPageViewController: 1e07543e4d0f159a93529748747d18b7c1f11e23
+  SJPageViewController: 7a096f47f25bedacdc5a2d06d1cff64eba9d80ba
 
 PODFILE CHECKSUM: 1546a428dbdab4986cf2119569fe272fc5ce0613
 

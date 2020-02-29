@@ -5,7 +5,6 @@ platform :ios, '8.0'
 target 'SJPageViewController_Example' do
   
   pod 'SJPageViewController/ObjC', :path => '../'
-  
   pod 'Masonry'
   pod 'MJRefresh', '3.1.17', :inhibit_warnings => true
 end

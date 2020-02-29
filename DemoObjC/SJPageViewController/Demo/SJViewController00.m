@@ -9,7 +9,7 @@
 #import "SJViewController00.h"
 #import <SJPageViewController/SJPageViewController.h>
 #import <Masonry/Masonry.h>
-#import "SJDemoTableViewController.h"
+#import "SJDemoTableViewController1.h"
 
 @interface SJViewController00 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource>
 @property (nonatomic, strong) SJPageViewController *pageViewController;
@@ -51,6 +51,6 @@
 }
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
-    return SJDemoTableViewController.new;
+    return SJDemoTableViewController1.new;
 }
 @end

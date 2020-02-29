@@ -135,7 +135,10 @@ extension SJViewController4: SJPageViewControllerDataSource {
 }
 
 extension SJViewController4: SJPageViewControllerDelegate {
-    func pageViewController(_ pageViewController: SJPageViewController, headerViewScrollProgressDidChange progress: CGFloat) {
-        navBar.contentView.alpha = progress
+    func pageViewController(_ pageViewController: SJPageViewController, headerViewVisibleRectDidChange visibleRect: CGRect) {
+        let headerViewHeight = pageViewController.heightForHeaderBounds
+        let pinnedHeight = pageViewController.heightForHeaderPinToVisibleBounds
+        let alpha = 1 - (visibleRect.height - pinnedHeight) / (headerViewHeight - pinnedHeight)
+        navBar.contentView.alpha = alpha;
     }
 }

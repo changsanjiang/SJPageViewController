@@ -12,8 +12,11 @@
 #import "SJViewController0.h"
 #import "SJViewController1.h"
 #import "SJViewController2.h"
-#import "SJViewController3.h"
 #import "SJViewController4.h"
+#import "SJViewController5.h"
+#import "SJTestViewController1.h"
+#import "SJTestViewController2.h"
+#import "SJTestViewController3.h"
 
 static NSString * const kCellId = @"1";
 
@@ -40,13 +43,16 @@ static NSString * const kCellId = @"1";
     }];
 }
 
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return section == 0 ? 1 : 5;
+    if ( section == 0 )
+        return 1;
+    else if ( section == 1 )
+        return 5;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -58,7 +64,7 @@ static NSString * const kCellId = @"1";
     if ( indexPath.section == 0 ) {
         cell.textLabel.text = [NSString stringWithFormat:@"Demo 应用"];
     }
-    else {
+    else if ( indexPath.section == 1 ) {
         switch ( indexPath.row ) {
             case 0: {
                 cell.textLabel.text = [NSString stringWithFormat:@"普通左右滑动, 无header样式"];
@@ -82,13 +88,16 @@ static NSString * const kCellId = @"1";
                 break;
         }
     }
+    else {
+        cell.textLabel.text = @"Test";
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ( indexPath.section == 0 ) {
-        [self.navigationController pushViewController:SJViewController3.new animated:YES];
+        [self.navigationController pushViewController:SJViewController5.new animated:YES];
     }
-    else {
+    else if ( indexPath.section == 1 ) {
         switch ( indexPath.row ) {
             case 0: {
                 [self.navigationController pushViewController:SJViewController00.new animated:YES];
@@ -109,6 +118,25 @@ static NSString * const kCellId = @"1";
             case 4: {
                 [self.navigationController pushViewController:SJViewController4.new animated:YES];
             }
+                break;
+            case 5: {
+                [self.navigationController pushViewController:SJViewController5.new animated:YES];
+            }
+                break;
+        }
+    }
+    else if ( indexPath.section == 2 ) {
+        switch ( indexPath.row ) {
+            case 0:
+                [self.navigationController pushViewController:SJTestViewController1.new animated:YES];
+                break;
+            case 1:
+                [self.navigationController pushViewController:SJTestViewController2.new animated:YES];
+                break;
+            case 2:
+                [self.navigationController pushViewController:SJTestViewController3.new animated:YES];
+                break;
+            default:
                 break;
         }
     }

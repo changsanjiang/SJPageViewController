@@ -151,10 +151,21 @@
 /// 在顶部悬浮保留的高度
 ///
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return 40 + _navBar.bounds.size.height;
+    return 44 + _navBar.bounds.size.height;
 }
 
-- (void)pageViewController:(SJPageViewController *)pageViewController headerViewScrollProgressDidChange:(CGFloat)progress {
-    _navBar.contentView.alpha = progress;
+#pragma mark -
+
+///
+/// HeaderView 可见范围发生改变的回调
+///
+- (void)pageViewController:(SJPageViewController *)pageViewController headerViewVisibleRectDidChange:(CGRect)visibleRect {
+    /// headerView的高度
+    CGFloat headerViewHeight = pageViewController.heightForHeaderBounds;
+    /// 在顶部固定时的高度
+    CGFloat pinnedHeight = pageViewController.heightForHeaderPinToVisibleBounds;
+    /// 设置导航栏透明度
+    CGFloat alpha = 1 - (visibleRect.size.height - pinnedHeight) / (headerViewHeight - pinnedHeight);
+    _navBar.contentView.alpha = alpha;
 }
 @end

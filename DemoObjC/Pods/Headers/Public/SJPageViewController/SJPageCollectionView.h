@@ -1,1 +1,1 @@
-../../../../../SJPageViewController/ObjC/Core/View/SJPageCollectionView.h
+../../../../../SJPageViewController/ObjC/PageViewController/Core/SJPageCollectionView.h

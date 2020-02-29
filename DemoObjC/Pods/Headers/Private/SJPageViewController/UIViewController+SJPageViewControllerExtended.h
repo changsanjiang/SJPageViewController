@@ -1,1 +1,1 @@
-../../../../../SJPageViewController/ObjC/Core/Category/UIViewController+SJPageViewControllerExtended.h
+../../../../../SJPageViewController/ObjC/PageViewController/Core/UIViewController+SJPageViewControllerExtended.h

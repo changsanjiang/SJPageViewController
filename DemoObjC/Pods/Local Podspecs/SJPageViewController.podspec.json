@@ -19,40 +19,31 @@
     "ios": "8.0"
   },
   "default_subspecs": "ObjC",
-  "swift_versions": "5",
   "subspecs": [
     {
       "name": "ObjC",
-      "source_files": "SJPageViewController/ObjC/*.{h,m}",
       "subspecs": [
         {
-          "name": "Core",
-          "source_files": "SJPageViewController/ObjC/Core/**/*.{h,m}"
+          "name": "PageViewController",
+          "source_files": "SJPageViewController/ObjC/PageViewController/*.{h,m}",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/ObjC/PageViewController/Core/**/*.{h,m}"
+            }
+          ]
         },
         {
-          "name": "ScrollToolbar",
-          "source_files": "SJPageViewController/ObjC/ScrollToolbar/**/*.{h,m}",
-          "dependencies": {
-            "Masonry": [
-
-            ],
-            "SDWebImage": [
-
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "name": "Swift",
-      "source_files": "SJPageViewController/Swift/*.{h,m}",
-      "subspecs": [
-        {
-          "name": "Core",
-          "source_files": "SJPageViewController/Swift/Core/**/*.{h,m}"
+          "name": "PageMenuBar",
+          "source_files": "SJPageViewController/ObjC/PageMenuBar/*.{h,m}",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/ObjC/PageMenuBar/Core/**/*.{h,m}"
+            }
+          ]
         }
       ]
     }
-  ],
-  "swift_version": "5"
+  ]
 }

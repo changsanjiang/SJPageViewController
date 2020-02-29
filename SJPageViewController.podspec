@@ -33,23 +33,35 @@ Pod::Spec.new do |s|
   s.default_subspec = 'ObjC'
   
   s.subspec 'ObjC' do |ss|
-    ss.source_files = 'SJPageViewController/ObjC/*.{h,m}'
-    ss.subspec 'Core' do |sss|
-        sss.source_files = 'SJPageViewController/ObjC/Core/**/*.{h,m}'
+    ss.subspec 'PageViewController' do |sss|
+      sss.source_files = 'SJPageViewController/ObjC/PageViewController/*.{h,m}'
+      sss.subspec 'Core' do |ssss|
+        ssss.source_files = 'SJPageViewController/ObjC/PageViewController/Core/**/*.{h,m}'
+      end
     end
     
-    ss.subspec 'ScrollToolbar' do |sss|
-        sss.source_files = 'SJPageViewController/ObjC/ScrollToolbar/**/*.{h,m}'
-        sss.dependency 'Masonry'
-        sss.dependency 'SDWebImage'
+    ss.subspec 'PageMenuBar' do |sss|
+      sss.source_files = 'SJPageViewController/ObjC/PageMenuBar/*.{h,m}'
+      sss.subspec 'Core' do |ssss|
+        ssss.source_files = 'SJPageViewController/ObjC/PageMenuBar/Core/**/*.{h,m}'
+      end
     end
   end
   
   s.subspec 'Swift' do |ss|
     s.swift_versions = "5"
-    ss.source_files = 'SJPageViewController/Swift/*.swift'
-    ss.subspec 'Core' do |sss|
-        sss.source_files = 'SJPageViewController/Swift/Core/**/*.swift'
+    ss.subspec 'PageViewController' do |sss|
+        sss.source_files = 'SJPageViewController/Swift/PageViewController/*.swift'
+        sss.subspec 'Core' do |ssss|
+            ssss.source_files = 'SJPageViewController/Swift/PageViewController/Core/**/*.swift'
+        end
+    end
+
+    ss.subspec 'PageMenuBar' do |sss|
+        sss.source_files = 'SJPageViewController/Swift/PageMenuBar/*.swift'
+        sss.subspec 'Core' do |ssss|
+            ssss.source_files = 'SJPageViewController/Swift/PageMenuBar/Core/**/*.swift'
+        end
     end
   end
 end
