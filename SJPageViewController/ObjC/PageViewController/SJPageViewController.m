@@ -402,9 +402,9 @@ static NSString *const kReuseIdentifierForCell = @"1";
                 if (@available(iOS 13.0, *)) {
                     childScrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
                 }
-                if (@available(iOS 11.0, *)) {
-                    childScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-                }
+//                if (@available(iOS 11.0, *)) {
+//                    childScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+//                }
                 if ( _headerView.superview == nil ) {
                     _headerView.frame = CGRectMake(0, -_heightForHeaderBounds, bounds.size.width, _heightForHeaderBounds);
                     [childScrollView addSubview:_headerView];
