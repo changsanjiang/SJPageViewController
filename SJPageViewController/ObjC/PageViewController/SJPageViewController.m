@@ -57,7 +57,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 - (instancetype)initWithOptions:(nullable NSDictionary<SJPageViewControllerOptionsKey,id> *)options {
     self = [super initWithNibName:nil bundle:nil];
     if ( self ) {
-        self.edgesForExtendedLayout = UIRectEdgeNone;
+//        self.edgesForExtendedLayout = UIRectEdgeNone;
         _focusedIndex = NSNotFound;
         _options = options;
         _viewControllers = NSMutableDictionary.new;
@@ -514,10 +514,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
 #endif
 }
 
-- (void)willMoveToParentViewController:(nullable UIViewController *)parent {
-    parent.edgesForExtendedLayout = UIRectEdgeNone;
-    [super willMoveToParentViewController:parent];
-}
+//- (void)willMoveToParentViewController:(nullable UIViewController *)parent {
+//    parent.edgesForExtendedLayout = UIRectEdgeNone;
+//    [super willMoveToParentViewController:parent];
+//}
 
 #pragma mark -
  
