@@ -58,6 +58,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reloadItemAtIndex:(NSInteger)index animated:(BOOL)animated {
     if ( [self _isSafeIndex:index] ) {
+        if ( self.menuItemViews.count < index ) {
+            [self reloadPageMenuBar];
+            return;
+        }
+        
         NSNumber *idx = @(index);
         __auto_type oldView = self.cache[idx];
         self.cache[idx] = nil;
@@ -84,8 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
      if ( [self _isSafeIndex:toIdx] && _focusedIndex != toIdx ) {
          NSInteger previousIdx = self.focusedIndex;
          self.focusedIndex = toIdx;
-         if ( self.bounds.size.height == 0 ) return;
-         if ( self.bounds.size.width == 0 ) return;
+         if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
          [UIView animateWithDuration:animated ? 0.25 : 0.0 animations:^{
              // previous
              if ( [self _isSafeIndex:previousIdx] ) {
@@ -327,8 +331,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex {
-    if ( self.bounds.size.height == 0 ) return;
-    if ( self.bounds.size.width == 0 ) return;
+    if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
     CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
     CGFloat itemSpacing = _distribution == SJPageMenuBarDistributionEqualSpacing ? _itemSpacing : 0;
@@ -372,8 +375,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_remakeConstraintsForScrollIndicator {
-    if ( self.bounds.size.height == 0 ) return;
-    if ( self.bounds.size.width == 0 ) return;
+    if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     if ( self.menuItemViews.count <= _focusedIndex ) return;
     CGRect frame = (CGRect){0, 0, _scrollIndicatorSize};
     frame.origin.y = self.bounds.size.height - _scrollIndicatorBottomInset - _scrollIndicatorSize.height;
@@ -392,8 +394,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self scrollToItemAtIndex:right animated:YES];
     }
     else {
-        if ( self.bounds.size.height == 0 ) return;
-        if ( self.bounds.size.width == 0 ) return;
+        if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
         CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
         CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
         CGFloat zoomScaleLength = _maximumZoomScale - _minimumZoomScale;
