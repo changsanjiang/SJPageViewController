@@ -116,7 +116,7 @@
 }
 
 - (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return pageViewController.headerView.bounds.size.height;
+    return 200;
 }
 
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController {

@@ -144,7 +144,7 @@
 /// 头部视图的高度
 ///
 - (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return pageViewController.headerView.bounds.size.height;
+    return 375;
 }
 
 ///

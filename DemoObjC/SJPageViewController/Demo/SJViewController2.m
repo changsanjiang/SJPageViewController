@@ -65,7 +65,7 @@
 /// 头部视图
 ///
 - (nullable __kindof UIView *)viewForHeaderInPageViewController:(SJPageViewController *)pageViewController {
-    UIImageView *headerView = [UIImageView.alloc initWithFrame:CGRectZero];
+    UIImageView *headerView = [UIImageView.alloc initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 200)];
     headerView.backgroundColor = UIColor.redColor;
     headerView.image = [UIImage imageNamed:@"cover1"];
     headerView.contentMode = UIViewContentModeScaleAspectFill;
@@ -79,7 +79,7 @@
         make.centerX.offset(0);
         make.bottom.offset(0);
         make.width.offset(self.view.bounds.size.width);
-        make.height.offset([self heightForHeaderPinToVisibleBoundsWithPageViewController:pageViewController]);
+        make.height.offset(pageViewController.heightForHeaderPinToVisibleBounds);
     }];
     
     return headerView;

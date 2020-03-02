@@ -8,10 +8,10 @@
 #import "SJPageCollectionView.h"
 
 @implementation SJPageCollectionView
-//- (BOOL)gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-//    if ( [self.delegate respondsToSelector:@selector(collectionView:gestureRecognizer:shouldRecognizeSimultaneouslyWithGestureRecognizer:)] ) {
-//        return [(id)self.delegate collectionView:self gestureRecognizer:gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer];
-//    }
-//    return NO;
-//}
+- (BOOL)gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+    if ( [self.delegate respondsToSelector:@selector(collectionView:gestureRecognizer:shouldRecognizeSimultaneouslyWithGestureRecognizer:)] ) {
+        return [(id)self.delegate collectionView:self gestureRecognizer:gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:otherGestureRecognizer];
+    }
+    return NO;
+}
 @end

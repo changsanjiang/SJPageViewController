@@ -22,7 +22,7 @@ static NSString *const kContentOffset = @"contentOffset";
 static NSString *const kState = @"state";
 static NSString *const kReuseIdentifierForCell = @"1";
 
-@interface SJPageViewController ()<UICollectionViewDataSource, SJPageCollectionViewDelegate, UICollectionViewDelegateFlowLayout, SJPageViewControllerItemCellDelegate> {
+@interface SJPageViewController ()<UICollectionViewDataSource, SJPageCollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
     NSDictionary<SJPageViewControllerOptionsKey, id> *_Nullable _options;
     CGRect _previousBounds;
     CGFloat _previousOffset;
@@ -31,6 +31,11 @@ static NSString *const kReuseIdentifierForCell = @"1";
     BOOL _isResponse_didEndDisplayingViewController;
     BOOL _isResponse_didScrollInRange;
     BOOL _isResponse_headerViewVisibleRectDidChange;
+    
+    BOOL _isResponse_heightForHeaderPinToVisibleBounds;
+    BOOL _isResponse_heightForHeaderBounds;
+    BOOL _isResponse_modeForHeader;
+    BOOL _isResponse_viewForHeader;
 }
 @property (nonatomic, getter=isDataSourceLoaded) BOOL dataSourceLoaded;
 @property (nonatomic, strong, readonly) NSMutableDictionary<NSNumber *, __kindof UIViewController *> *viewControllers;
@@ -70,11 +75,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self _setupViews];
-    if ( self.dataSource != nil ) [self reloadPageViewController];
-}
-
-- (NSInteger)numberOfViewControllers {
-    return [self.dataSource numberOfViewControllersInPageViewController:self];
+    [self reloadPageViewController];
 }
 
 - (void)reloadPageViewController {
@@ -143,6 +144,11 @@ static NSString *const kReuseIdentifierForCell = @"1";
 - (void)setDataSource:(nullable id<SJPageViewControllerDataSource>)dataSource {
     if ( dataSource != _dataSource ) {
         _dataSource = dataSource;
+        
+        _isResponse_heightForHeaderPinToVisibleBounds = [dataSource respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)];
+        _isResponse_heightForHeaderBounds = [dataSource respondsToSelector:@selector(heightForHeaderBoundsWithPageViewController:)];
+        _isResponse_modeForHeader = [dataSource respondsToSelector:@selector(modeForHeaderWithPageViewController:)];
+        _isResponse_viewForHeader = [dataSource respondsToSelector:@selector(viewForHeaderInPageViewController:)];
         [self reloadPageViewController];
     }
 }
@@ -182,6 +188,12 @@ static NSString *const kReuseIdentifierForCell = @"1";
 - (void)observeValueForKeyPath:(nullable NSString *)keyPath ofObject:(nullable id)object change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change context:(nullable void *)context {
     if ( context == &kContentOffset ) {
         [self _childScrollViewContentOffsetDidChange:object change:change];
+    }
+    else if ( context == &kState ) {
+        UIGestureRecognizer *gesture = object;
+        if ( gesture.state == UIGestureRecognizerStateBegan ) {
+            [self _insertHeaderViewForFocusedViewController];
+        }
     }
 }
 
@@ -322,61 +334,21 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(SJPageViewControllerItemCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     NSInteger idx = indexPath.item;
-    cell.delegate = self;
-    cell.item = [self viewControllerAtIndex:indexPath.item];
+    __auto_type oldViewController = cell.viewController;
+    __auto_type newViewController = [self viewControllerAtIndex:indexPath.item];
+    cell.viewController = newViewController;
     
-    UIViewController *viewController = cell.item;
-    if ( _hasHeader ) {
-        SJPageItem *item = viewController.sj_pageItem;
-        if ( [item.scrollView sj_locked] == NO ) {
-            CGFloat intersection = self.heightForIntersectionBounds;
-            CGPoint contentOffset = item.conentOffset;
-            contentOffset.y += item.intersection - intersection;
-            if ( !CGPointEqualToPoint(item.scrollView.contentOffset, contentOffset) ) {
-                [item.scrollView sj_lock];
-                [item.scrollView setContentOffset:contentOffset animated:NO];
-                [item.scrollView sj_unlock];
-            }
-        }
-    }
-    
-    if ( _isResponse_willDisplayViewController ) {
-        [self.delegate pageViewController:self willDisplayViewController:cell.item atIndex:idx];
-    }
-}
-
-- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(SJPageViewControllerItemCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ( _hasHeader ) {
-        UIViewController *viewController = cell.item;
-        SJPageItem *pageItem = viewController.sj_pageItem;
-        pageItem.intersection = self.heightForIntersectionBounds;
-        pageItem.conentOffset = pageItem.scrollView.contentOffset;
-    }
-
-    if ( _isResponse_didEndDisplayingViewController ) {
-        [self.delegate pageViewController:self didEndDisplayingViewController:cell.item atIndex:indexPath.item];
-    }
-    
-    cell.item = nil;
-}
-
-- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return self.view.bounds.size;
-}
-
-- (void)pageViewControllerItemCell:(SJPageViewControllerItemCell *)cell itemDidChange:(nullable NSDictionary<SJItemChangeKey, UIViewController *> *)change {
-    UIViewController *_Nullable oldViewController = change[SJItemChangeKeyOldKey];
-    UIViewController *_Nullable newViewController = change[SJItemChangeKeyNewKey];
-    
-    if ( newViewController != nil ) {
+    if ( oldViewController != newViewController ) {
+        [self _removePageChildViewController:oldViewController];
+        
         [self addChildViewController:newViewController];
-        [cell.contentView addSubview:newViewController.view];
         [newViewController.view setFrame:cell.bounds];
+        [cell.contentView addSubview:newViewController.view];
         
         if ( _hasHeader ) {
             UIScrollView *childScrollView = [newViewController sj_lookupScrollView];
             NSAssert(childScrollView != nil, @"The scrollView can't be nil!");
-            CGRect bounds = newViewController.view.bounds;
+            CGRect bounds = cell.bounds;
             SJPageItem *_Nullable pageItem = newViewController.sj_pageItem;
             if ( pageItem == nil ) {
                 pageItem = SJPageItem.new;
@@ -408,20 +380,45 @@ static NSString *const kReuseIdentifierForCell = @"1";
             else {
                 [self _setupContentInsetForChildScrollView:childScrollView];
             }
+            
+            if ( [pageItem.scrollView sj_locked] == NO ) {
+                CGFloat intersection = self.heightForIntersectionBounds;
+                CGPoint contentOffset = pageItem.conentOffset;
+                contentOffset.y += pageItem.intersection - intersection;
+                if ( !CGPointEqualToPoint(pageItem.scrollView.contentOffset, contentOffset) ) {
+                    [pageItem.scrollView sj_lock];
+                    [pageItem.scrollView setContentOffset:contentOffset animated:NO];
+                    [pageItem.scrollView sj_unlock];
+                }
+            }
         }
     }
-    
-    if ( oldViewController.view.superview == cell.contentView ) {
-        [oldViewController willMoveToParentViewController:nil];
-        [oldViewController.view removeFromSuperview];
-        [oldViewController removeFromParentViewController];
-        [oldViewController didMoveToParentViewController:nil];
+     
+    if ( _isResponse_willDisplayViewController ) {
+        [self.delegate pageViewController:self willDisplayViewController:newViewController atIndex:idx];
     }
 }
 
-- (void)pageViewControllerItemCellDidLayoutSubviews:(SJPageViewControllerItemCell *)cell {
-    cell.item.view.frame = cell.bounds;
+- (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(SJPageViewControllerItemCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    UIViewController *viewController = cell.viewController;
+    if ( _hasHeader ) {
+        SJPageItem *pageItem = viewController.sj_pageItem;
+        pageItem.intersection = self.heightForIntersectionBounds;
+        pageItem.conentOffset = pageItem.scrollView.contentOffset;
+    }
+
+    if ( _isResponse_didEndDisplayingViewController ) {
+        [self.delegate pageViewController:self didEndDisplayingViewController:viewController atIndex:indexPath.item];
+    }
+    
+    [self _removePageChildViewController:viewController];
+    cell.viewController = nil;
 }
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return self.view.bounds.size;
+}
+ 
 
 - (BOOL)collectionView:(UICollectionView *)collectionView gestureRecognizer:(UIPanGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     if ( gestureRecognizer.state == UIGestureRecognizerStateFailed ||
@@ -482,20 +479,41 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return 0;
 }
 
+- (NSInteger)numberOfViewControllers {
+    return [self.dataSource numberOfViewControllersInPageViewController:self];
+}
+
 - (CGFloat)heightForHeaderPinToVisibleBounds {
-    return [self.dataSource heightForHeaderPinToVisibleBoundsWithPageViewController:self];
+    if ( _isResponse_heightForHeaderPinToVisibleBounds ) {
+        return [self.dataSource heightForHeaderPinToVisibleBoundsWithPageViewController:self];
+    }
+    return 0;
 }
 
 - (CGFloat)heightForHeaderBounds {
-    return [self.dataSource heightForHeaderBoundsWithPageViewController:self] ?: self.headerView.frame.size.height;
+    if ( _isResponse_heightForHeaderBounds ) {
+        return [self.dataSource heightForHeaderBoundsWithPageViewController:self] ?: self.headerView.frame.size.height;
+    }
+    return 0;
 }
 
 - (SJPageViewControllerHeaderMode)modeForHeader {
-    return [self.dataSource modeForHeaderWithPageViewController:self];
+    if ( _isResponse_modeForHeader )
+        return [self.dataSource modeForHeaderWithPageViewController:self];
+    return 0;
+}
+
+- (__kindof UIView *_Nullable)headerView {
+    if ( _headerView == nil ) {
+        if ( _isResponse_viewForHeader ) {
+            _headerView = [self.dataSource viewForHeaderInPageViewController:self];
+        }
+    }
+    return _headerView;
 }
 
 - (nullable __kindof UIViewController *)currentVisibleViewController {
-    return [(SJPageViewControllerItemCell *)self.collectionView.visibleCells.lastObject item];
+    return [(SJPageViewControllerItemCell *)self.collectionView.visibleCells.lastObject viewController];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -562,7 +580,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
         // 停止滑动时, 将 headerView 恢复到 child scrollView 中
         UIScrollView *childScrollView = self.focusedViewController.sj_pageItem.scrollView;
         CGRect frame = [_headerView.superview convertRect:_headerView.frame toView:childScrollView];
-        frame.origin.x = 0;
         _headerView.frame = frame;
         [childScrollView addSubview:_headerView];
     }
@@ -594,34 +611,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
         }
     }
     return NSNotFound;
-}
-
-- (SJPageViewControllerHeaderMode)_modeForHeader {
-    if ( [self.dataSource respondsToSelector:@selector(modeForHeaderWithPageViewController:)] ) {
-        return [self.dataSource modeForHeaderWithPageViewController:self];
-    }
-    return 0;
-}
-
-- (nullable UIView *)_viewForHeader {
-    if ( [self.dataSource respondsToSelector:@selector(viewForHeaderInPageViewController:)] ) {
-        return [self.dataSource viewForHeaderInPageViewController:self];
-    }
-    return nil;
-}
-
-- (CGFloat)_heightForHeaderBounds {
-    if ( [self.dataSource respondsToSelector:@selector(heightForHeaderBoundsWithPageViewController:)] ) {
-        return [self.dataSource heightForHeaderBoundsWithPageViewController:self];
-    }
-    return 0;
-}
-
-- (CGFloat)_heightForHeaderPinToVisibleBounds {
-    if ( [self.dataSource respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)] ) {
-        return [self.dataSource heightForHeaderPinToVisibleBoundsWithPageViewController:self];
-    }
-    return 0;
 }
 
 - (void)_cleanPageItems {
@@ -658,12 +647,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (void)_reloadPageViewController {
     self.dataSourceLoaded = YES;
-    [self.headerView removeFromSuperview];
-    self.headerView = nil;
+    
+    if ( _headerView != nil ) {
+        [_headerView removeFromSuperview];
+        _headerView = nil;
+    }
     
     NSInteger numberOfViewControllers = self.numberOfViewControllers;
     if ( numberOfViewControllers != 0 ) {
-        self.headerView = [self _viewForHeader];
         self.hasHeader = self.headerView != nil;
     }
     
@@ -691,6 +682,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
 #endif
 
     [self setViewControllerAtIndex:self.focusedIndex];
+}
+
+- (void)_removePageChildViewController:(UIViewController *)viewController {
+    if ( viewController == nil ) return;
+    [viewController willMoveToParentViewController:nil];
+    [viewController.view removeFromSuperview];
+    [viewController removeFromParentViewController];
+    [viewController didMoveToParentViewController:nil];
 }
 @end
 NS_ASSUME_NONNULL_END

@@ -108,7 +108,7 @@ SJPageViewController is available under the MIT license. See the LICENSE file fo
 
 ```Objective-C
 - (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return pageViewController.headerView.bounds.size.height;
+    return 375;
 }
 ```
 
