@@ -57,7 +57,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 - (instancetype)initWithOptions:(nullable NSDictionary<SJPageViewControllerOptionsKey,id> *)options {
     self = [super initWithNibName:nil bundle:nil];
     if ( self ) {
-//        self.edgesForExtendedLayout = UIRectEdgeNone;
+        self.edgesForExtendedLayout = UIRectEdgeNone;
         _focusedIndex = NSNotFound;
         _options = options;
         _viewControllers = NSMutableDictionary.new;
@@ -188,15 +188,9 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( context == &kContentOffset ) {
         [self _childScrollViewContentOffsetDidChange:object change:change];
     }
-    else if ( context == &kState ) {
-        UIGestureRecognizer *gesture = object;
-        if ( gesture.state == UIGestureRecognizerStateBegan ) {
-            [self _insertHeaderViewForFocusedViewController];
-        }
-    }
 }
 
-- (void)_childScrollViewContentOffsetDidChange:(__kindof UIScrollView *)childScrollView change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change {
+- (void)_childScrollViewContentOffsetDidChange:(UIScrollView *)childScrollView change:(nullable NSDictionary<NSKeyValueChangeKey,id> *)change {
     if ( _collectionView.isDecelerating || _collectionView.isDragging ) return;
 
     CGFloat newValue = [change[NSKeyValueChangeNewKey] CGPointValue].y;
@@ -283,8 +277,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
             CGRect rect = (CGRect){0, 0, frame.size.width, frame.size.height * progress};
             [self.delegate pageViewController:self headerViewVisibleRectDidChange:rect];
         }
-
-//        [self _setupTopContentInsetForChildScrollViewIfNeeded:childScrollView];
     }
 }
 
@@ -402,9 +394,9 @@ static NSString *const kReuseIdentifierForCell = @"1";
                 if (@available(iOS 13.0, *)) {
                     childScrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
                 }
-//                if (@available(iOS 11.0, *)) {
-//                    childScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-//                }
+                if (@available(iOS 11.0, *)) {
+                    childScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+                }
                 if ( _headerView.superview == nil ) {
                     _headerView.frame = CGRectMake(0, -_heightForHeaderBounds, bounds.size.width, _heightForHeaderBounds);
                     [childScrollView addSubview:_headerView];
@@ -412,14 +404,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
                 childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(_heightForHeaderBounds, 0, 0, 0);
                 [self _setupContentInsetForChildScrollView:childScrollView];
                 [childScrollView setContentOffset:CGPointMake(0, -_heightForHeaderBounds) animated:NO];
-                [childScrollView addObserver:self
-                                  forKeyPath:kContentOffset
-                                     options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld
-                                     context:(void *)&kContentOffset];
-                [childScrollView.panGestureRecognizer addObserver:self
-                                                       forKeyPath:kState
-                                                          options:NSKeyValueObservingOptionNew
-                                                          context:(void *)&kState];
+                [childScrollView addObserver:self forKeyPath:kContentOffset options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:(void *)&kContentOffset];
+                [childScrollView.panGestureRecognizer addObserver:self forKeyPath:kState options:NSKeyValueObservingOptionNew context:(void *)&kState];
             }
             else {
                 [self _setupContentInsetForChildScrollView:childScrollView];
@@ -514,10 +500,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
 #endif
 }
 
-//- (void)willMoveToParentViewController:(nullable UIViewController *)parent {
-//    parent.edgesForExtendedLayout = UIRectEdgeNone;
-//    [super willMoveToParentViewController:parent];
-//}
+- (void)willMoveToParentViewController:(nullable UIViewController *)parent {
+    parent.edgesForExtendedLayout = UIRectEdgeNone;
+    [super willMoveToParentViewController:parent];
+}
 
 #pragma mark -
  
@@ -635,14 +621,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
     for ( UIViewController *vc in self.viewControllers.allValues ) {
         SJPageItem *item = vc.sj_pageItem;
         if ( item != nil ) {
-            [item.scrollView.panGestureRecognizer removeObserver:self forKeyPath:kState context:(void *)&kState];
-            [item.scrollView removeObserver:self forKeyPath:kContentOffset context:(void *)&kContentOffset];
+            [item.scrollView.panGestureRecognizer removeObserver:self forKeyPath:kState];
+            [item.scrollView removeObserver:self forKeyPath:kContentOffset];
             vc.sj_pageItem = nil;
         }
     }
 }
 
-- (void)_setupContentInsetForChildScrollView:(__kindof UIScrollView *)childScrollView {
+- (void)_setupContentInsetForChildScrollView:(UIScrollView *)childScrollView {
     CGRect bounds = self.view.bounds;
     CGFloat boundsHeight = bounds.size.height;
     CGFloat contentHeight = childScrollView.contentSize.height;
@@ -653,79 +639,23 @@ static NSString *const kReuseIdentifierForCell = @"1";
     
     if ( bottomInset < _minimumBottomInsetForChildScrollView ) bottomInset = _minimumBottomInsetForChildScrollView;
     
-    CGFloat topInset = _heightForHeaderBounds;
-//    if ( [childScrollView isKindOfClass:UITableView.class] ) {
-        CGFloat offset = childScrollView.contentOffset.y;
-//        UITableView *tableView = childScrollView;
-//        if ( tableView.style == UITableViewStylePlain && tableView.indexPathsForVisibleRows.count != 0 ) {
-//            __auto_type headerView = [tableView headerViewForSection:tableView.indexPathsForVisibleRows.firstObject.section];
-            topInset = childScrollView.contentInset.top;
-            if ( offset <= -_heightForHeaderBounds ) {
-                topInset = _heightForHeaderBounds;
-            }
-            else if ( offset < -_heightForHeaderPinToVisibleBounds ) {
-                topInset = -offset;
-            }
-            else {
-                topInset = _heightForHeaderPinToVisibleBounds;
-            }
-//            if ( headerView.bounds.size.height > 0.1 ) {
-//            }
-//        }
-//    }
-    
-    if ( childScrollView.contentInset.top != topInset || childScrollView.contentInset.bottom != bottomInset ) {
-        UIEdgeInsets inset = childScrollView.contentInset;
-        inset.top = topInset;
-        inset.bottom = bottomInset;
-        childScrollView.contentInset = inset;
+    if ( childScrollView.contentInset.top != _heightForHeaderBounds || childScrollView.contentInset.bottom != bottomInset ) {
+        childScrollView.contentInset = UIEdgeInsetsMake(_heightForHeaderBounds, childScrollView.contentInset.left, bottomInset, childScrollView.contentInset.right);
     }
 }
-
-//- (void)_setupTopContentInsetForChildScrollViewIfNeeded:(__kindof UIScrollView *)childScrollView {
-//    if ( [childScrollView isKindOfClass:UITableView.class] ) {
-//        CGFloat offset = childScrollView.contentOffset.y;
-//        UITableView *tableView = childScrollView;
-//        if ( tableView.style == UITableViewStylePlain && tableView.indexPathsForVisibleRows.count != 0 ) {
-//            __auto_type headerView = [tableView headerViewForSection:tableView.indexPathsForVisibleRows.firstObject.section];
-//            if ( headerView != nil ) {
-//                UIEdgeInsets contentInset = childScrollView.contentInset;
-//                if ( offset <= -_heightForHeaderBounds ) {
-//                    contentInset.top = _heightForHeaderBounds;
-//                }
-//                else if ( offset < -_heightForHeaderPinToVisibleBounds ) {
-//                    contentInset.top = -offset;
-//                }
-//                else {
-//                    contentInset.top = _heightForHeaderPinToVisibleBounds;
-//                }
-//                if ( childScrollView.contentInset.top != contentInset.top ) {
-//                    childScrollView.contentInset = contentInset;
-//                }
-//            }
-//        }
-//    }
-//}
 
 - (void)_reloadPageViewController {
     self.dataSourceLoaded = YES;
     [self.headerView removeFromSuperview];
-    self.headerView = nil;
-    self.hasHeader = NO;
-    
-    // header
-    if ( self.numberOfViewControllers != 0 ) {
-        self.heightForHeaderBounds = [self _heightForHeaderBounds];
-        self.heightForHeaderPinToVisibleBounds = [self _heightForHeaderPinToVisibleBounds];
-        self.modeForHeader = [self _modeForHeader];
-        self.headerView = [self _viewForHeader];
-        self.hasHeader = self.headerView != nil;
-        if ( self.hasHeader && self.heightForHeaderBounds == 0 ) {
-            CGFloat height = self.headerView.frame.size.height;
-            if ( height == 0 ) height = ceil([self.headerView systemLayoutSizeFittingSize:CGSizeMake(self.view.bounds.size.width, CGFLOAT_MAX)].height);
-            NSAssert(height != UIViewNoIntrinsicMetric, @"The `dataSource` must implement `heightForHeaderBoundsWithPageViewController:`!");
-            self.heightForHeaderBounds = height;
-        }
+    self.headerView = [self _viewForHeader];
+    self.hasHeader = self.headerView != nil;
+    self.modeForHeader = [self _modeForHeader];
+    self.heightForHeaderBounds = [self _heightForHeaderBounds];
+    self.heightForHeaderPinToVisibleBounds = [self _heightForHeaderPinToVisibleBounds];
+    if ( self.hasHeader && self.heightForHeaderBounds == 0 ) {
+        CGFloat height = ceil([self.headerView systemLayoutSizeFittingSize:CGSizeMake(self.view.bounds.size.width, CGFLOAT_MAX)].height);
+        if ( height == 0 ) height = self.headerView.frame.size.height;
+        self.heightForHeaderBounds = height;
     }
     
     [self _cleanPageItems];

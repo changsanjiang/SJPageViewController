@@ -12,6 +12,7 @@
 
 #import <UIKit/UIKit.h>
 @protocol SJPageViewControllerDataSource, SJPageViewControllerDelegate;
+typedef NSString *SJPageViewControllerOptionsKey;
 
 ///
 /// SJPageViewControllerHeaderModeTracking
@@ -30,16 +31,15 @@ typedef enum : NSUInteger {
 } SJPageViewControllerHeaderMode;
 
 NS_ASSUME_NONNULL_BEGIN
-typedef NSString *SJPageViewControllerOptionsKey;
 UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInterPageSpacingKey;
 
 @interface SJPageViewController : UIViewController
-/// options参数: 主要用于传递一些初始化后不可更改的参数
 + (instancetype)pageViewControllerWithOptions:(nullable NSDictionary<SJPageViewControllerOptionsKey, id> *)options;
 - (instancetype)initWithOptions:(nullable NSDictionary<SJPageViewControllerOptionsKey, id> *)options;
 
 @property (nonatomic, weak, nullable) id<SJPageViewControllerDataSource> dataSource;
 @property (nonatomic, weak, nullable) id<SJPageViewControllerDelegate> delegate;
+
 - (void)reloadPageViewController;
 - (void)setViewControllerAtIndex:(NSInteger)index;
 
@@ -55,8 +55,8 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 @property (nonatomic, readonly, nullable) NSArray<__kindof UIViewController *> *cachedViewControllers;
 @property (nonatomic, readonly, nullable) __kindof UIView *headerView;
 @property (nonatomic, readonly) SJPageViewControllerHeaderMode modeForHeader;
-@property (nonatomic, readonly) CGFloat heightForHeaderBounds;
 @property (nonatomic, readonly) CGFloat heightForHeaderPinToVisibleBounds;
+@property (nonatomic, readonly) CGFloat heightForHeaderBounds;
 @end
 
 
