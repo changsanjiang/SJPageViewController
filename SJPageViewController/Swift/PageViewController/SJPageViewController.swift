@@ -50,20 +50,17 @@ open class SJPageViewController: UIViewController {
     }
     
     open func setViewController(at index: Int) {
-        DispatchQueue.main.async {
-            if self._isSafeIndex(index) {
-                if self.collectionView.visibleCells.count == 0 {
-                    self.collectionView.reloadData()
-                }
-                
-                let offset = CGFloat(index) * self.collectionView.bounds.size.width
-                self.collectionView.setContentOffset(CGPoint.init(x: offset, y: 0), animated: false)
+        if isSafeIndex(index) {
+            if collectionView.bounds.width != 0 {
+                let offset = CGFloat(index) * collectionView.bounds.size.width
+                collectionView.setContentOffset(.init(x: offset, y: 0), animated: false)
             }
+            self.focusedIndex = index
         }
     }
     
     open func viewController(at index: Int) -> UIViewController? {
-        if _isSafeIndex(index) {
+        if isSafeIndex(index) {
             var vc = self.viewControllers[index]
             if vc == nil {
                 vc = self.dataSource?.pageViewController(self, viewControllerAt: index)
@@ -76,7 +73,7 @@ open class SJPageViewController: UIViewController {
     }
     
     open func isViewControllerVisible(at index: Int) -> Bool {
-        if _isSafeIndex(index) {
+        if isSafeIndex(index) {
             if index == self.focusedIndex {
                 return true
             }
@@ -105,6 +102,12 @@ open class SJPageViewController: UIViewController {
     }
     
     open private(set) var headerView: UIView?
+    open var heightForHeaderBounds: CGFloat {
+        return self.dataSource?.heightForHeaderBounds(with: self) ?? 0
+    }
+    open var heightForHeaderPinToVisibleBounds: CGFloat {
+        return self.dataSource?.heightForHeaderPinToVisibleBounds(with: self) ?? 0
+    }
     
     open var focusedViewController: UIViewController? {
         return self.viewController(at: self.focusedIndex)
@@ -114,10 +117,6 @@ open class SJPageViewController: UIViewController {
         return self.viewControllers.values.reversed()
     }
     
-    open private(set) var modeForHeader: SJPageViewController.HeaderMode = .tracking
-    open private(set) var heightForHeaderBounds: CGFloat = 0
-    open private(set) var heightForHeaderPinToVisibleBounds: CGFloat = 0
-
     @objc public enum HeaderMode: Int {
         case tracking
         case pinnedToTop
@@ -134,7 +133,7 @@ open class SJPageViewController: UIViewController {
     }
     
     deinit {
-        _cleanPageItems()
+        cleanPageItems()
     }
     
     private var isDataSourceLoaded = false
@@ -167,13 +166,17 @@ open class SJPageViewController: UIViewController {
     private var previousOffset: CGFloat = 0
     private var hasHeader = false
     private var heightForIntersectionBounds: CGFloat {
-        let frame = _convertHeaderViewFrame(to: self.view)
+        let frame = convertHeaderViewFrame(to: self.view)
         let intersection = self.view.bounds.intersection(frame)
         return intersection.isEmpty || intersection.isNull ? 0 : intersection.height
+    }
+    private var modeForHeader: SJPageViewController.HeaderMode {
+        return self.dataSource?.modeForHeader(with: self) ?? .tracking
     }
     private var interPageSpacing: CGFloat {
         return options?[SJPageViewController.OptionsKey.interPageSpacing] as? CGFloat ?? 0
     }
+    private var previousBounds: CGRect = .zero
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -185,10 +188,10 @@ open class SJPageViewController: UIViewController {
     
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        
-        let bounds = self.view.bounds
-        let width: CGFloat = bounds.width + self.interPageSpacing
-        self.collectionView.frame = CGRect.init(x: 0, y: 0, width: width, height: bounds.height)
+        if previousBounds.equalTo(self.view.bounds) == false {
+            previousBounds = self.view.bounds
+            remakeConstraints()
+        }
     }
     
     open override func willMove(toParent parent: UIViewController?) {
@@ -196,39 +199,41 @@ open class SJPageViewController: UIViewController {
         super.willMove(toParent: parent)
     }
     
+    private func _setupViews() {
+        view.clipsToBounds = true
+        view.addSubview(collectionView)
+    }
+    
     @objc private func _reload() {
-        self.isDataSourceLoaded = true
-        self.headerView?.removeFromSuperview()
-        self.headerView = nil
-        self.hasHeader = false
-        
-        if self.numberOfViewControllers != 0 {
-            self.modeForHeader = self.dataSource?.modeForHeader(with: self) ?? .tracking
-            self.heightForHeaderBounds = self.dataSource?.heightForHeaderBounds(with: self) ?? 0
-            self.heightForHeaderPinToVisibleBounds = self.dataSource?.heightForHeaderPinToVisibleBounds(with: self) ?? 0
-            self.headerView = self.dataSource?.viewForHeader(in: self)
-            self.hasHeader = self.headerView != nil
-            if let headerView = headerView, self.heightForHeaderBounds == 0 {
-                var height = headerView.frame.height
-                if height == 0 {
-                    height = ceil(headerView.systemLayoutSizeFitting(CGSize.init(width: self.view.bounds.width, height: CGFloat.greatestFiniteMagnitude)).height)
-                }
-                assert(height != UIView.noIntrinsicMetric, "The `dataSource` must implement `heightForHeaderBoundsWithPageViewController:`!")
-                self.heightForHeaderBounds = height
-            }
+        isDataSourceLoaded = true
+        if headerView != nil {
+            headerView?.removeFromSuperview()
+            headerView = nil
+            hasHeader = false
         }
         
-        _cleanPageItems()
-        self.viewControllers.removeAll()
-        self.collectionView.reloadData()
+        if numberOfViewControllers != 0 {
+            headerView = dataSource?.viewForHeader(in: self)
+            hasHeader = headerView != nil
+        }
+        
+        cleanPageItems()
+        viewControllers.removeAll()
+        collectionView.reloadData()
+        
+        if numberOfViewControllers != 0 {
+            var index = focusedIndex
+            if index == NSNotFound {
+                index = 0
+            }
+            else if index >= numberOfViewControllers {
+                index = numberOfViewControllers - 1
+            }
+            setViewController(at: index)
+        }
     }
-    
-    private func _setupViews() {
-        self.view.clipsToBounds = true
-        self.view.addSubview(self.collectionView)
-    }
-    
-    private func _cleanPageItems() {
+     
+    private func cleanPageItems() {
         for vc in self.viewControllers.values {
             if let item = vc.sj_pageItem {
                 item.scrollView?.panGestureRecognizer.removeObserver(self, forKeyPath: kState, context: &kState)
@@ -238,42 +243,40 @@ open class SJPageViewController: UIViewController {
         }
     }
     
-    private func _setupContentInset(for childScrollView: UIScrollView) {
-        let bounds = self.view.bounds
-        let boundsHeight = bounds.size.height
-        let contentHeight = childScrollView.contentSize.height
-        var bottomInset = minimumBottomInsetForChildScrollView
-        if contentHeight < boundsHeight {
-            bottomInset = ceil(boundsHeight - contentHeight - heightForHeaderPinToVisibleBounds)
+    private func remakeConstraints() {
+        let bounds = view.bounds
+        if let headerView = headerView {
+            var frame = headerView.frame
+            frame.size.width = bounds.width
+            headerView.frame = frame
         }
-        if bottomInset < minimumBottomInsetForChildScrollView {
-            bottomInset = minimumBottomInsetForChildScrollView
-        }
-        
-        if childScrollView.contentInset.top != heightForHeaderBounds || childScrollView.contentInset.bottom != bottomInset {
-            let oldInset = childScrollView.contentInset
-            childScrollView.contentInset = UIEdgeInsets.init(top: heightForHeaderBounds, left: oldInset.left, bottom: bottomInset, right: oldInset.right)
-        }
+        let width: CGFloat = bounds.width + interPageSpacing
+        collectionView.frame = CGRect.init(x: 0, y: 0, width: width, height: bounds.height)
+        setViewController(at: focusedIndex)
+    }
+}
+
+
+private extension SJPageViewController {
+    func isSafeIndex(_ index: Int) -> Bool {
+        return index >= 0 && index < numberOfViewControllers
     }
     
-    private func _convertHeaderViewFrame(to view: UIView?) -> CGRect {
+    func convertHeaderViewFrame(to view: UIView?) -> CGRect {
         if let headerView = headerView, let superview = headerView.superview, let view = view {
             return superview.convert(headerView.frame, to: view)
         }
         return .zero
     }
     
-    private func _isSafeIndex(_ index: Int) -> Bool {
-        return index >= 0 && index < self.numberOfViewControllers
-    }
-    
-    private func _removeChild(_ childController: UIViewController) {
+    func removePageChildViewController(_ childController: UIViewController) {
         childController.willMove(toParent: nil)
         childController.view.removeFromSuperview()
         childController.removeFromParent()
         childController.didMove(toParent: nil)
     }
 }
+
 
 public extension SJPageViewController.OptionsKey {
     static let interPageSpacing = SJPageViewController.OptionsKey.init(rawValue: "SJPageViewControllerOptionInterPageSpacingKey")
@@ -345,7 +348,7 @@ extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDele
         
         if oldViewController != newViewController {
             if let oldViewController = oldViewController, oldViewController.view.superview == pageCell.contentView {
-                _removeChild(oldViewController)
+                removePageChildViewController(oldViewController)
             }
             
             if let newViewController = newViewController {
@@ -381,14 +384,14 @@ extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDele
                             headerView.frame = CGRect.init(x: 0, y: -heightForHeaderBounds, width: bounds.width, height: heightForHeaderBounds)
                             childScrollView.addSubview(headerView)
                         }
-                        _setupContentInset(for: childScrollView)
+                        setupContentInset(for: childScrollView)
                         childScrollView.scrollIndicatorInsets = UIEdgeInsets.init(top: heightForHeaderBounds, left: 0, bottom: 0, right: 0)
                         childScrollView.setContentOffset(CGPoint.init(x: 0, y: -heightForHeaderBounds), animated: false)
                         childScrollView.panGestureRecognizer.addObserver(self, forKeyPath: kState, options: .new, context: &kState)
                         childScrollView.addObserver(self, forKeyPath: kContentOffset, options: [.new, .old], context: &kContentOffset)
                     }
                     else {
-                        _setupContentInset(for: childScrollView)
+                        setupContentInset(for: childScrollView)
                     }
                     
                     if let pageItem = pageItem, let scrollView = pageItem.scrollView, scrollView.sj_locked == false {
@@ -450,7 +453,7 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
         if let gestureRecognizer = gestureRecognizer as? UIPanGestureRecognizer, self.numberOfViewControllers != 0 {
             let location = gestureRecognizer.location(in: self.view)
             if hasHeader {
-                if _convertHeaderViewFrame(to: self.view).contains(location) {
+                if convertHeaderViewFrame(to: self.view).contains(location) {
                     gestureRecognizer.state = .cancelled
                     return false
                 }
@@ -503,7 +506,7 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
             if newValue == oldValue {
                 return
             }
-            _setupContentInset(for: childScrollView)
+            setupContentInset(for: childScrollView)
             // 同步 pageItem, 当前 child scrollView 的 contentOffset
             if childScrollView.sj_locked == false {
                 for vc in self.viewControllers.values {
@@ -536,7 +539,8 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
                     }
                 }
                 
-                switch modeForHeader {
+                let mode = modeForHeader
+                switch mode {
                 case .tracking:
                     frame.origin.x = 0
                     frame.origin.y = y
@@ -565,6 +569,9 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
                 }
                 
                 headerView.frame = frame
+                if ( mode == .scaleAspectFill ) {
+                    headerView.layoutIfNeeded()
+                }
                 
                 var indictorTopInset = -heightForHeaderBounds
                 if y <= -heightForHeaderBounds {
@@ -624,7 +631,7 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
     private func _insertHeaderViewForRootViewController() {
         if hasHeader, let headerView = headerView {
             let horizontalOffset = collectionView.contentOffset.x
-            var frame = _convertHeaderViewFrame(to: self.view)
+            var frame = convertHeaderViewFrame(to: self.view)
             let lastItemOffset = CGFloat((self.numberOfViewControllers - 1)) * collectionView.bounds.width
             if horizontalOffset <= 0 {
                 frame.origin.x = -horizontalOffset
@@ -644,9 +651,7 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
     
     private func _insertHeaderViewForFocusedViewController() {
         if hasHeader, let headerView = headerView, let childScrollView = self.focusedViewController?.sj_pageItem?.scrollView {
-            var frame = _convertHeaderViewFrame(to: childScrollView)
-            frame.origin.x = 0
-            headerView.frame = frame
+            headerView.frame = convertHeaderViewFrame(to: childScrollView)
             if headerView.superview != childScrollView {
                 let index = _indexOfScrollIndicator(in: childScrollView)
                 if index != NSNotFound {
@@ -667,6 +672,26 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
                 } ?? NSNotFound
         }
         return NSNotFound
+    }
+    
+    private func setupContentInset(for childScrollView: UIScrollView) {
+        let bounds = self.view.bounds
+        let boundsHeight = bounds.size.height
+        let contentHeight = childScrollView.contentSize.height
+        var bottomInset = minimumBottomInsetForChildScrollView
+        if contentHeight < boundsHeight {
+            bottomInset = ceil(boundsHeight - contentHeight - heightForHeaderPinToVisibleBounds)
+        }
+        if bottomInset < minimumBottomInsetForChildScrollView {
+            bottomInset = minimumBottomInsetForChildScrollView
+        }
+        
+        var insets = childScrollView.contentInset
+        if insets.top != heightForHeaderBounds || insets.bottom != bottomInset {
+            insets.top = heightForHeaderBounds;
+            insets.bottom = bottomInset;
+            childScrollView.contentInset = insets;
+        }
     }
 }
 

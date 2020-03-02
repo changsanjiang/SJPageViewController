@@ -7,16 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		076281EE2A7B3B24191E3E4BC3A914D8 /* SJPageMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3BEAE4162381B8057479C31F7BEE9B /* SJPageMenuBar.swift */; };
+		076281EE2A7B3B24191E3E4BC3A914D8 /* SJPageMenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DCEAB1598B5268441379281B351CDA1 /* SJPageMenuBar.swift */; };
 		5F150C4AED4F61C0B0AC727905A4989D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		7CD29F488502D410DADFD943C22EACD9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */; };
 		A3D95F57EA9D0169571647A6E8B90CF3 /* Pods-SJPageViewControllerswift_Example-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B0D03D42B0463F5A72B0DD0122BD4D37 /* Pods-SJPageViewControllerswift_Example-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B153843E5CAE793455F0D632049D081A /* SJPageViewController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A18FBD9336D960478D19EFDA088A19FA /* SJPageViewController-dummy.m */; };
-		B2B1E33A8F451F45DAF5FE51400EF4D5 /* SJPageViewController-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 0D320A884E999EAE299120008C484B91 /* SJPageViewController-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CC8E17D59AE308F9656393B93E0A8C3F /* SJPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C43D3CCF58846CD33759899276FDA /* SJPageViewController.swift */; };
-		EF98D275603EACF264C4FD1109AD980C /* SJPageCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F7EC617F41763E3FE15758623B0AD67 /* SJPageCollectionView.swift */; };
+		B153843E5CAE793455F0D632049D081A /* SJPageViewController-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C47367C92C8BCA5F52319D45FB26DD1 /* SJPageViewController-dummy.m */; };
+		B2B1E33A8F451F45DAF5FE51400EF4D5 /* SJPageViewController-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BF351AF4ECEA4FB992552D2E027EDC0 /* SJPageViewController-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CC8E17D59AE308F9656393B93E0A8C3F /* SJPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 101C0B3C9A079124E7393DADB48F3D73 /* SJPageViewController.swift */; };
+		EF98D275603EACF264C4FD1109AD980C /* SJPageCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8090551DF69B3FC2AA4E79FED903EBD0 /* SJPageCollectionView.swift */; };
 		F61A51D649184F9F25D931B1EB080774 /* Pods-SJPageViewControllerswift_Example-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = BC74094E511E99B2A40F9DE6EC5BC024 /* Pods-SJPageViewControllerswift_Example-dummy.m */; };
-		FF89EBB2D5D21EC5E0FF45CFEDC3A1FD /* SJPageMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AF513DDC915C76DC6177ADDEE97268E /* SJPageMenuItemView.swift */; };
+		FF89EBB2D5D21EC5E0FF45CFEDC3A1FD /* SJPageMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8182FA7BB3BB56B1ED1A59A869CBE78 /* SJPageMenuItemView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,32 +30,33 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		03DD30B4D169359892A0DACD9747830F /* SJPageViewController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SJPageViewController.framework; path = SJPageViewController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		0AF513DDC915C76DC6177ADDEE97268E /* SJPageMenuItemView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageMenuItemView.swift; path = SJPageViewController/Swift/PageMenuBar/Core/SJPageMenuItemView.swift; sourceTree = "<group>"; };
-		0D320A884E999EAE299120008C484B91 /* SJPageViewController-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJPageViewController-umbrella.h"; sourceTree = "<group>"; };
-		14CAF3091048B1F0EB492C9D5E1C27BD /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		03DD30B4D169359892A0DACD9747830F /* SJPageViewController.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SJPageViewController.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		101C0B3C9A079124E7393DADB48F3D73 /* SJPageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageViewController.swift; path = SJPageViewController/Swift/PageViewController/SJPageViewController.swift; sourceTree = "<group>"; };
+		110A87EC8BD627900A4A62D6A8AE7346 /* SJPageViewController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJPageViewController.release.xcconfig; sourceTree = "<group>"; };
 		3212113385A8FBBDB272BD23C409FF61 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS12.2.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		33096DB512AC9463B3CE867C170CEBEB /* Pods-SJPageViewControllerswift_Example-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-SJPageViewControllerswift_Example-frameworks.sh"; sourceTree = "<group>"; };
-		3CC387171E07E404AE49B7E865D58642 /* SJPageViewController-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJPageViewController-prefix.pch"; sourceTree = "<group>"; };
+		3C783866613AAC5C06D9C0B4E453F136 /* SJPageViewController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJPageViewController.debug.xcconfig; sourceTree = "<group>"; };
 		407375E2CC5A63A89F4977263986FE37 /* Pods-SJPageViewControllerswift_Example-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SJPageViewControllerswift_Example-Info.plist"; sourceTree = "<group>"; };
 		49B2F0E9C2761B437C5ECDA3947C1DC2 /* Pods-SJPageViewControllerswift_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SJPageViewControllerswift_Example.release.xcconfig"; sourceTree = "<group>"; };
-		67653B721B1A1F937FC6CBD7403EA059 /* SJPageViewController.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = SJPageViewController.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		4BF351AF4ECEA4FB992552D2E027EDC0 /* SJPageViewController-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJPageViewController-umbrella.h"; sourceTree = "<group>"; };
+		5B40A0DB56EAE9C84AFA3485234DF30F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		698923195EA4DB938FD26E81E76D7730 /* Pods-SJPageViewControllerswift_Example-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SJPageViewControllerswift_Example-acknowledgements.plist"; sourceTree = "<group>"; };
-		76B96F49C41A978AEB50BD905D13DE46 /* SJPageViewController-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "SJPageViewController-Info.plist"; sourceTree = "<group>"; };
-		8AC63FD3FA2533DEB067E091B1460EDC /* SJPageViewController.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SJPageViewController.xcconfig; sourceTree = "<group>"; };
-		8F7EC617F41763E3FE15758623B0AD67 /* SJPageCollectionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageCollectionView.swift; path = SJPageViewController/Swift/PageViewController/Core/SJPageCollectionView.swift; sourceTree = "<group>"; };
+		6DCEAB1598B5268441379281B351CDA1 /* SJPageMenuBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageMenuBar.swift; path = SJPageViewController/Swift/PageMenuBar/SJPageMenuBar.swift; sourceTree = "<group>"; };
+		7C47367C92C8BCA5F52319D45FB26DD1 /* SJPageViewController-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SJPageViewController-dummy.m"; sourceTree = "<group>"; };
+		8090551DF69B3FC2AA4E79FED903EBD0 /* SJPageCollectionView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageCollectionView.swift; path = SJPageViewController/Swift/PageViewController/Core/SJPageCollectionView.swift; sourceTree = "<group>"; };
+		9059130D322B6036E722D0E49CDCB2D1 /* SJPageViewController-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "SJPageViewController-Info.plist"; sourceTree = "<group>"; };
+		9A19E92CA6E2179B6EFCB224A44BCF5F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		9BE609FA0DBC34DE44CC07781B0579A7 /* Pods-SJPageViewControllerswift_Example-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-SJPageViewControllerswift_Example-acknowledgements.markdown"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		A17C43D3CCF58846CD33759899276FDA /* SJPageViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageViewController.swift; path = SJPageViewController/Swift/PageViewController/SJPageViewController.swift; sourceTree = "<group>"; };
-		A18FBD9336D960478D19EFDA088A19FA /* SJPageViewController-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SJPageViewController-dummy.m"; sourceTree = "<group>"; };
-		AB3BEAE4162381B8057479C31F7BEE9B /* SJPageMenuBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageMenuBar.swift; path = SJPageViewController/Swift/PageMenuBar/SJPageMenuBar.swift; sourceTree = "<group>"; };
+		9CFA2C7157DA55FD2887B2112F422925 /* SJPageViewController-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SJPageViewController-prefix.pch"; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		B0D03D42B0463F5A72B0DD0122BD4D37 /* Pods-SJPageViewControllerswift_Example-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-SJPageViewControllerswift_Example-umbrella.h"; sourceTree = "<group>"; };
 		B5B9F89714FB3EABA11E0B7423BCFCAF /* Pods-SJPageViewControllerswift_Example.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-SJPageViewControllerswift_Example.modulemap"; sourceTree = "<group>"; };
-		B63616F891D4482453E333688FB33CA3 /* Pods_SJPageViewControllerswift_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = Pods_SJPageViewControllerswift_Example.framework; path = "Pods-SJPageViewControllerswift_Example.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B63616F891D4482453E333688FB33CA3 /* Pods_SJPageViewControllerswift_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SJPageViewControllerswift_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		B8182FA7BB3BB56B1ED1A59A869CBE78 /* SJPageMenuItemView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SJPageMenuItemView.swift; path = SJPageViewController/Swift/PageMenuBar/Core/SJPageMenuItemView.swift; sourceTree = "<group>"; };
 		BC74094E511E99B2A40F9DE6EC5BC024 /* Pods-SJPageViewControllerswift_Example-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SJPageViewControllerswift_Example-dummy.m"; sourceTree = "<group>"; };
-		BED4953B0C7C8AC7A92C2E5EC960A55C /* SJPageViewController.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SJPageViewController.modulemap; sourceTree = "<group>"; };
 		BFB1A3C438E77D4AAE0ED67587BB4DF6 /* Pods-SJPageViewControllerswift_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-SJPageViewControllerswift_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		E9A66F62EC771113C048BE876E58A5DA /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		E011B5FDA2ED96D9D39D5219C85E3FF8 /* SJPageViewController.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = SJPageViewController.podspec; sourceTree = "<group>"; tabWidth = 2; };
+		F7826DE591A51C3189B4DAD2E89F6A3E /* SJPageViewController.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SJPageViewController.modulemap; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,21 +79,42 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1DF5436790A015BCA3D8FFFFA1D2A25B /* Core */ = {
+		03DCE2D21D8AA3EF059FB5095A3E8B2D /* PageViewController */ = {
 			isa = PBXGroup;
 			children = (
-				0AF513DDC915C76DC6177ADDEE97268E /* SJPageMenuItemView.swift */,
+				101C0B3C9A079124E7393DADB48F3D73 /* SJPageViewController.swift */,
+				6A78B64673F4F79ADF395914A1EBBE3A /* Core */,
+			);
+			name = PageViewController;
+			sourceTree = "<group>";
+		};
+		0BC6651F5DD784A7D8FCD53346987E84 /* Pod */ = {
+			isa = PBXGroup;
+			children = (
+				9A19E92CA6E2179B6EFCB224A44BCF5F /* LICENSE */,
+				5B40A0DB56EAE9C84AFA3485234DF30F /* README.md */,
+				E011B5FDA2ED96D9D39D5219C85E3FF8 /* SJPageViewController.podspec */,
+			);
+			name = Pod;
+			sourceTree = "<group>";
+		};
+		1C2FEE669515C2A65C24EA9A5B67710A /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				B8182FA7BB3BB56B1ED1A59A869CBE78 /* SJPageMenuItemView.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
 		};
-		228A102F9E1AF614C59FA78CF8BDEB78 /* Swift */ = {
+		27489D4E58C7E3627C4AB8DA89DECEF7 /* SJPageViewController */ = {
 			isa = PBXGroup;
 			children = (
-				DFB33CC427B8CD6551108FD473942F70 /* PageMenuBar */,
-				7FAE7976AC042A28B36CC3A295DDA281 /* PageViewController */,
+				0BC6651F5DD784A7D8FCD53346987E84 /* Pod */,
+				842EB53816DB25FC0AF983A92C8D8487 /* Support Files */,
+				43FE675F91C711C6EE973DC7087095F0 /* Swift */,
 			);
-			name = Swift;
+			name = SJPageViewController;
+			path = ../..;
 			sourceTree = "<group>";
 		};
 		3E0630AC701B61ECF89555B620797971 /* Products */ = {
@@ -104,46 +126,45 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		3FA809EEF22AF0A4DC0415662BB81530 /* SJPageViewController */ = {
+		43FE675F91C711C6EE973DC7087095F0 /* Swift */ = {
 			isa = PBXGroup;
 			children = (
-				C2BAB7673F1721908CC933E977CECE5E /* Pod */,
-				B9B09EFDF715AA31D7DAD92649A51060 /* Support Files */,
-				228A102F9E1AF614C59FA78CF8BDEB78 /* Swift */,
+				B97B3D35245699055344A01C2B8AC5AA /* PageMenuBar */,
+				03DCE2D21D8AA3EF059FB5095A3E8B2D /* PageViewController */,
 			);
-			name = SJPageViewController;
-			path = ../..;
+			name = Swift;
 			sourceTree = "<group>";
 		};
-		7FAE7976AC042A28B36CC3A295DDA281 /* PageViewController */ = {
+		6A78B64673F4F79ADF395914A1EBBE3A /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				A17C43D3CCF58846CD33759899276FDA /* SJPageViewController.swift */,
-				889B5EDAAC3E5E9FD7DB3661ED516417 /* Core */,
-			);
-			name = PageViewController;
-			sourceTree = "<group>";
-		};
-		889B5EDAAC3E5E9FD7DB3661ED516417 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				8F7EC617F41763E3FE15758623B0AD67 /* SJPageCollectionView.swift */,
+				8090551DF69B3FC2AA4E79FED903EBD0 /* SJPageCollectionView.swift */,
 			);
 			name = Core;
 			sourceTree = "<group>";
 		};
-		B9B09EFDF715AA31D7DAD92649A51060 /* Support Files */ = {
+		842EB53816DB25FC0AF983A92C8D8487 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				BED4953B0C7C8AC7A92C2E5EC960A55C /* SJPageViewController.modulemap */,
-				8AC63FD3FA2533DEB067E091B1460EDC /* SJPageViewController.xcconfig */,
-				A18FBD9336D960478D19EFDA088A19FA /* SJPageViewController-dummy.m */,
-				76B96F49C41A978AEB50BD905D13DE46 /* SJPageViewController-Info.plist */,
-				3CC387171E07E404AE49B7E865D58642 /* SJPageViewController-prefix.pch */,
-				0D320A884E999EAE299120008C484B91 /* SJPageViewController-umbrella.h */,
+				F7826DE591A51C3189B4DAD2E89F6A3E /* SJPageViewController.modulemap */,
+				7C47367C92C8BCA5F52319D45FB26DD1 /* SJPageViewController-dummy.m */,
+				9059130D322B6036E722D0E49CDCB2D1 /* SJPageViewController-Info.plist */,
+				9CFA2C7157DA55FD2887B2112F422925 /* SJPageViewController-prefix.pch */,
+				4BF351AF4ECEA4FB992552D2E027EDC0 /* SJPageViewController-umbrella.h */,
+				3C783866613AAC5C06D9C0B4E453F136 /* SJPageViewController.debug.xcconfig */,
+				110A87EC8BD627900A4A62D6A8AE7346 /* SJPageViewController.release.xcconfig */,
 			);
 			name = "Support Files";
 			path = "DemoSwift/Pods/Target Support Files/SJPageViewController";
+			sourceTree = "<group>";
+		};
+		B97B3D35245699055344A01C2B8AC5AA /* PageMenuBar */ = {
+			isa = PBXGroup;
+			children = (
+				6DCEAB1598B5268441379281B351CDA1 /* SJPageMenuBar.swift */,
+				1C2FEE669515C2A65C24EA9A5B67710A /* Core */,
+			);
+			name = PageMenuBar;
 			sourceTree = "<group>";
 		};
 		C0834CEBB1379A84116EF29F93051C60 /* iOS */ = {
@@ -154,20 +175,10 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
-		C2BAB7673F1721908CC933E977CECE5E /* Pod */ = {
-			isa = PBXGroup;
-			children = (
-				E9A66F62EC771113C048BE876E58A5DA /* LICENSE */,
-				14CAF3091048B1F0EB492C9D5E1C27BD /* README.md */,
-				67653B721B1A1F937FC6CBD7403EA059 /* SJPageViewController.podspec */,
-			);
-			name = Pod;
-			sourceTree = "<group>";
-		};
 		CE5B7891FB0F5A5EB05F7B3BF9BDF8CF /* Development Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3FA809EEF22AF0A4DC0415662BB81530 /* SJPageViewController */,
+				27489D4E58C7E3627C4AB8DA89DECEF7 /* SJPageViewController */,
 			);
 			name = "Development Pods";
 			sourceTree = "<group>";
@@ -189,15 +200,6 @@
 				C0834CEBB1379A84116EF29F93051C60 /* iOS */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		DFB33CC427B8CD6551108FD473942F70 /* PageMenuBar */ = {
-			isa = PBXGroup;
-			children = (
-				AB3BEAE4162381B8057479C31F7BEE9B /* SJPageMenuBar.swift */,
-				1DF5436790A015BCA3D8FFFFA1D2A25B /* Core */,
-			);
-			name = PageMenuBar;
 			sourceTree = "<group>";
 		};
 		E67CB08438A552B662E9B6984D818BF7 /* Targets Support Files */ = {
@@ -299,6 +301,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
 			productRefGroup = 3E0630AC701B61ECF89555B620797971 /* Products */;
@@ -361,6 +364,38 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		3ED516C9F9F97936F900C1C13FE7AD72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 110A87EC8BD627900A4A62D6A8AE7346 /* SJPageViewController.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/SJPageViewController/SJPageViewController-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/SJPageViewController/SJPageViewController-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/SJPageViewController/SJPageViewController.modulemap";
+				PRODUCT_MODULE_NAME = SJPageViewController;
+				PRODUCT_NAME = SJPageViewController;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		796E40224A0190977B721690DC604B11 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = BFB1A3C438E77D4AAE0ED67587BB4DF6 /* Pods-SJPageViewControllerswift_Example.debug.xcconfig */;
@@ -393,69 +428,6 @@
 				VERSION_INFO_PREFIX = "";
 			};
 			name = Debug;
-		};
-		8D596B8A7B5BF71E72AF2A9E27BBC928 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8AC63FD3FA2533DEB067E091B1460EDC /* SJPageViewController.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/SJPageViewController/SJPageViewController-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/SJPageViewController/SJPageViewController-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/SJPageViewController/SJPageViewController.modulemap";
-				PRODUCT_MODULE_NAME = SJPageViewController;
-				PRODUCT_NAME = SJPageViewController;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		A127BC8ABF333ED81EFC5F9A08C52B9E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8AC63FD3FA2533DEB067E091B1460EDC /* SJPageViewController.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				GCC_PREFIX_HEADER = "Target Support Files/SJPageViewController/SJPageViewController-prefix.pch";
-				INFOPLIST_FILE = "Target Support Files/SJPageViewController/SJPageViewController-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MODULEMAP_FILE = "Target Support Files/SJPageViewController/SJPageViewController.modulemap";
-				PRODUCT_MODULE_NAME = SJPageViewController;
-				PRODUCT_NAME = SJPageViewController;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
-				SWIFT_VERSION = 5;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-			};
-			name = Release;
 		};
 		B0087CB4594321EF41619F3181FE120E /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -510,8 +482,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_INSTALLED_PRODUCT = NO;
-				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				SWIFT_VERSION = 5.0;
 				SYMROOT = "${SRCROOT}/../build";
 			};
@@ -615,6 +586,37 @@
 			};
 			name = Debug;
 		};
+		F86E2D435EC9B5204ED0CA280199BCB1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3C783866613AAC5C06D9C0B4E453F136 /* SJPageViewController.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_PREFIX_HEADER = "Target Support Files/SJPageViewController/SJPageViewController-prefix.pch";
+				INFOPLIST_FILE = "Target Support Files/SJPageViewController/SJPageViewController-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MODULEMAP_FILE = "Target Support Files/SJPageViewController/SJPageViewController.modulemap";
+				PRODUCT_MODULE_NAME = SJPageViewController;
+				PRODUCT_NAME = SJPageViewController;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
+				SWIFT_VERSION = 5;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -630,8 +632,8 @@
 		57B0668C539A801FA229AC24DF1DE29D /* Build configuration list for PBXNativeTarget "SJPageViewController" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8D596B8A7B5BF71E72AF2A9E27BBC928 /* Debug */,
-				A127BC8ABF333ED81EFC5F9A08C52B9E /* Release */,
+				F86E2D435EC9B5204ED0CA280199BCB1 /* Debug */,
+				3ED516C9F9F97936F900C1C13FE7AD72 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

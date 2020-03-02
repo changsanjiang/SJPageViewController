@@ -17,7 +17,7 @@ class SJViewController1: UIViewController {
 
     var items = [SJPageMenuItem]()
     var pageViewController: SJPageViewController!
-    var pageMenuBar: SJPageMenuBar?
+    var pageMenuBar: SJPageMenuBar!
     
     override func viewDidLoad() {
         super.viewDidLoad() 
@@ -27,13 +27,21 @@ class SJViewController1: UIViewController {
         self.addChild(pageViewController)
         self.view.addSubview(pageViewController.view)
         
-        
+        pageMenuBar = SJPageMenuBar.init(frame: .zero)
+        pageMenuBar.distribution = .fillEqually
+        pageMenuBar.dataSource = self
+        pageMenuBar.delegate = self
+
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
             guard let self = self else { return }
             for index in 0...5 {
                 self.items.append(SJPageMenuItem.init(title: String.init(index)))
             }
             self.pageViewController.reload()
+            self.pageMenuBar.reload()
+            self.pageMenuBar.scrollToItem(at: 4, animated: false)
+            // or
+            // self.pageViewController.setViewController(at: 4)
         }
         
     }
@@ -57,10 +65,6 @@ extension SJViewController1: SJPageViewControllerDataSource {
         let headerView = UIView.init(frame: .init(x: 0, y: 0, width: view.bounds.width, height: 300))
         headerView.backgroundColor = .red
         
-        pageMenuBar = SJPageMenuBar.init(frame: .zero)
-        pageMenuBar?.distribution = .fillEqually
-        pageMenuBar?.dataSource = self
-        pageMenuBar?.delegate = self
         pageMenuBar?.frame = CGRect.init(x: 0, y: 300 - 44, width: view.bounds.width, height: 44)
         headerView.addSubview(pageMenuBar!)
         return headerView
@@ -81,7 +85,7 @@ extension SJViewController1: SJPageViewControllerDataSource {
 
 extension SJViewController1: SJPageViewControllerDelegate {
     func pageViewController(_ pageViewController: SJPageViewController, didScrollIn range: NSRange, distanceProgress progress: CGFloat) {
-        pageMenuBar?.scroll(inRange: range, distaneProgress: progress)
+        pageMenuBar.scroll(inRange: range, distaneProgress: progress)
     }
 }
 
@@ -90,7 +94,7 @@ extension SJViewController1: SJPageMenuBarDataSource {
         return pageViewController.numberOfViewControllers
     }
     
-    func pageMenuBar(_ menuBar: SJPageMenuBar, viewForItemAtIndex index: Int) -> SJPageMenuItemViewProtocol {
+    func pageMenuBar(_ menuBar: SJPageMenuBar, viewForItemAt index: Int) -> SJPageMenuItemViewProtocol {
         let menuItemView = SJPageMenuItemView.init(frame: .zero)
         menuItemView.text = items[index].title
         return menuItemView

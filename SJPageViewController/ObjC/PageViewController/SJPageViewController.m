@@ -46,6 +46,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 @property (nonatomic) BOOL hasHeader;
 @property (nonatomic, strong, nullable) __kindof UIView *headerView;
 @property (nonatomic, readonly) CGFloat heightForIntersectionBounds;
+@property (nonatomic, readonly) SJPageViewControllerHeaderMode modeForHeader;
 @end
 
 @implementation SJPageViewController
@@ -87,8 +88,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (void)setViewControllerAtIndex:(NSInteger)index {
     if ( [self _isSafeIndex:index] ) {
-        CGFloat offset = index * self.collectionView.bounds.size.width;
-        [self.collectionView setContentOffset:CGPointMake(offset, 0) animated:NO];
+        if ( self.collectionView.bounds.size.width != 0 ) {
+            CGFloat offset = index * self.collectionView.bounds.size.width;
+            [self.collectionView setContentOffset:CGPointMake(offset, 0) animated:NO];
+        }
         self.focusedIndex = index;
     }
 }
@@ -651,11 +654,12 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( _headerView != nil ) {
         [_headerView removeFromSuperview];
         _headerView = nil;
+        _hasHeader = NO;
     }
     
     NSInteger numberOfViewControllers = self.numberOfViewControllers;
     if ( numberOfViewControllers != 0 ) {
-        self.hasHeader = self.headerView != nil;
+        _hasHeader = self.headerView != nil;
     }
     
     [self _cleanPageItems];
@@ -663,7 +667,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
     [self.collectionView reloadData];
     
     if ( numberOfViewControllers != 0 ) {
-        NSInteger focusedIndex = self.focusedIndex;
+        NSInteger focusedIndex = _focusedIndex;
         if ( focusedIndex == NSNotFound )
             focusedIndex = 0;
         else if ( focusedIndex >= numberOfViewControllers )

@@ -10,7 +10,7 @@ import UIKit
 public protocol SJPageMenuBarDataSource: NSObjectProtocol {
     func numberOfItems(in menuBar: SJPageMenuBar) -> Int
 
-    func pageMenuBar(_ menuBar: SJPageMenuBar, viewForItemAtIndex index: Int) -> SJPageMenuItemViewProtocol
+    func pageMenuBar(_ menuBar: SJPageMenuBar, viewForItemAt index: Int) -> SJPageMenuItemViewProtocol
 }
 
 public protocol SJPageMenuBarDelegate: NSObjectProtocol {
@@ -48,11 +48,16 @@ open class SJPageMenuBar: UIView {
         perform(#selector(_reload), with: nil, afterDelay: 0, inModes: [.common])
     }
 
-    open func reloadItem(atIndex index: Int, animated: Bool) {
+    open func reloadItem(at index: Int, animated: Bool) {
         if isSafeIndex(index) {
+            if menuItemViews.count < index {
+                reload()
+                return
+            }
+            
             let oldView = cache[index]
             cache[index] = nil
-            let newView = viewForItem(atIndex: index)
+            let newView = viewForItem(at: index)
             newView?.center = oldView!.center
             scrollView.addSubview(newView!)
             menuItemViews[index] = newView!
@@ -71,12 +76,14 @@ open class SJPageMenuBar: UIView {
         }
     }
     
-    open func scrollToItem(atIndex index: Int, animated: Bool) {
+    open func scrollToItem(at index: Int, animated: Bool) {
         if isSafeIndex(index) && focusedIndex != index {
+            let previousIdx = focusedIndex
+            focusedIndex = index
+            if self.bounds.size.width == 0 || self.bounds.size.height == 0 {
+                return
+            }
             UIView.animate(withDuration: animated ? 0.25 : 0.0, animations: {
-                let previousIdx = self.focusedIndex
-                self.focusedIndex = index
-                
                 // previous
                 if ( self.isSafeIndex(previousIdx) ) {
                     self.setZoomScale(self.minimumZoomScale, forMenuItemViewAt: previousIdx)
@@ -98,10 +105,10 @@ open class SJPageMenuBar: UIView {
     }
 
     
-    open func viewForItem(atIndex index: Int) -> SJPageMenuItemViewProtocol? {
+    open func viewForItem(at index: Int) -> SJPageMenuItemViewProtocol? {
         if ( index >= 0 && index < numberOfItems ) {
             if cache[index] == nil {
-                guard let view = dataSource?.pageMenuBar(self, viewForItemAtIndex: index) else {
+                guard let view = dataSource?.pageMenuBar(self, viewForItemAt: index) else {
                     assertionFailure("The menuItemView can't be nil!")
                     return nil
                 }
@@ -253,10 +260,10 @@ open class SJPageMenuBar: UIView {
     
     @objc private func handleTap(_ tap: UITapGestureRecognizer) {
         let location = tap.location(in: scrollView)
-        for index in 0...(menuItemViews.count-1) {
+        for index in 0..<menuItemViews.count {
             let view = menuItemViews[index]
             if view.frame.contains(.init(x: location.x, y: view.frame.origin.y)) {
-                scrollToItem(atIndex: index, animated: true)
+                scrollToItem(at: index, animated: true)
                 return
             }
         }
@@ -269,8 +276,8 @@ open class SJPageMenuBar: UIView {
         menuItemViews.removeAll()
         
         if numberOfItems != 0 {
-            for index in 0...numberOfItems {
-                if let menuItemView = viewForItem(atIndex: index) {
+            for index in 0..<numberOfItems {
+                if let menuItemView = viewForItem(at: index) {
                     menuItemViews.append(menuItemView)
                     scrollView.addSubview(menuItemView)
                 }
@@ -283,14 +290,13 @@ open class SJPageMenuBar: UIView {
 private extension SJPageMenuBar {
     func isSafeIndex(_ index: Int) -> Bool {
         return index >= 0 &&
-               index < numberOfItems &&
-               index < menuItemViews.count
+               index < numberOfItems
     }
 }
  
 private extension SJPageMenuBar {
     func setContentOffsetForScrollViewToIndex(_ index: Int) {
-        if let toView = viewForItem(atIndex: index) {
+        if let toView = viewForItem(at: index) {
             let half = bounds.size.width * 0.5
             var offset = toView.center.x - half
             
@@ -335,7 +341,7 @@ private extension SJPageMenuBar {
     }
     
     func resetTintColorForMenuItemViews() {
-        for index in 0...(menuItemViews.count-1) {
+        for index in 0..<menuItemViews.count {
             let view = menuItemViews[index]
             view.tintColor = index == focusedIndex ? focusedItemTintColor : itemTintColor
         }
@@ -359,7 +365,7 @@ private extension SJPageMenuBar {
         let contentLayoutHeight = bounds.height - contentInsets.top - contentInsets.bottom
         let contentLayoutWidth = bounds.width - contentInsets.left - contentInsets.right
         let spacing = distribution == .equalSpacing ? itemSpacing : 0
-        for index in safeIndex...(menuItemViews.count-1) {
+        for index in safeIndex..<menuItemViews.count {
             let curr = menuItemViews[index]
             let prev = index != 0 ? menuItemViews[index - 1] : nil
             // zoomScale & tintColor
@@ -421,24 +427,24 @@ private extension SJPageMenuBar {
 
 private extension SJPageMenuBar {
     func _scroll(inRange range: NSRange, distaneProgress progress: CGFloat) {
-        if bounds.size.width == 0 || bounds.size.height == 0 {
-            return
-        }
         let left = range.location
         let right = NSMaxRange(range)
         
         if left == right || progress <= 0 {
-            scrollToItem(atIndex: left, animated: true)
+            scrollToItem(at: left, animated: true)
         }
         else if progress >= 1 {
-            scrollToItem(atIndex: right, animated: true)
+            scrollToItem(at: right, animated: true)
         }
         else {
+            if bounds.size.width == 0 || bounds.size.height == 0 {
+                return
+            }
             let contentLayoutHeight = bounds.height - contentInsets.top - contentInsets.bottom
             let contentLayoutWidth = bounds.width - contentInsets.left - contentInsets.right
             let zoomScaleLength = maximumZoomScale - minimumZoomScale
             let spacing = distribution == .equalSpacing ? itemSpacing : 0;
-            for index in left...(menuItemViews.count-1) {
+            for index in left..<menuItemViews.count {
                 let curr = menuItemViews[index]
                 let prev = index != 0 ? menuItemViews[index - 1] : nil
                 // zoomScale & tintColor

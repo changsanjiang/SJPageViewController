@@ -108,7 +108,7 @@
     [headerView addSubview:_menuBar];
     [_menuBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.offset(0);
-        make.height.offset(pageViewController.heightForHeaderPinToVisibleBounds);
+        make.height.offset(40);
     }];
     return headerView;
 }

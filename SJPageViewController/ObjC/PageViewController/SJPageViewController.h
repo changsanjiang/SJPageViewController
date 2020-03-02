@@ -54,7 +54,6 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 @property (nonatomic, readonly, nullable) __kindof UIViewController *focusedViewController;
 @property (nonatomic, readonly, nullable) NSArray<__kindof UIViewController *> *cachedViewControllers;
 @property (nonatomic, readonly, nullable) __kindof UIView *headerView;
-@property (nonatomic, readonly) SJPageViewControllerHeaderMode modeForHeader;
 @property (nonatomic, readonly) CGFloat heightForHeaderPinToVisibleBounds;
 @property (nonatomic, readonly) CGFloat heightForHeaderBounds;
 @end

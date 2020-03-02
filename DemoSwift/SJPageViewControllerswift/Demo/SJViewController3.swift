@@ -57,7 +57,7 @@ extension SJViewController3: SJPageViewControllerDataSource {
     }
     
     func heightForHeaderBounds(with pageViewController: SJPageViewController) -> CGFloat {
-        return pageViewController.headerView?.frame.height ?? 0
+        return 300
     }
     
     func heightForHeaderPinToVisibleBounds(with pageViewController: SJPageViewController) -> CGFloat {
