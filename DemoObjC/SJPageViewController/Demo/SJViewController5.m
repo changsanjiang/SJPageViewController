@@ -12,7 +12,6 @@
 #import "SJDemoTableViewController.h"
 #import "SJPageMenuBar.h"
 #import "SJPageMenuItemView.h"
-#import "SJTestViewController1.h"
 
 @interface SJPageMenuItem : NSObject
 - (instancetype)initWithTitle:(NSString *)title;
@@ -95,7 +94,6 @@
 }
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
-    if ( index == 0 ) return SJTestViewController1.new;
     return SJDemoTableViewController.new;
 }
 

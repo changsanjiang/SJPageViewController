@@ -27,12 +27,8 @@
 		7786E65223EDD51D00931805 /* SJDemoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65123EDD51D00931805 /* SJDemoTableViewController.m */; };
 		7786E65523EDD7B300931805 /* SJViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65423EDD7B300931805 /* SJViewController1.m */; };
 		7786E65823EDD85200931805 /* SJViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65623EDD85200931805 /* SJViewController2.m */; };
-		7786E65E23EDDD7300931805 /* SJDemoTableViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65D23EDDD7300931805 /* SJDemoTableViewController1.m */; };
 		778BAD9323F2626400B59D0B /* SJViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = 778BAD9223F2626400B59D0B /* SJViewController5.m */; };
 		7799B93F23EFE00A00486A86 /* SJViewController4.m in Sources */ = {isa = PBXBuildFile; fileRef = 7799B93D23EFE00900486A86 /* SJViewController4.m */; };
-		77B5E9E0240A1E6100A93F1E /* SJTestViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B5E9DF240A1E6100A93F1E /* SJTestViewController1.m */; };
-		77B5E9E3240A291400A93F1E /* SJTestViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B5E9E2240A291400A93F1E /* SJTestViewController2.m */; };
-		77D6FD6F240A2EC500F50C07 /* SJTestViewController3.m in Sources */ = {isa = PBXBuildFile; fileRef = 77D6FD6E240A2EC500F50C07 /* SJTestViewController3.m */; };
 		77F65DA523F2A77C009E7BBC /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F65DA423F2A77C009E7BBC /* SJTestViewController.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
 /* End PBXBuildFile section */
@@ -81,18 +77,10 @@
 		7786E65423EDD7B300931805 /* SJViewController1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController1.m; sourceTree = "<group>"; };
 		7786E65623EDD85200931805 /* SJViewController2.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController2.m; sourceTree = "<group>"; };
 		7786E65723EDD85200931805 /* SJViewController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController2.h; sourceTree = "<group>"; };
-		7786E65C23EDDD7300931805 /* SJDemoTableViewController1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJDemoTableViewController1.h; sourceTree = "<group>"; };
-		7786E65D23EDDD7300931805 /* SJDemoTableViewController1.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJDemoTableViewController1.m; sourceTree = "<group>"; };
 		778BAD9123F2626400B59D0B /* SJViewController5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5.h; sourceTree = "<group>"; };
 		778BAD9223F2626400B59D0B /* SJViewController5.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5.m; sourceTree = "<group>"; };
 		7799B93D23EFE00900486A86 /* SJViewController4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController4.m; sourceTree = "<group>"; };
 		7799B93E23EFE00900486A86 /* SJViewController4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController4.h; sourceTree = "<group>"; };
-		77B5E9DE240A1E6100A93F1E /* SJTestViewController1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController1.h; sourceTree = "<group>"; };
-		77B5E9DF240A1E6100A93F1E /* SJTestViewController1.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController1.m; sourceTree = "<group>"; };
-		77B5E9E1240A291400A93F1E /* SJTestViewController2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController2.h; sourceTree = "<group>"; };
-		77B5E9E2240A291400A93F1E /* SJTestViewController2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController2.m; sourceTree = "<group>"; };
-		77D6FD6D240A2EC500F50C07 /* SJTestViewController3.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController3.h; sourceTree = "<group>"; };
-		77D6FD6E240A2EC500F50C07 /* SJTestViewController3.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController3.m; sourceTree = "<group>"; };
 		77F65DA323F2A77C009E7BBC /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
 		77F65DA423F2A77C009E7BBC /* SJTestViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTestViewController.m; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = Main.storyboard; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -179,7 +167,6 @@
 				6003F5A5195388D20070C39A /* SJViewController.h */,
 				6003F5A6195388D20070C39A /* SJViewController.m */,
 				7786E64C23EDD34600931805 /* Demo */,
-				77B5E9DD240A1E4E00A93F1E /* Test */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
 				6003F594195388D20070C39A /* Supporting Files */,
@@ -247,23 +234,8 @@
 				778BAD9223F2626400B59D0B /* SJViewController5.m */,
 				7786E65023EDD51D00931805 /* SJDemoTableViewController.h */,
 				7786E65123EDD51D00931805 /* SJDemoTableViewController.m */,
-				7786E65C23EDDD7300931805 /* SJDemoTableViewController1.h */,
-				7786E65D23EDDD7300931805 /* SJDemoTableViewController1.m */,
 			);
 			path = Demo;
-			sourceTree = "<group>";
-		};
-		77B5E9DD240A1E4E00A93F1E /* Test */ = {
-			isa = PBXGroup;
-			children = (
-				77B5E9DE240A1E6100A93F1E /* SJTestViewController1.h */,
-				77B5E9DF240A1E6100A93F1E /* SJTestViewController1.m */,
-				77B5E9E1240A291400A93F1E /* SJTestViewController2.h */,
-				77B5E9E2240A291400A93F1E /* SJTestViewController2.m */,
-				77D6FD6D240A2EC500F50C07 /* SJTestViewController3.h */,
-				77D6FD6E240A2EC500F50C07 /* SJTestViewController3.m */,
-			);
-			path = Test;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -416,17 +388,13 @@
 			files = (
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
 				7786E65823EDD85200931805 /* SJViewController2.m in Sources */,
-				77B5E9E0240A1E6100A93F1E /* SJTestViewController1.m in Sources */,
 				7799B93F23EFE00A00486A86 /* SJViewController4.m in Sources */,
 				6003F5A7195388D20070C39A /* SJViewController.m in Sources */,
 				7786E64F23EDD36200931805 /* SJViewController0.m in Sources */,
-				77B5E9E3240A291400A93F1E /* SJTestViewController2.m in Sources */,
 				7786E65223EDD51D00931805 /* SJDemoTableViewController.m in Sources */,
 				77F65DA523F2A77C009E7BBC /* SJTestViewController.m in Sources */,
-				7786E65E23EDDD7300931805 /* SJDemoTableViewController1.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				778BAD9323F2626400B59D0B /* SJViewController5.m in Sources */,
-				77D6FD6F240A2EC500F50C07 /* SJTestViewController3.m in Sources */,
 				7786E65523EDD7B300931805 /* SJViewController1.m in Sources */,
 				7780233123EE843D00255BDD /* SJViewController00.m in Sources */,
 			);

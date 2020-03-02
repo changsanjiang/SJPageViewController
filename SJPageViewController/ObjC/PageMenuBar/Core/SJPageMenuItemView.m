@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
     self = [super initWithFrame:frame];
     if ( self ) {
         self.tintColor = UIColor.whiteColor;
-        self.font = [UIFont boldSystemFontOfSize:20];
+        self.font = [UIFont systemFontOfSize:20];
         self.textAlignment = NSTextAlignmentCenter;
     }
     return self;
