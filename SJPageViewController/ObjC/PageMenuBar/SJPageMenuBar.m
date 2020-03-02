@@ -82,10 +82,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)scrollToItemAtIndex:(NSInteger)toIdx animated:(BOOL)animated {
      if ( [self _isSafeIndex:toIdx] && _focusedIndex != toIdx ) {
+         NSInteger previousIdx = self.focusedIndex;
+         self.focusedIndex = toIdx;
+         if ( self.bounds.size.height == 0 ) return;
+         if ( self.bounds.size.width == 0 ) return;
          [UIView animateWithDuration:animated ? 0.25 : 0.0 animations:^{
-             NSInteger previousIdx = self.focusedIndex;
-             self.focusedIndex = toIdx;
-             
              // previous
              if ( [self _isSafeIndex:previousIdx] ) {
                  [self _setZoomScale:self.minimumZoomScale forMenuItemViewAtIndex:previousIdx];
@@ -297,8 +298,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 - (BOOL)_isSafeIndex:(NSInteger)index {
-    return (index >= 0 && index < self.numberOfItems) &&
-           (index < self.menuItemViews.count);
+    return (index >= 0 && index < self.numberOfItems);
 }
 
 - (void)_reloadPageMenuBar {
@@ -382,8 +382,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_scrollInRange:(NSRange)range distaneProgress:(CGFloat)progress {
-    if ( self.bounds.size.height == 0 ) return;
-    if ( self.bounds.size.width == 0 ) return;
     NSInteger left = range.location;
     NSInteger right = NSMaxRange(range);
     
@@ -394,6 +392,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self scrollToItemAtIndex:right animated:YES];
     }
     else {
+        if ( self.bounds.size.height == 0 ) return;
+        if ( self.bounds.size.width == 0 ) return;
         CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
         CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
         CGFloat zoomScaleLength = _maximumZoomScale - _minimumZoomScale;

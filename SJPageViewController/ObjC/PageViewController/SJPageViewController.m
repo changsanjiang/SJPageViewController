@@ -24,6 +24,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 @interface SJPageViewController ()<UICollectionViewDataSource, SJPageCollectionViewDelegate, UICollectionViewDelegateFlowLayout, SJPageViewControllerItemCellDelegate> {
     NSDictionary<SJPageViewControllerOptionsKey, id> *_Nullable _options;
+    CGRect _previousBounds;
     CGFloat _previousOffset;
     BOOL _isResponse_focusedIndexDidChange;
     BOOL _isResponse_willDisplayViewController;
@@ -39,9 +40,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 @property (nonatomic) BOOL hasHeader;
 @property (nonatomic, strong, nullable) __kindof UIView *headerView;
-@property (nonatomic) SJPageViewControllerHeaderMode modeForHeader;
-@property (nonatomic) CGFloat heightForHeaderBounds;
-@property (nonatomic) CGFloat heightForHeaderPinToVisibleBounds;
 @property (nonatomic, readonly) CGFloat heightForIntersectionBounds;
 @end
 
@@ -87,14 +85,11 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)setViewControllerAtIndex:(NSInteger)index {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ( [self _isSafeIndex:index] ) {
-            if ( self.collectionView.visibleCells.count == 0 )
-                [self.collectionView reloadData];
-            CGFloat offset = index * self.collectionView.bounds.size.width;
-            [self.collectionView setContentOffset:CGPointMake(offset, 0) animated:NO];
-        }
-    });
+    if ( [self _isSafeIndex:index] ) {
+        CGFloat offset = index * self.collectionView.bounds.size.width;
+        [self.collectionView setContentOffset:CGPointMake(offset, 0) animated:NO];
+        self.focusedIndex = index;
+    }
 }
 
 - (nullable __kindof UIViewController *)viewControllerAtIndex:(NSInteger)index {
@@ -218,7 +213,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
         CGFloat offset = childScrollView.contentOffset.y;
         CGRect frame = _headerView.frame;
 
-        CGFloat topPinOffset = offset - _heightForHeaderBounds + _heightForHeaderPinToVisibleBounds;
+        CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
+        CGFloat heightForHeaderPinToVisibleBounds = self.heightForHeaderPinToVisibleBounds;
+        __auto_type modeForHeader = self.modeForHeader;
+        CGFloat topPinOffset = offset - heightForHeaderBounds + heightForHeaderPinToVisibleBounds;
         CGFloat y = frame.origin.y;
         // 向上移动
         if ( newValue >= oldValue ) {
@@ -227,17 +225,17 @@ static NSString *const kReuseIdentifierForCell = @"1";
         // 向下移动
         else {
             y += newValue - oldValue;
-            if ( y <= -_heightForHeaderBounds ) y = -_heightForHeaderBounds;
+            if ( y <= -heightForHeaderBounds ) y = -heightForHeaderBounds;
         }
         
-        switch ( _modeForHeader ) {
+        switch ( modeForHeader ) {
             case SJPageViewControllerHeaderModeTracking: {
                 frame.origin.x = 0;
                 frame.origin.y = y;
             }
                 break;
             case SJPageViewControllerHeaderModePinnedToTop: {
-                if ( offset <= -_heightForHeaderBounds ) {
+                if ( offset <= -heightForHeaderBounds ) {
                     y = offset;
                 }
                 
@@ -246,8 +244,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
             }
                 break;
             case SJPageViewControllerHeaderModeAspectFill: {
-                CGFloat extend = (-offset - _heightForHeaderBounds);
-                if ( offset <= -_heightForHeaderBounds ) {
+                CGFloat extend = (-offset - heightForHeaderBounds);
+                if ( offset <= -heightForHeaderBounds ) {
                     y = offset;
                 }
                 else {
@@ -257,21 +255,21 @@ static NSString *const kReuseIdentifierForCell = @"1";
                 frame.origin.x = -extend * 0.5;
                 frame.origin.y = y;
                 frame.size.width = self.view.bounds.size.width + extend;
-                frame.size.height = _heightForHeaderBounds + extend;
+                frame.size.height = heightForHeaderBounds + extend;
             }
                 break;
         }
         
         _headerView.frame = frame;
         
-        CGFloat indictorTopInset = _heightForHeaderBounds;
-        if ( y <= -_heightForHeaderBounds ) indictorTopInset = -y;
+        CGFloat indictorTopInset = heightForHeaderBounds;
+        if ( y <= -heightForHeaderBounds ) indictorTopInset = -y;
         if ( childScrollView.scrollIndicatorInsets.top != indictorTopInset ) {
             childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(indictorTopInset, 0, 0, 0);
         }
         
         if ( _isResponse_headerViewVisibleRectDidChange ) {
-            CGFloat progress = 1 - ABS(y - offset) / _heightForHeaderBounds;
+            CGFloat progress = 1 - ABS(y - offset) / heightForHeaderBounds;
             if ( progress <= 0 ) progress = 0;
             else if ( progress >= 1 ) progress = 1;
             CGRect rect = (CGRect){0, 0, frame.size.width, frame.size.height * progress};
@@ -345,7 +343,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( _isResponse_willDisplayViewController ) {
         [self.delegate pageViewController:self willDisplayViewController:cell.item atIndex:idx];
     }
-    if ( _focusedIndex == NSNotFound ) self.focusedIndex = 0;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didEndDisplayingCell:(SJPageViewControllerItemCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -397,13 +394,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
                 if (@available(iOS 11.0, *)) {
                     childScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
                 }
+                CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
                 if ( _headerView.superview == nil ) {
-                    _headerView.frame = CGRectMake(0, -_heightForHeaderBounds, bounds.size.width, _heightForHeaderBounds);
+                    _headerView.frame = CGRectMake(0, -heightForHeaderBounds, bounds.size.width, heightForHeaderBounds);
                     [childScrollView addSubview:_headerView];
                 }
-                childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(_heightForHeaderBounds, 0, 0, 0);
+                childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(heightForHeaderBounds, 0, 0, 0);
                 [self _setupContentInsetForChildScrollView:childScrollView];
-                [childScrollView setContentOffset:CGPointMake(0, -_heightForHeaderBounds) animated:NO];
+                [childScrollView setContentOffset:CGPointMake(0, -heightForHeaderBounds) animated:NO];
                 [childScrollView addObserver:self forKeyPath:kContentOffset options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:(void *)&kContentOffset];
                 [childScrollView.panGestureRecognizer addObserver:self forKeyPath:kState options:NSKeyValueObservingOptionNew context:(void *)&kState];
             }
@@ -484,20 +482,29 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return 0;
 }
 
+- (CGFloat)heightForHeaderPinToVisibleBounds {
+    return [self.dataSource heightForHeaderPinToVisibleBoundsWithPageViewController:self];
+}
+
+- (CGFloat)heightForHeaderBounds {
+    return [self.dataSource heightForHeaderBoundsWithPageViewController:self] ?: self.headerView.frame.size.height;
+}
+
+- (SJPageViewControllerHeaderMode)modeForHeader {
+    return [self.dataSource modeForHeaderWithPageViewController:self];
+}
+
 - (nullable __kindof UIViewController *)currentVisibleViewController {
     return [(SJPageViewControllerItemCell *)self.collectionView.visibleCells.lastObject item];
 }
 
 - (void)viewWillLayoutSubviews {
     [super viewWillLayoutSubviews];
-    
-#ifdef SJDEBUG
-    self.view.clipsToBounds = NO;
-    // 扩大两倍 用于调试
-    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]) * 2, self.view.bounds.size.height);
-#else
-    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]), self.view.bounds.size.height);
-#endif
+    CGRect bounds = self.view.bounds;
+    if ( !CGRectEqualToRect(_previousBounds, bounds) ) {
+        _previousBounds = bounds;
+        [self _remakeConstraints];
+    }
 }
 
 - (void)willMoveToParentViewController:(nullable UIViewController *)parent {
@@ -629,38 +636,61 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)_setupContentInsetForChildScrollView:(UIScrollView *)childScrollView {
+    CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
+    CGFloat heightForHeaderPinToVisibleBounds = self.heightForHeaderPinToVisibleBounds;
     CGRect bounds = self.view.bounds;
     CGFloat boundsHeight = bounds.size.height;
     CGFloat contentHeight = childScrollView.contentSize.height;
     CGFloat bottomInset = _minimumBottomInsetForChildScrollView;
     if ( contentHeight < boundsHeight ) {
-        bottomInset = ceil(boundsHeight - contentHeight - _heightForHeaderPinToVisibleBounds);
+        bottomInset = ceil(boundsHeight - contentHeight - heightForHeaderPinToVisibleBounds);
     }
     
     if ( bottomInset < _minimumBottomInsetForChildScrollView ) bottomInset = _minimumBottomInsetForChildScrollView;
     
-    if ( childScrollView.contentInset.top != _heightForHeaderBounds || childScrollView.contentInset.bottom != bottomInset ) {
-        childScrollView.contentInset = UIEdgeInsetsMake(_heightForHeaderBounds, childScrollView.contentInset.left, bottomInset, childScrollView.contentInset.right);
+    UIEdgeInsets insets = childScrollView.contentInset;
+    if ( insets.top != heightForHeaderBounds || insets.bottom != bottomInset ) {
+        insets.top = heightForHeaderBounds;
+        insets.bottom = bottomInset;
+        childScrollView.contentInset = insets;
     }
 }
 
 - (void)_reloadPageViewController {
     self.dataSourceLoaded = YES;
     [self.headerView removeFromSuperview];
-    self.headerView = [self _viewForHeader];
-    self.hasHeader = self.headerView != nil;
-    self.modeForHeader = [self _modeForHeader];
-    self.heightForHeaderBounds = [self _heightForHeaderBounds];
-    self.heightForHeaderPinToVisibleBounds = [self _heightForHeaderPinToVisibleBounds];
-    if ( self.hasHeader && self.heightForHeaderBounds == 0 ) {
-        CGFloat height = ceil([self.headerView systemLayoutSizeFittingSize:CGSizeMake(self.view.bounds.size.width, CGFLOAT_MAX)].height);
-        if ( height == 0 ) height = self.headerView.frame.size.height;
-        self.heightForHeaderBounds = height;
+    self.headerView = nil;
+    
+    NSInteger numberOfViewControllers = self.numberOfViewControllers;
+    if ( numberOfViewControllers != 0 ) {
+        self.headerView = [self _viewForHeader];
+        self.hasHeader = self.headerView != nil;
     }
     
     [self _cleanPageItems];
     [self.viewControllers removeAllObjects];
     [self.collectionView reloadData];
+    
+    if ( numberOfViewControllers != 0 ) {
+        NSInteger focusedIndex = self.focusedIndex;
+        if ( focusedIndex == NSNotFound )
+            focusedIndex = 0;
+        else if ( focusedIndex >= numberOfViewControllers )
+            focusedIndex = numberOfViewControllers - 1;
+        [self setViewControllerAtIndex:focusedIndex];
+    }
+}
+
+- (void)_remakeConstraints {
+#ifdef SJDEBUG
+    self.view.clipsToBounds = NO;
+    // 扩大两倍 用于调试
+    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]) * 2, self.view.bounds.size.height);
+#else
+    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]), self.view.bounds.size.height);
+#endif
+
+    [self setViewControllerAtIndex:self.focusedIndex];
 }
 @end
 NS_ASSUME_NONNULL_END

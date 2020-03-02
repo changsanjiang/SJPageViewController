@@ -34,20 +34,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSInteger)index;
 
-@property (nonatomic) SJPageMenuBarDistribution distribution; // default is `SJPageMenuBarDistributionEqualSpacing`.
-@property (nonatomic) UIEdgeInsets contentInsets; // default is UIEdgeInsetsZero.
-@property (nonatomic) CGFloat itemSpacing; // default is `16`.
+@property (nonatomic) SJPageMenuBarDistribution distribution;       // default is `SJPageMenuBarDistributionEqualSpacing`.
+@property (nonatomic) UIEdgeInsets contentInsets;                   // default is UIEdgeInsetsZero.
+@property (nonatomic) CGFloat itemSpacing;                          // default is `16`.
 @property (nonatomic, strong, null_resettable) UIColor *itemTintColor;
 @property (nonatomic, strong, null_resettable) UIColor *focusedItemTintColor;
-@property (nonatomic) CGFloat minimumZoomScale; // default is `1.0`.
-@property (nonatomic) CGFloat maximumZoomScale; // default is `1.0`. must be > minimum zoom scale to enable zooming.
+@property (nonatomic) CGFloat minimumZoomScale;                     // default is `1.0`.
+@property (nonatomic) CGFloat maximumZoomScale;                     // default is `1.0`. must be > minimum zoom scale to enable zooming.
 
-@property (nonatomic) BOOL showsScrollIndicator; // default is `YES`.
-@property (nonatomic) CGSize scrollIndicatorSize; // default is `CGSize(12, 2)`.
-@property (nonatomic) CGFloat scrollIndicatorBottomInset; // default is `3.0`.
+@property (nonatomic) BOOL showsScrollIndicator;                    // default is `YES`.
+@property (nonatomic) CGSize scrollIndicatorSize;                   // default is `CGSize(12, 2)`.
+@property (nonatomic) CGFloat scrollIndicatorBottomInset;           // default is `3.0`.
 @property (nonatomic, strong, null_resettable) UIColor *scrollIndicatorTintColor;
 
-@property (nonatomic) CGFloat centerlineOffset; // default is `0`.
+@property (nonatomic) CGFloat centerlineOffset;                     // default is `0`.
 @end
 
 

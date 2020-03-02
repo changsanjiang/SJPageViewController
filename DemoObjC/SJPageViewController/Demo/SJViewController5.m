@@ -54,6 +54,8 @@
         }
         self.menuItems = m;
         [self.pageViewController reloadPageViewController];
+        [self.menuBar reloadPageMenuBar];
+        [self.pageViewController setViewControllerAtIndex:4];
     });
     
 }
@@ -72,6 +74,12 @@
     _pageViewController = [SJPageViewController pageViewControllerWithOptions:@{SJPageViewControllerOptionInterPageSpacingKey:@(3)}];
     _pageViewController.dataSource = self;
     _pageViewController.delegate = self;
+    
+    _menuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
+    _menuBar.distribution = SJPageMenuBarDistributionFillEqually;
+    _menuBar.dataSource = self;
+    _menuBar.delegate = self;
+    
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
     [_pageViewController.view mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -99,10 +107,6 @@
     UIView *headerView = [UIView.alloc initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 200)];
     headerView.backgroundColor = UIColor.redColor;
 
-    _menuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    _menuBar.distribution = SJPageMenuBarDistributionFillEqually;
-    _menuBar.dataSource = self;
-    _menuBar.delegate = self;
     [headerView addSubview:_menuBar];
     [_menuBar mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.bottom.right.offset(0);
@@ -121,7 +125,7 @@
  
 - (void)pageViewController:(SJPageViewController *)pageViewController didScrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
     [_menuBar scrollInRange:range distaneProgress:progress];
-}
+} 
 
 - (void)pageViewController:(SJPageViewController *)pageViewController headerViewVisibleRectDidChange:(CGRect)visibleRect {
     
