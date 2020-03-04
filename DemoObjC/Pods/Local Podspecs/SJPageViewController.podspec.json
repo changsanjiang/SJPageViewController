@@ -1,6 +1,6 @@
 {
   "name": "SJPageViewController",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "summary": "SJPageViewController.",
   "description": "A container view controller that manages navigation between pages of content, where each page is managed by a child view controller.",
   "homepage": "https://github.com/changsanjiang/SJPageViewController",
@@ -13,12 +13,13 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJPageViewController.git",
-    "tag": "0.0.2"
+    "tag": "0.0.4"
   },
   "platforms": {
     "ios": "8.0"
   },
   "default_subspecs": "ObjC",
+  "swift_versions": "5",
   "subspecs": [
     {
       "name": "ObjC",
@@ -44,6 +45,32 @@
           ]
         }
       ]
+    },
+    {
+      "name": "Swift",
+      "subspecs": [
+        {
+          "name": "PageViewController",
+          "source_files": "SJPageViewController/Swift/PageViewController/*.swift",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/Swift/PageViewController/Core/**/*.swift"
+            }
+          ]
+        },
+        {
+          "name": "PageMenuBar",
+          "source_files": "SJPageViewController/Swift/PageMenuBar/*.swift",
+          "subspecs": [
+            {
+              "name": "Core",
+              "source_files": "SJPageViewController/Swift/PageMenuBar/Core/**/*.swift"
+            }
+          ]
+        }
+      ]
     }
-  ]
+  ],
+  "swift_version": "5"
 }

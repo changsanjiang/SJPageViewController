@@ -14,6 +14,7 @@
 #import "SJViewController2.h"
 #import "SJViewController4.h"
 #import "SJViewController5.h"
+#import "SJPageMenuBarDemoViewController.h"
 
 static NSString * const kCellId = @"1";
 
@@ -41,14 +42,15 @@ static NSString * const kCellId = @"1";
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    return 2;
+    return 3;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ( section == 0 )
         return 1;
-    else
+    else if ( section == 1 )
         return 5;
+    return 1;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -60,7 +62,7 @@ static NSString * const kCellId = @"1";
     if ( indexPath.section == 0 ) {
         cell.textLabel.text = [NSString stringWithFormat:@"Demo 应用"];
     }
-    else {
+    else if ( indexPath.section == 1 ) {
         switch ( indexPath.row ) {
             case 0: {
                 cell.textLabel.text = [NSString stringWithFormat:@"普通左右滑动, 无header样式"];
@@ -84,13 +86,15 @@ static NSString * const kCellId = @"1";
                 break;
         }
     }
+    else
+        cell.textLabel.text = [NSString stringWithFormat:@"PageMenuBar Demo"];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if ( indexPath.section == 0 ) {
         [self.navigationController pushViewController:SJViewController5.new animated:YES];
     }
-    else {
+    else if ( indexPath.section == 1 ) {
         switch ( indexPath.row ) {
             case 0: {
                 [self.navigationController pushViewController:SJViewController00.new animated:YES];
@@ -117,6 +121,9 @@ static NSString * const kCellId = @"1";
             }
                 break;
         }
+    }
+    else {
+        [self.navigationController pushViewController:SJPageMenuBarDemoViewController.new animated:YES];
     }
 }
 

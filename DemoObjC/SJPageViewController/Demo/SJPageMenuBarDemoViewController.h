@@ -1,8 +1,8 @@
 //
-//  SJTableViewHeaderFooterView.h
+//  SJPageMenuBarDemoViewController.h
 //  SJPageViewController_Example
 //
-//  Created by BlueDancer on 2020/3/3.
+//  Created by BlueDancer on 2020/3/4.
 //  Copyright © 2020 changsanjiang@gmail.com. All rights reserved.
 //
 
@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SJTableViewHeaderFooterView : UITableViewHeaderFooterView
+@interface SJPageMenuBarDemoViewController : UIViewController
 
 @end
 

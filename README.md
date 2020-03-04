@@ -28,27 +28,33 @@ changsanjiang@gmail.com, changsanjiang@gmail.com
 
 SJPageViewController is available under the MIT license. See the LICENSE file for more info.
 
-# 顶部下拉时, headerView 跟随移动
+
+___
+
+# SJPageViewController
+
+
+## 顶部下拉时, headerView 跟随移动
 
 ![tracking.gif](https://upload-images.jianshu.io/upload_images/2318691-dae7ac82261576a5.gif?imageMogr2/auto-orient/strip)
 
-# 顶部下拉时, headerView 固定在顶部
+## 顶部下拉时, headerView 固定在顶部
 
 ![pinnedToTop.gif](https://upload-images.jianshu.io/upload_images/2318691-aff58d85caa69fb3.gif?imageMogr2/auto-orient/strip)
 
-# 顶部下拉时, headerView 同比放大
+## 顶部下拉时, headerView 同比放大
 
 ![sacleAspectFill.gif](https://upload-images.jianshu.io/upload_images/2318691-b021b5c1a6099bc6.gif?imageMogr2/auto-orient/strip)
 
-# 普通模式
+## 普通模式
 
 ![normal.gif](https://upload-images.jianshu.io/upload_images/2318691-bafc820aa9f27985.gif?imageMogr2/auto-orient/strip)
 
-# 自定义导航栏控制透明度
+## 自定义导航栏控制透明度
 
 ![alpha.gif](https://upload-images.jianshu.io/upload_images/2318691-16066ab069b338f1.gif?imageMogr2/auto-orient/strip)
 
-# 快速开始
+## 快速开始
 
 1. 导入头文件:
 ```Objective-C
@@ -130,5 +136,78 @@ SJPageViewController is available under the MIT license. See the LICENSE file fo
 ///
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController {
     return 44;
+}
+```
+
+____
+
+
+# SJPageMenuBar
+
+## 几个样式
+
+![Mar-04-2020 23-13-16.gif](https://upload-images.jianshu.io/upload_images/2318691-e00ff572d5c548d2.gif?imageMogr2/auto-orient/strip)
+
+![image.png](https://upload-images.jianshu.io/upload_images/2318691-1d1737955b14e15b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+## 快速开始
+
+1. 导入头文件:
+```Objective-C
+#import <SJPageViewController/SJPageMenuBar.h>
+#import <SJPageViewController/SJPageMenuItemView.h>
+```
+
+2. 添加 `pageMenuBar` 属性
+
+```Objective-C
+@interface SJViewController ()<SJPageMenuBarDataSource, SJPageMenuBarDelegate>
+@property (nonatomic, strong) SJPageMenuBar *pageMenuBar;
+@end
+```
+
+3. 创建 `pageMenuBar` 对象:
+
+```Objective-C
+    SJPageMenuBar *pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
+    pageMenuBar.dataSource = self;
+    pageMenuBar.delegate = self;
+    [self.view addSubview:pageMenuBar];
+    [pageMenuBar mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.offset(0);
+        make.left.right.offset(0);
+        make.height.offset(60);
+    }];
+    _pageMenuBar = pageMenuBar;
+    
+    // 内容
+    pageMenuBar.contentInsets = UIEdgeInsetsMake(0, 12, 0, 12);
+
+    // 分布模式. 这里设置为等间隔分布
+    pageMenuBar.distribution = SJPageMenuBarDistributionEqualSpacing;
+    pageMenuBar.minimumZoomScale = 0.8;
+    pageMenuBar.maximumZoomScale = 1.0;
+    
+    // 显示底部线
+    pageMenuBar.showsScrollIndicator = YES;
+    // 线宽的布局模式, 这里设置为指定宽度
+    pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeSpecifiedWidth;
+    // 指定宽度为`12`, 高度为`2`
+    pageMenuBar.scrollIndicatorSize = CGSizeMake(12, 2);
+```
+
+4. 实现 `SJPageMenuBarDataSource` 数据源方法:
+
+```Objective-C
+- (NSInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)menuBar {
+    return 5;
+}
+
+/// 返回itemView, 可返回自定义视图
+- (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
+    SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
+    view.font = [UIFont boldSystemFontOfSize:25];
+    view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山"][index];
+    return view;
 }
 ```

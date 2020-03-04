@@ -48,8 +48,8 @@
         __strong typeof(_self) self = _self;
         if ( !self ) return;
         NSMutableArray<SJPageMenuItem *> *m = [NSMutableArray arrayWithCapacity:5];
-        for ( int i = 0 ; i < 5 ; ++ i  ) {
-            [m addObject:[SJPageMenuItem.alloc initWithTitle:@[@"从前", @"有", @"99", @"座", @"灵剑山"][i]]];
+        for ( int i = 0 ; i < 99 ; ++ i  ) {
+            [m addObject:[SJPageMenuItem.alloc initWithTitle:@[@"从前", @"有", @"99", @"座", @"灵剑山"][i % 5]]];
         }
         self.menuItems = m;
         [self.pageViewController reloadPageViewController];
@@ -75,7 +75,8 @@
     _pageViewController.delegate = self;
     
     _menuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    _menuBar.distribution = SJPageMenuBarDistributionFillEqually;
+//    _menuBar.distribution = SJPageMenuBarDistributionFillEqually;
+    _menuBar.contentInsets = UIEdgeInsetsMake(0, 12, 0, 12);
     _menuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
     _menuBar.dataSource = self;
     _menuBar.delegate = self;
@@ -135,7 +136,7 @@
 - (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
     SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
     view.text = self.menuItems[index].title;
-    view.font = [UIFont systemFontOfSize:18];
+    view.font = [UIFont boldSystemFontOfSize:18];
     return view;
 }
 
