@@ -104,15 +104,7 @@ SJPageViewController is available under the MIT license. See the LICENSE file fo
 
 ```
 
-5.2 设置`HeaderView`的高度(可选的, 如未实现该方法, 将默认使用 headerView.frame.size.height)
-
-```Objective-C
-- (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return 375;
-}
-```
-
-5.3 设置`HeaderMode`
+5.2 设置`HeaderMode`
 
 ```Objective-C
 - (SJPageViewControllerHeaderMode)modeForHeaderWithPageViewController:(SJPageViewController *)pageViewController {
@@ -130,7 +122,7 @@ SJPageViewController is available under the MIT license. See the LICENSE file fo
 }
 ```
 
-5.4 设置`HeaderView`上拉时固定在顶部悬浮的高度(示例图中的绿色区域)
+5.3 设置`HeaderView`上拉时固定在顶部悬浮的高度(示例图中的绿色区域)
 
 ```
 ///

@@ -20,6 +20,7 @@ SJPageViewControllerOptionsKey const SJPageViewControllerOptionInterPageSpacingK
 
 static NSString *const kContentOffset = @"contentOffset";
 static NSString *const kState = @"state";
+static NSString *const kBounds = @"bounds";
 static NSString *const kReuseIdentifierForCell = @"1";
 
 @interface SJPageViewController ()<UICollectionViewDataSource, SJPageCollectionViewDelegate, UICollectionViewDelegateFlowLayout> {
@@ -47,6 +48,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 @property (nonatomic, strong, nullable) __kindof UIView *headerView;
 @property (nonatomic, readonly) CGFloat heightForIntersectionBounds;
 @property (nonatomic, readonly) SJPageViewControllerHeaderMode modeForHeader;
+@property (nonatomic) CGFloat heightForHeaderBounds;
 @end
 
 @implementation SJPageViewController
@@ -70,6 +72,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)dealloc {
+    [self _cleanHeaderView];
     [self _cleanPageItems];
 }
 
@@ -149,7 +152,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
         _dataSource = dataSource;
         
         _isResponse_heightForHeaderPinToVisibleBounds = [dataSource respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)];
-        _isResponse_heightForHeaderBounds = [dataSource respondsToSelector:@selector(heightForHeaderBoundsWithPageViewController:)];
         _isResponse_modeForHeader = [dataSource respondsToSelector:@selector(modeForHeaderWithPageViewController:)];
         _isResponse_viewForHeader = [dataSource respondsToSelector:@selector(viewForHeaderInPageViewController:)];
         [self reloadPageViewController];
@@ -197,6 +199,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
         if ( gesture.state == UIGestureRecognizerStateBegan ) {
             [self _insertHeaderViewForFocusedViewController];
         }
+    }
+    else if ( context == &kBounds ) {
+        _heightForHeaderBounds = _headerView.bounds.size.height;
+        [self _setupContentInsetForChildScrollView:self.focusedViewController.sj_lookupScrollView];
     }
 }
 
@@ -493,13 +499,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return 0;
 }
 
-- (CGFloat)heightForHeaderBounds {
-    if ( _isResponse_heightForHeaderBounds ) {
-        return [self.dataSource heightForHeaderBoundsWithPageViewController:self] ?: self.headerView.frame.size.height;
-    }
-    return 0;
-}
-
 - (SJPageViewControllerHeaderMode)modeForHeader {
     if ( _isResponse_modeForHeader )
         return [self.dataSource modeForHeaderWithPageViewController:self];
@@ -627,7 +626,17 @@ static NSString *const kReuseIdentifierForCell = @"1";
     }
 }
 
+- (void)_cleanHeaderView {
+    if ( _headerView != nil ) {
+        [_headerView removeObserver:self forKeyPath:kBounds];
+        [_headerView removeFromSuperview];
+        _headerView = nil;
+        _hasHeader = NO;
+    }
+}
+
 - (void)_setupContentInsetForChildScrollView:(UIScrollView *)childScrollView {
+    if ( !childScrollView ) return;
     CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
     CGFloat heightForHeaderPinToVisibleBounds = self.heightForHeaderPinToVisibleBounds;
     CGRect bounds = self.view.bounds;
@@ -650,20 +659,18 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (void)_reloadPageViewController {
     self.dataSourceLoaded = YES;
-    
-    if ( _headerView != nil ) {
-        [_headerView removeFromSuperview];
-        _headerView = nil;
-        _hasHeader = NO;
-    }
+    [self _cleanHeaderView];
+    [self _cleanPageItems];
+    [self.viewControllers removeAllObjects];
     
     NSInteger numberOfViewControllers = self.numberOfViewControllers;
     if ( numberOfViewControllers != 0 ) {
         _hasHeader = self.headerView != nil;
+        if ( _hasHeader ) {
+            [_headerView addObserver:self forKeyPath:kBounds options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kBounds];
+        }
     }
     
-    [self _cleanPageItems];
-    [self.viewControllers removeAllObjects];
     [self.collectionView reloadData];
     
     if ( numberOfViewControllers != 0 ) {

@@ -62,7 +62,7 @@
 /// 头部视图
 ///
 - (nullable __kindof UIView *)viewForHeaderInPageViewController:(SJPageViewController *)pageViewController {
-    UIView *headerView = [UIView.alloc initWithFrame:CGRectZero];
+    UIView *headerView = [UIView.alloc initWithFrame:CGRectMake(0, 0, 0, 300)];
     headerView.backgroundColor = UIColor.redColor;
     
     UILabel *channelView = [UILabel.alloc initWithFrame:CGRectZero];
@@ -75,14 +75,7 @@
     }];
     
     return headerView;
-}
-
-///
-/// 头部视图的高度
-///
-- (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return 200;
-}
+} 
 
 ///
 /// 在顶部悬浮保留的高度

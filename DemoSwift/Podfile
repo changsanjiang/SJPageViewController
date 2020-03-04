@@ -1,5 +1,7 @@
 use_frameworks!
 
+platform :ios, '9.3'
+
 target 'SJPageViewControllerswift_Example' do
   pod 'SJPageViewController/Swift', :path => '../'
 #  pod 'SJPageViewController/ObjC', :path => '../'

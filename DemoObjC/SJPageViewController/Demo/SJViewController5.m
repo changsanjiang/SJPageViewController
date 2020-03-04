@@ -47,9 +47,9 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSMutableArray<SJPageMenuItem *> *m = [NSMutableArray arrayWithCapacity:4];
-        for ( int i = 0 ; i < 4 ; ++ i  ) {
-            [m addObject:[SJPageMenuItem.alloc initWithTitle:[NSString stringWithFormat:@"%d", i]]];
+        NSMutableArray<SJPageMenuItem *> *m = [NSMutableArray arrayWithCapacity:5];
+        for ( int i = 0 ; i < 5 ; ++ i  ) {
+            [m addObject:[SJPageMenuItem.alloc initWithTitle:@[@"从前", @"有", @"99", @"座", @"灵剑山"][i]]];
         }
         self.menuItems = m;
         [self.pageViewController reloadPageViewController];
@@ -114,10 +114,6 @@
     return headerView;
 }
 
-- (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return 200;
-}
-
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController {
     return 40;
 }
@@ -138,7 +134,7 @@
 
 - (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
     SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    view.text = @[@"从前", @"有AAAAA", @"座", @"灵剑山"][index];
+    view.text = self.menuItems[index].title;
     view.font = [UIFont systemFontOfSize:18];
     return view;
 }

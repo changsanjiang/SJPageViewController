@@ -11,15 +11,36 @@ import SJPageViewController
 
 class SJViewController3: UIViewController {
 
+    var items = [SJPageMenuItem]()
     var pageViewController: SJPageViewController!
+    var pageMenuBar: SJPageMenuBar!
     
     override func viewDidLoad() {
-        super.viewDidLoad() 
+        super.viewDidLoad()
         self.view.backgroundColor = .black
         pageViewController = SJPageViewController.init(options: [.interPageSpacing:CGFloat(3)], dataSource: self, delegate: self)
         pageViewController.bounces = false;
         self.addChild(pageViewController)
         self.view.addSubview(pageViewController.view)
+        
+        pageMenuBar = SJPageMenuBar.init(frame: .zero)
+        pageMenuBar.distribution = .fillEqually
+        pageMenuBar.scrollIndicatorLayoutMode = .equalItemViewLayoutWidth
+        pageMenuBar.dataSource = self
+        pageMenuBar.delegate = self
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
+            guard let self = self else { return }
+            for index in 0...5 {
+                self.items.append(SJPageMenuItem.init(title: String.init(index)))
+            }
+            self.pageViewController.reload()
+            self.pageMenuBar.reload()
+            self.pageMenuBar.scrollToItem(at: 4, animated: false)
+            // or
+            // self.pageViewController.setViewController(at: 4)
+        }
+        
     }
 
     override func viewWillLayoutSubviews() {
@@ -30,7 +51,7 @@ class SJViewController3: UIViewController {
 
 extension SJViewController3: SJPageViewControllerDataSource {
     func numberOfViewControllers(in pageViewController: SJPageViewController) -> Int {
-        return 3
+        return items.count
     }
     
     func pageViewController(_ pageViewController: SJPageViewController, viewControllerAt index: Int) -> UIViewController {
@@ -44,20 +65,13 @@ extension SJViewController3: SJPageViewControllerDataSource {
         headerView.clipsToBounds = true
         headerView.contentMode = .scaleAspectFill
         
-        let label = UILabel.init(frame: .zero)
-        label.text = "左右滑动切换vc"
-        label.backgroundColor = .green
-        headerView.addSubview(label)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.centerXAnchor.constraint(equalTo: headerView.centerXAnchor).isActive = true
-        label.bottomAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
-        label.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
-        label.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        headerView.addSubview(pageMenuBar!)
+        pageMenuBar.translatesAutoresizingMaskIntoConstraints = false
+        pageMenuBar.centerXAnchor.constraint(equalTo: headerView.centerXAnchor).isActive = true
+        pageMenuBar.bottomAnchor.constraint(equalTo: headerView.bottomAnchor).isActive = true
+        pageMenuBar.widthAnchor.constraint(equalToConstant: self.view.bounds.width).isActive = true
+        pageMenuBar.heightAnchor.constraint(equalToConstant: 44).isActive = true
         return headerView
-    }
-    
-    func heightForHeaderBounds(with pageViewController: SJPageViewController) -> CGFloat {
-        return 300
     }
     
     func heightForHeaderPinToVisibleBounds(with pageViewController: SJPageViewController) -> CGFloat {
@@ -70,5 +84,27 @@ extension SJViewController3: SJPageViewControllerDataSource {
 }
 
 extension SJViewController3: SJPageViewControllerDelegate {
+    func pageViewController(_ pageViewController: SJPageViewController, didScrollIn range: NSRange, distanceProgress progress: CGFloat) {
+        pageMenuBar.scroll(inRange: range, distaneProgress: progress)
+    }
+}
+
+extension SJViewController3: SJPageMenuBarDataSource {
+    func numberOfItems(in menuBar: SJPageMenuBar) -> Int {
+        return pageViewController.numberOfViewControllers
+    }
     
+    func pageMenuBar(_ menuBar: SJPageMenuBar, viewForItemAt index: Int) -> SJPageMenuItemViewProtocol {
+        let menuItemView = SJPageMenuItemView.init(frame: .zero)
+        menuItemView.text = items[index].title
+        return menuItemView
+    }
+}
+
+extension SJViewController3: SJPageMenuBarDelegate {
+    func pageMenuBar(_ bar: SJPageMenuBar, focusedIndexDidChange index: Int) {
+        if pageViewController.isViewControllerVisible(at: index) == false {
+            pageViewController.setViewController(at: index)
+        }
+    }
 }

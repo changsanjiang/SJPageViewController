@@ -66,7 +66,6 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 
 @optional
 - (nullable __kindof UIView *)viewForHeaderInPageViewController:(SJPageViewController *)pageViewController;
-- (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController;
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController;
 - (SJPageViewControllerHeaderMode)modeForHeaderWithPageViewController:(SJPageViewController *)pageViewController;
 @end

@@ -21,7 +21,7 @@ typedef enum : NSUInteger {
 typedef enum : NSUInteger {
     SJPageMenuBarScrollIndicatorLayoutModeSpecifiedWidth,
     SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth,
-    SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewWidth,
+    SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewLayoutWidth,
 } SJPageMenuBarScrollIndicatorLayoutMode;
 
 NS_ASSUME_NONNULL_BEGIN

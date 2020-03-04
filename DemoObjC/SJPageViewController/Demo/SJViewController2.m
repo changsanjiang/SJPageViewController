@@ -84,14 +84,7 @@
     
     return headerView;
 }
-
-///
-/// 头部视图的高度
-///
-- (CGFloat)heightForHeaderBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return 200;
-}
-
+ 
 ///
 /// 在顶部悬浮保留的高度
 ///

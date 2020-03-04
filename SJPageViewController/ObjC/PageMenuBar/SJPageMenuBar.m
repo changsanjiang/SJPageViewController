@@ -67,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)reloadPageMenuBar {
+    if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_reloadPageMenuBar) object:nil];
     [self performSelector:@selector(_reloadPageMenuBar) withObject:nil afterDelay:0 inModes:@[NSRunLoopCommonModes]];
 }
@@ -219,6 +220,11 @@ NS_ASSUME_NONNULL_BEGIN
     _scrollIndicator.backgroundColor = self.scrollIndicatorTintColor;
 }
 
+- (void)setScrollIndicatorLayoutMode:(SJPageMenuBarScrollIndicatorLayoutMode)scrollIndicatorLayoutMode {
+    _scrollIndicatorLayoutMode = scrollIndicatorLayoutMode;
+    [self _remakeConstraintsForScrollIndicator];
+}
+
 - (void)setCenterlineOffset:(CGFloat)centerlineOffset {
     if ( centerlineOffset != _centerlineOffset ) {
         _centerlineOffset = centerlineOffset;
@@ -273,7 +279,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !CGRectEqualToRect(self.previousBounds, bounds) ) {
         self.previousBounds = bounds;
         _scrollView.frame = bounds;
-        [self _remakeConstraints];
+        self.menuItemViews.count == 0 ? [self reloadPageMenuBar] : [self _remakeConstraints];
     }
 }
 
@@ -339,13 +345,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex {
-    if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
-    
     [self _remakeConstraintsForMenuItemViewWithBeginIndex:safeIndex zoomScale:^CGFloat(NSInteger index) {
         return self.focusedIndex == index ? self.maximumZoomScale : self.minimumZoomScale;
     } tintColor:^UIColor * _Nonnull(NSInteger index) {
         return self.focusedIndex == index ? self.focusedItemTintColor : self.itemTintColor;
-    } centerlineOffset:^CGFloat(UIView<SJPageMenuItemView> * _Nonnull curr, NSInteger index) {
+    } centerlineOffset:^CGFloat(NSInteger index) {
         return self.focusedIndex == index ? 0 : self.centerlineOffset;;
     }];
 }
@@ -373,40 +377,27 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         CGFloat maximumZoomScale = _maximumZoomScale;
         CGFloat minimumZoomScale = _minimumZoomScale;
-        CGFloat zoomScaleLength = maximumZoomScale - minimumZoomScale;
         [self _remakeConstraintsForMenuItemViewWithBeginIndex:left zoomScale:^CGFloat(NSInteger index) {
+            CGFloat zoomScaleLength = maximumZoomScale - minimumZoomScale;
             // zoomScale
-            CGFloat zoomScale = 0;
-            if ( index == left ) {
-                zoomScale = maximumZoomScale - zoomScaleLength * progress;
-            }
-            else if ( index == right ) {
-                zoomScale = minimumZoomScale + zoomScaleLength * progress;
-            }
-            else {
-                zoomScale = minimumZoomScale;
-            }
-            return zoomScale;
+            if      ( index == left )
+                return maximumZoomScale - zoomScaleLength * progress;
+            else if ( index == right )
+                return minimumZoomScale + zoomScaleLength * progress;
+            return minimumZoomScale;
         } tintColor:^UIColor * _Nonnull(NSInteger index) {
             // tintColor
-            UIColor *tintColor = nil;
-            if ( index == left ) {
-                tintColor = [self _gradientColorWithProgress:1 - progress];
-            }
-            else if ( index == right ) {
-                tintColor = [self _gradientColorWithProgress:progress];
-            }
-            else {
-                tintColor = self.itemTintColor;
-            }
-            return tintColor;
-        } centerlineOffset:^CGFloat(UIView<SJPageMenuItemView> * _Nonnull curr, NSInteger index) {
-            CGFloat centerlineOffset = self.centerlineOffset;
-            if ( index == left )
-                centerlineOffset = self.centerlineOffset * progress;
+            if      ( index == left )
+                return [self _gradientColorWithProgress:1 - progress];
             else if ( index == right )
-                centerlineOffset = (1 - progress) * self.centerlineOffset;
-            return centerlineOffset;
+                return [self _gradientColorWithProgress:progress];
+            return self.itemTintColor;
+        } centerlineOffset:^CGFloat(NSInteger index) {
+            if      ( index == left )
+                return self.centerlineOffset * progress;
+            else if ( index == right )
+                return (1 - progress) * self.centerlineOffset;
+            return self.centerlineOffset;
         }];
         
         __auto_type leftView = self.menuItemViews[left];
@@ -433,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex zoomScale:(CGFloat(^)(NSInteger index))zoomScaleBlock tintColor:(UIColor *(^)(NSInteger index))tintColorBlock centerlineOffset:(CGFloat(^)(UIView<SJPageMenuItemView> *curr, NSInteger index))centerlineOffsetBlock {
+- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex zoomScale:(CGFloat(^)(NSInteger index))zoomScaleBlock tintColor:(UIColor *(^)(NSInteger index))tintColorBlock centerlineOffset:(CGFloat(^)(NSInteger index))centerlineOffsetBlock {
     if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
     CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
@@ -444,10 +435,9 @@ NS_ASSUME_NONNULL_BEGIN
         itemWidth = contentLayoutWidth / (maxs * _maximumZoomScale + mins * _minimumZoomScale);
     }
     CGFloat itemSpacing = _distribution == SJPageMenuBarDistributionEqualSpacing ? _itemSpacing : 0;
+    UIView<SJPageMenuItemView> *prev = safeIndex == 0 ? nil : _menuItemViews[safeIndex - 1];
     for (NSInteger index = safeIndex ; index < self.menuItemViews.count ; ++ index ) {
         __auto_type curr = self.menuItemViews[index];
-        __auto_type prev = index != 0 ? self.menuItemViews[index - 1] : nil;
-        CGFloat prez = prev.sj_pageZoomScale;
         // zoomScale
         CGFloat zoomScale = zoomScaleBlock(index);
         [self _setZoomScale:zoomScale forMenuItemViewAtIndex:index];
@@ -472,12 +462,14 @@ NS_ASSUME_NONNULL_BEGIN
         // center.x
         center.x = bounds.size.width * 0.5 * zoomScale;
         if ( prev != nil ) {
+            CGFloat prez = prev.sj_pageZoomScale;
             center.x += prev.center.x + prev.bounds.size.width * 0.5 * prez + itemSpacing ;
         }
         // center.y
-        center.y = contentLayoutHeight * 0.5 + centerlineOffsetBlock(curr, index);
+        center.y = contentLayoutHeight * 0.5 + centerlineOffsetBlock(index);
 
         curr.center = center;
+        prev = curr;
     }
     
     [self.scrollView setContentSize:CGSizeMake(CGRectGetMaxX(self.menuItemViews.lastObject.frame), self.bounds.size.height)];
@@ -558,7 +550,7 @@ struct color {
             size.height = _scrollIndicatorSize.height;
         }
             break;
-        case SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewWidth:
+        case SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewLayoutWidth:
             size = CGSizeMake(self.menuItemViews[index].bounds.size.width, _scrollIndicatorSize.height);
             break;
     }

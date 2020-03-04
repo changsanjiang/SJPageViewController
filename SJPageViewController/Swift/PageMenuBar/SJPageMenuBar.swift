@@ -44,6 +44,9 @@ open class SJPageMenuBar: UIView {
     }
     
     open func reload() {
+        if self.bounds.size.width == 0 || self.bounds.size.height == 0 {
+            return
+        }
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_reload), object: nil)
         perform(#selector(_reload), with: nil, afterDelay: 0, inModes: [.common])
     }
@@ -84,13 +87,6 @@ open class SJPageMenuBar: UIView {
                 return
             }
             UIView.animate(withDuration: animated ? 0.25 : 0.0, animations: {
-                // previous
-                if ( self.isSafeIndex(previousIdx) ) {
-                    self.setZoomScale(self.minimumZoomScale, forMenuItemViewAt: previousIdx)
-                }
-                
-                // to
-                self.setZoomScale(self.maximumZoomScale, forMenuItemViewAt: index)
                 self.remakeConstraints(previousIdx < index ? previousIdx : index)
                 self.remakeConstraintsForScrollIndicator()
                 self.setContentOffsetForScrollViewToIndex(index)
@@ -181,6 +177,12 @@ open class SJPageMenuBar: UIView {
             return !scrollIndicator.isHidden
         }
     }
+    
+    open var scrollIndicatorLayoutMode = ScrollIndicatorLayoutMode.specifiedWidth {
+        didSet {
+            remakeConstraintsForScrollIndicator()
+        }
+    }
 
     open var scrollIndicatorSize = CGSize.init(width: 12, height: 2) {
         didSet {
@@ -215,6 +217,18 @@ open class SJPageMenuBar: UIView {
     public enum Distribution {
         case equalSpacing
         case fillEqually
+    }
+    
+    public enum ScrollIndicatorLayoutMode {
+        case specifiedWidth
+        ///
+        /// itemView内容大小
+        ///
+        case equalItemViewContentWidth
+        ///
+        /// itemView布局显示时的大小
+        ///
+        case equalItemViewLayoutWidth
     }
     
     private var cache = [Int:SJPageMenuItemViewProtocol]()
@@ -254,7 +268,7 @@ open class SJPageMenuBar: UIView {
         if ( previousBounds.equalTo(bounds) == false ) {
             previousBounds = bounds
             scrollView.frame = bounds
-            remakeConstraints()
+            menuItemViews.count == 0 ? reload() : remakeConstraints()
         }
     }
     
@@ -267,6 +281,13 @@ open class SJPageMenuBar: UIView {
                 return
             }
         }
+    }
+}
+
+private extension SJPageMenuBar {
+    func isSafeIndex(_ index: Int) -> Bool {
+        return index >= 0 &&
+               index < numberOfItems
     }
     
     @objc private func _reload() {
@@ -288,13 +309,161 @@ open class SJPageMenuBar: UIView {
 }
 
 private extension SJPageMenuBar {
-    func isSafeIndex(_ index: Int) -> Bool {
-        return index >= 0 &&
-               index < numberOfItems
+    
+    func remakeConstraints(_ beginIndex: Int = 0) {
+        if isSafeIndex(beginIndex) {
+            remakeConstraintsForMenuItemViewsWithBeginIndex(beginIndex)
+            remakeConstraintsForScrollIndicator()
+        }
     }
-}
- 
-private extension SJPageMenuBar {
+    
+    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int) {
+        remakeConstraintsForMenuItemViewsWithBeginIndex(safeIndex, zoomScale: {
+            return $0 == focusedIndex ? maximumZoomScale : minimumZoomScale
+        }, tintColor: {
+            return $0 == focusedIndex ? focusedItemTintColor : itemTintColor
+        }, centerlineOffset: {
+            return $0 == focusedIndex ? 0 : centerlineOffset
+        })
+    }
+    
+    func remakeConstraintsForScrollIndicator() {
+        if bounds.size.width == 0 || bounds.size.height == 0 {
+            return
+        }
+        
+        if menuItemViews.count <= focusedIndex {
+            return
+        }
+        
+        var frame = CGRect.zero
+        frame.size = sizeForScrollIndicator(at: focusedIndex)
+        frame.origin.y = bounds.height - scrollIndicatorBottomInsets - scrollIndicatorSize.height
+        frame.origin.x = menuItemViews[focusedIndex].center.x - frame.size.width * 0.5
+        scrollIndicator.frame = frame;
+    }
+    
+    func _scroll(inRange range: NSRange, distaneProgress progress: CGFloat) {
+        let left = range.location
+        let right = NSMaxRange(range)
+        
+        if left == right || progress <= 0 {
+            scrollToItem(at: left, animated: true)
+        }
+        else if progress >= 1 {
+            scrollToItem(at: right, animated: true)
+        }
+        else {
+            remakeConstraintsForMenuItemViewsWithBeginIndex(left, zoomScale: {
+                let length = maximumZoomScale - minimumZoomScale
+                if      $0 == left {
+                    return maximumZoomScale - length * progress
+                }
+                else if $0 == right {
+                    return minimumZoomScale + length * progress
+                }
+                return minimumZoomScale
+            }, tintColor: {
+                if      $0 == left {
+                    return graidentColor(progress: 1 - progress)
+                }
+                else if $0 == right {
+                    return graidentColor(progress: progress)
+                }
+                return itemTintColor
+            }, centerlineOffset: {
+                if $0 == left {
+                    return centerlineOffset * progress
+                }
+                else if $0 == right {
+                    return centerlineOffset * (1 - progress)
+                }
+                return centerlineOffset
+            })
+            
+            let leftView = menuItemViews[left]
+            let rightView = menuItemViews[right]
+            
+            let distance = rightView.frame.midX - leftView.frame.midX
+            var currWidth: CGFloat = 0
+            let leftSize = sizeForScrollIndicator(at: left)
+            let rightSize = sizeForScrollIndicator(at: right)
+            // A + (B - A) = B
+            // 小于 0.5 开始变长
+            if ( progress < 0.5 ) {
+                currWidth = distance * progress + leftSize.width + (rightSize.width - leftSize.width) * progress;
+            }
+            // 超过 0.5 开始缩小
+            else {
+                currWidth = distance * (1 - progress) + leftSize.width + (rightSize.width - leftSize.width) * progress;
+            }
+            let maxOffset = rightView.center.x - leftView.center.x
+            let currOffset = leftView.center.x + maxOffset * progress - currWidth * 0.5;
+            var frame = scrollIndicator.frame
+            frame.size.width = currWidth;
+            frame.origin.x = currOffset;
+            scrollIndicator.frame = frame;
+        }
+    }
+
+    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int, zoomScale: (Int) -> CGFloat, tintColor: (Int) -> UIColor, centerlineOffset: (Int) -> CGFloat) {
+        if bounds.size.width == 0 || bounds.size.height == 0 {
+            return
+        }
+        
+        let contentLayoutHeight = bounds.size.height - contentInsets.top - contentInsets.bottom
+        let contentLayoutWidth = bounds.size.width - contentInsets.top - contentInsets.bottom
+        var itemWidth = contentLayoutWidth / CGFloat(numberOfItems)
+        
+        if distribution == .fillEqually {
+            let maxNums: CGFloat = 1
+            let minNums: CGFloat = CGFloat(numberOfItems) - maxNums
+            itemWidth = contentLayoutWidth / (maxNums * maximumZoomScale + minNums * minimumZoomScale)
+        }
+        
+        let spacing = distribution == .equalSpacing ? itemSpacing : 0
+        
+        var prev: SJPageMenuItemViewProtocol? = safeIndex == 0 ? nil : menuItemViews[safeIndex - 1]
+        for index in safeIndex..<numberOfItems {
+            let curr = menuItemViews[index]
+            
+            
+            // zoomScale
+            let scale = zoomScale(index)
+            setZoomScale(scale, forMenuItemViewAt: index)
+            
+            // tintColor
+            let color = tintColor(index)
+            curr.tintColor = color
+            
+            // bounds
+            var bounds = curr.bounds
+            switch distribution {
+            case .equalSpacing:
+                break
+            case .fillEqually:
+                bounds.size.width = itemWidth
+            }
+            curr.bounds = bounds
+            
+            // center
+            var center = CGPoint.zero
+            // center.x
+            center.x = bounds.size.width * 0.5 * scale
+            if let prev = prev {
+                let prez = prev.sj_pageZoomScale
+                center.x += prev.center.x + prev.bounds.width * 0.5 * prez + spacing
+            }
+            // center.y
+            center.y = contentLayoutHeight * 0.5 + centerlineOffset(index)
+            curr.center = center
+            
+            prev = curr
+        }
+        
+        scrollView.contentSize = .init(width: menuItemViews.last?.frame.maxX ?? 0, height: bounds.size.height)
+    }
+    
     func setContentOffsetForScrollViewToIndex(_ index: Int) {
         if let toView = viewForItem(at: index) {
             let half = bounds.size.width * 0.5
@@ -312,7 +481,24 @@ private extension SJPageMenuBar {
             else if offset >= maxOffset {
                 offset = maxOffset
             }
-            scrollView.contentSize = .init(width: offset, height: 0)
+            scrollView.contentOffset = .init(x: offset, y: 0)
+        }
+    }
+
+    func setZoomScale(_ zoomScale: CGFloat, forMenuItemViewAt index: Int) {
+        let view = menuItemViews[index]
+        view.sj_pageZoomScale = zoomScale
+        view.transform = CGAffineTransform.init(scaleX: zoomScale, y: zoomScale)
+    }
+    
+    func sizeForScrollIndicator(at index: Int) -> CGSize {
+        switch scrollIndicatorLayoutMode {
+        case .specifiedWidth:
+            return scrollIndicatorSize
+        case .equalItemViewContentWidth:
+            return CGSize.init(width: menuItemViews[index].sizeThatFits(CGSize.init(width: 1000, height: 1000)).width, height: scrollIndicatorSize.height)
+        case .equalItemViewLayoutWidth:
+            return CGSize.init(width: menuItemViews[index].bounds.size.width, height: scrollIndicatorSize.height)
         }
     }
 }
@@ -326,18 +512,17 @@ private extension SJPageMenuBar {
         var alpha: CGFloat = 0.0;
     }
     
-    func setGradientColor(progress: CGFloat, forItemAt index: Int) {
+    func graidentColor(progress: CGFloat) -> UIColor {
         if focusedItemTintColor.isEqual(itemTintColor) {
-            return
+            return itemTintColor
         }
         
         var tinCol = ColorValues.init()
         var focTinCol = ColorValues.init()
         itemTintColor.getRed(&tinCol.red, green: &tinCol.green, blue: &tinCol.blue, alpha: &tinCol.alpha)
         focusedItemTintColor.getRed(&focTinCol.red, green: &focTinCol.green, blue: &focTinCol.blue, alpha: &focTinCol.alpha)
-        
-        let view = menuItemViews[index]
-        view.tintColor = .init(red: tinCol.red + (focTinCol.red - tinCol.red) * progress, green: tinCol.green + (focTinCol.green - tinCol.green) * progress, blue: tinCol.blue + (focTinCol.blue - tinCol.blue) * progress, alpha: tinCol.alpha + (focTinCol.alpha - tinCol.alpha) * progress)
+
+        return .init(red: tinCol.red + (focTinCol.red - tinCol.red) * progress, green: tinCol.green + (focTinCol.green - tinCol.green) * progress, blue: tinCol.blue + (focTinCol.blue - tinCol.blue) * progress, alpha: tinCol.alpha + (focTinCol.alpha - tinCol.alpha) * progress)
     }
     
     func resetTintColorForMenuItemViews() {
@@ -347,176 +532,20 @@ private extension SJPageMenuBar {
         }
     }
 }
-
-private extension SJPageMenuBar {
-    
-    func remakeConstraints(_ beginIndex: Int = 0) {
-        if isSafeIndex(beginIndex) {
-            remakeConstraintsForMenuItemViewsWithBeginIndex(beginIndex)
-            remakeConstraintsForScrollIndicator()
-        }
-    }
-    
-    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int) {
-        if bounds.size.width == 0 || bounds.size.height == 0 {
-            return
-        }
-        
-        let contentLayoutHeight = bounds.height - contentInsets.top - contentInsets.bottom
-        let contentLayoutWidth = bounds.width - contentInsets.left - contentInsets.right
-        let spacing = distribution == .equalSpacing ? itemSpacing : 0
-        for index in safeIndex..<menuItemViews.count {
-            let curr = menuItemViews[index]
-            let prev = index != 0 ? menuItemViews[index - 1] : nil
-            // zoomScale & tintColor
-            if focusedIndex == index {
-                setZoomScale(maximumZoomScale, forMenuItemViewAt: index)
-                curr.tintColor = focusedItemTintColor
-            }
-            else {
-                setZoomScale(minimumZoomScale, forMenuItemViewAt: index)
-                curr.tintColor = itemTintColor
-            }
-            
-            // x
-            let size = curr.frame.size
-            var frame = CGRect.zero
-            if let prev = prev  {
-                frame.origin.x = prev.frame.maxX + spacing
-            }
-            else {
-                frame.origin.x = 0
-            }
-            // y
-            let centloffset = focusedIndex == index ? 0 : centerlineOffset
-            frame.origin.y = (contentLayoutHeight - size.height) * 0.5 + centloffset
-            // size
-            switch distribution {
-            case .equalSpacing:
-                frame.size = size
-            case .fillEqually:
-                frame.size = CGSize.init(width: contentLayoutWidth / CGFloat(numberOfItems), height: size.height)
-            }
-            curr.frame = frame
-        }
-        // contentSize
-        scrollView.contentSize = CGSize.init(width: menuItemViews.last?.frame.maxX ?? 0, height: bounds.size.height)
-    }
-    
-    func remakeConstraintsForScrollIndicator() {
-        if bounds.size.width == 0 || bounds.size.height == 0 {
-            return
-        }
-        
-        if menuItemViews.count <= focusedIndex {
-            return
-        }
-        
-        var frame = CGRect.zero
-        frame.size = scrollIndicatorSize
-        frame.origin.y = bounds.height - scrollIndicatorBottomInsets - scrollIndicatorSize.height
-        frame.origin.x = menuItemViews[focusedIndex].center.x - frame.size.width * 0.5
-        scrollIndicator.frame = frame;
-    }
-    
-    
-    func setZoomScale(_ zoomScale: CGFloat, forMenuItemViewAt index: Int) {
-        menuItemViews[index].transform = CGAffineTransform.init(scaleX: zoomScale, y: zoomScale)
-    }
-}
-
-private extension SJPageMenuBar {
-    func _scroll(inRange range: NSRange, distaneProgress progress: CGFloat) {
-        let left = range.location
-        let right = NSMaxRange(range)
-        
-        if left == right || progress <= 0 {
-            scrollToItem(at: left, animated: true)
-        }
-        else if progress >= 1 {
-            scrollToItem(at: right, animated: true)
-        }
-        else {
-            if bounds.size.width == 0 || bounds.size.height == 0 {
-                return
-            }
-            let contentLayoutHeight = bounds.height - contentInsets.top - contentInsets.bottom
-            let contentLayoutWidth = bounds.width - contentInsets.left - contentInsets.right
-            let zoomScaleLength = maximumZoomScale - minimumZoomScale
-            let spacing = distribution == .equalSpacing ? itemSpacing : 0;
-            for index in left..<menuItemViews.count {
-                let curr = menuItemViews[index]
-                let prev = index != 0 ? menuItemViews[index - 1] : nil
-                // zoomScale & tintColor
-                if index == left {
-                    setZoomScale(maximumZoomScale - zoomScaleLength * progress, forMenuItemViewAt: index)
-                    setGradientColor(progress: 1 - progress, forItemAt: index)
-                }
-                else if index == right {
-                    setZoomScale(minimumZoomScale + zoomScaleLength * progress, forMenuItemViewAt: index)
-                    setGradientColor(progress: progress, forItemAt: index)
-                }
-                else {
-                    setZoomScale(minimumZoomScale, forMenuItemViewAt: index)
-                    curr.tintColor = itemTintColor
-                }
-                
-                // x
-                let size = curr.frame.size
-                var frame = CGRect.zero
-                if let prev = prev  {
-                    frame.origin.x = prev.frame.maxX + spacing
-                }
-                else {
-                    frame.origin.x = 0
-                }
-                // y
-                var centloffset = centerlineOffset
-                if index == left {
-                    centloffset = centerlineOffset * progress
-                }
-                else if index == right {
-                    centloffset = (1 - progress) * centerlineOffset;
-                }
-                frame.origin.y = (contentLayoutHeight - size.height) * 0.5 + centloffset
-                // size
-                switch distribution {
-                case .equalSpacing:
-                    frame.size = size
-                case .fillEqually:
-                    frame.size = CGSize.init(width: contentLayoutWidth / CGFloat(numberOfItems), height: size.height)
-                }
-                curr.frame = frame
-            }
-            
-            // scroll indicator
-            let leftView = menuItemViews[left]
-            let rightView = menuItemViews[right]
-            let distance = rightView.frame.maxX - leftView.frame.minX
-            var currWidth: CGFloat = 0.0
-            if progress < 0.5 {
-                currWidth = distance * progress + scrollIndicatorSize.width
-            }
-            else {
-                currWidth = (1 - progress) * distance + scrollIndicatorSize.width
-            }
-            let maxOffset = rightView.center.x - leftView.center.x
-            let currOffset = leftView.center.x + maxOffset * progress - currWidth * 0.5
-            var frame = scrollIndicator.frame
-            frame.size.width = currWidth
-            frame.origin.x = currOffset
-            scrollIndicator.frame = frame
-            
-            // contentSize
-            scrollView.contentSize = .init(width: menuItemViews.last?.frame.maxX ?? 0, height: bounds.size.height)
-        }
-    }
-}
-
+ 
 private class SJPageMenuBarScrollIndicator: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.size.height * 0.5
+    }
+}
+
+private var kPageZoomScale = "PageZoomScale";
+
+fileprivate extension UIView {
+     var sj_pageZoomScale: CGFloat {
+        set { objc_setAssociatedObject(self, &kPageZoomScale, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
+        get { return objc_getAssociatedObject(self, &kPageZoomScale) as? CGFloat ?? 0.0 }
     }
 }
 

@@ -29,6 +29,7 @@ class SJViewController1: UIViewController {
         
         pageMenuBar = SJPageMenuBar.init(frame: .zero)
         pageMenuBar.distribution = .fillEqually
+        pageMenuBar.scrollIndicatorLayoutMode = .specifiedWidth
         pageMenuBar.dataSource = self
         pageMenuBar.delegate = self
 
@@ -68,10 +69,6 @@ extension SJViewController1: SJPageViewControllerDataSource {
         pageMenuBar?.frame = CGRect.init(x: 0, y: 300 - 44, width: view.bounds.width, height: 44)
         headerView.addSubview(pageMenuBar!)
         return headerView
-    }
-    
-    func heightForHeaderBounds(with pageViewController: SJPageViewController) -> CGFloat {
-        return pageViewController.headerView?.bounds.height ?? 0
     }
     
     func heightForHeaderPinToVisibleBounds(with pageViewController: SJPageViewController) -> CGFloat {

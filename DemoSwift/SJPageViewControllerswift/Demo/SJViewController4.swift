@@ -9,7 +9,7 @@
 import UIKit
 import SJPageViewController
 
-class SJNavigationBar: UIView {
+class SJNavigationBar2: UIView {
     var contentView: UIView
     var backButton: UIButton
     
@@ -53,13 +53,13 @@ class SJNavigationBar: UIView {
 class SJViewController4: UIViewController {
 
     var pageViewController: SJPageViewController!
-    var navBar: SJNavigationBar!
+    var navBar: SJNavigationBar2!
     
     override func viewDidLoad() {
         super.viewDidLoad() 
         self.view.backgroundColor = .black
         
-        navBar = SJNavigationBar.init(frame: .zero)
+        navBar = SJNavigationBar2.init(frame: .zero)
         navBar.contentView.alpha = 0
         navBar.backButton.addTarget(self, action: #selector(backButtonWasTapped), for: .touchUpInside)
         
@@ -119,10 +119,6 @@ extension SJViewController4: SJPageViewControllerDataSource {
         label.backgroundColor = .green
         headerView.addSubview(label)
         return headerView
-    }
-    
-    func heightForHeaderBounds(with pageViewController: SJPageViewController) -> CGFloat {
-        return 300
     }
     
     func heightForHeaderPinToVisibleBounds(with pageViewController: SJPageViewController) -> CGFloat {

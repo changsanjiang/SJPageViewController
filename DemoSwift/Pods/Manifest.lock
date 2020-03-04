@@ -1,13 +1,13 @@
 PODS:
-  - SJPageViewController/Swift (0.0.2):
-    - SJPageViewController/Swift/PageMenuBar (= 0.0.2)
-    - SJPageViewController/Swift/PageViewController (= 0.0.2)
-  - SJPageViewController/Swift/PageMenuBar (0.0.2):
-    - SJPageViewController/Swift/PageMenuBar/Core (= 0.0.2)
-  - SJPageViewController/Swift/PageMenuBar/Core (0.0.2)
-  - SJPageViewController/Swift/PageViewController (0.0.2):
-    - SJPageViewController/Swift/PageViewController/Core (= 0.0.2)
-  - SJPageViewController/Swift/PageViewController/Core (0.0.2)
+  - SJPageViewController/Swift (0.0.4):
+    - SJPageViewController/Swift/PageMenuBar (= 0.0.4)
+    - SJPageViewController/Swift/PageViewController (= 0.0.4)
+  - SJPageViewController/Swift/PageMenuBar (0.0.4):
+    - SJPageViewController/Swift/PageMenuBar/Core (= 0.0.4)
+  - SJPageViewController/Swift/PageMenuBar/Core (0.0.4)
+  - SJPageViewController/Swift/PageViewController (0.0.4):
+    - SJPageViewController/Swift/PageViewController/Core (= 0.0.4)
+  - SJPageViewController/Swift/PageViewController/Core (0.0.4)
 
 DEPENDENCIES:
   - SJPageViewController/Swift (from `../`)
@@ -17,8 +17,8 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  SJPageViewController: 7a096f47f25bedacdc5a2d06d1cff64eba9d80ba
+  SJPageViewController: a79cf4899a2c5207ff371f827912bc5c9d84dfd6
 
-PODFILE CHECKSUM: d549fcd9b24651cd5859b40155c9a6844d0d2be7
+PODFILE CHECKSUM: d95664a684c0946c2b6b947cc6aee054de11f2ef
 
 COCOAPODS: 1.9.0

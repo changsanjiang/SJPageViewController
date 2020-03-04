@@ -10,6 +10,7 @@ import UIKit
 
 private var kContentOffset = "contentOffset";
 private var kState = "state";
+private var kBounds = "bounds"
 private var kReuseIdentifierForCell = "1"
 
 open class SJPageViewController: UIViewController {
@@ -102,8 +103,13 @@ open class SJPageViewController: UIViewController {
     }
     
     open private(set) var headerView: UIView?
-    open var heightForHeaderBounds: CGFloat {
-        return self.dataSource?.heightForHeaderBounds(with: self) ?? 0
+    open private(set) var heightForHeaderBounds: CGFloat = 0.0 {
+        didSet {
+            print(heightForHeaderBounds)
+            if let scrollView = self.focusedViewController?.sj_lookupScrollView() {
+                setupContentInset(for: scrollView)
+            }
+        }
     }
     open var heightForHeaderPinToVisibleBounds: CGFloat {
         return self.dataSource?.heightForHeaderPinToVisibleBounds(with: self) ?? 0
@@ -177,6 +183,7 @@ open class SJPageViewController: UIViewController {
         return options?[SJPageViewController.OptionsKey.interPageSpacing] as? CGFloat ?? 0
     }
     private var previousBounds: CGRect = .zero
+    private var boundsObservation: NSKeyValueObservation?
     
     override open func viewDidLoad() {
         super.viewDidLoad()
@@ -210,11 +217,20 @@ open class SJPageViewController: UIViewController {
             headerView?.removeFromSuperview()
             headerView = nil
             hasHeader = false
+            boundsObservation = nil
         }
         
         if numberOfViewControllers != 0 {
             headerView = dataSource?.viewForHeader(in: self)
             hasHeader = headerView != nil
+        }
+        
+        if let headerView = headerView {
+            heightForHeaderBounds = headerView.bounds.height
+            boundsObservation = headerView.observe(\.bounds, changeHandler: { [weak self] (headerView, _) in
+                guard let self = self else { return }
+                self.heightForHeaderBounds = headerView.bounds.height
+            })
         }
         
         cleanPageItems()
@@ -269,11 +285,13 @@ private extension SJPageViewController {
         return .zero
     }
     
-    func removePageChildViewController(_ childController: UIViewController) {
-        childController.willMove(toParent: nil)
-        childController.view.removeFromSuperview()
-        childController.removeFromParent()
-        childController.didMove(toParent: nil)
+    func removePageChildViewController(_ childController: UIViewController?) {
+        if let childController = childController {
+            childController.willMove(toParent: nil)
+            childController.view.removeFromSuperview()
+            childController.removeFromParent()
+            childController.didMove(toParent: nil)
+        }
     }
 }
 
@@ -287,7 +305,6 @@ public protocol SJPageViewControllerDataSource : NSObjectProtocol {
     func pageViewController(_ pageViewController: SJPageViewController, viewControllerAt index: Int) -> UIViewController
     
     func viewForHeader(in pageViewController: SJPageViewController) -> UIView?
-    func heightForHeaderBounds(with pageViewController: SJPageViewController) -> CGFloat
     func heightForHeaderPinToVisibleBounds(with pageViewController: SJPageViewController) -> CGFloat
     func modeForHeader(with pageViewController: SJPageViewController) -> SJPageViewController.HeaderMode
 }
@@ -305,10 +322,7 @@ public protocol SJPageViewControllerDelegate : NSObjectProtocol {
 public extension SJPageViewControllerDataSource {
     func viewForHeader(in pageViewController: SJPageViewController) -> UIView? {
         return nil
-    }
-    func heightForHeaderBounds(with pageViewController: SJPageViewController) -> CGFloat {
-        return 0
-    }
+    } 
     func heightForHeaderPinToVisibleBounds(with pageViewController: SJPageViewController) -> CGFloat {
         return 0
     }
@@ -347,7 +361,7 @@ extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDele
         pageCell.viewController = newViewController
         
         if oldViewController != newViewController {
-            if let oldViewController = oldViewController, oldViewController.view.superview == pageCell.contentView {
+            if oldViewController?.view.superview == pageCell.contentView {
                 removePageChildViewController(oldViewController)
             }
             
@@ -418,12 +432,13 @@ extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDele
         let pageCell = cell as! SJPageCollectionViewCell
         if hasHeader {
             if let viewController = pageCell.viewController {
-                viewController.sj_pageItem?.intersection = self.heightForIntersectionBounds
+                viewController.sj_pageItem?.intersection = heightForIntersectionBounds
                 viewController.sj_pageItem?.contentOffset = viewController.sj_pageItem?.scrollView?.contentOffset ?? .zero
             }
         }
         
-        self.delegate?.pageViewController(self, didEndDisplaying: pageCell.viewController, at: indexPath.item)
+        delegate?.pageViewController(self, didEndDisplaying: pageCell.viewController, at: indexPath.item)
+        removePageChildViewController(pageCell.viewController)
         pageCell.viewController = nil
     }
 }

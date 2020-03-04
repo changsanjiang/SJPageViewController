@@ -9,6 +9,7 @@ import UIKit
 
 public protocol SJPageMenuItemViewProtocol : UIView {
     var tintColor: UIColor? { set get }
+    func sizeThatFits(_ size: CGSize) -> CGSize
     func sizeToFit()
 }
 
