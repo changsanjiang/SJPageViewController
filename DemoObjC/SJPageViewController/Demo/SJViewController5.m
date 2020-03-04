@@ -47,8 +47,8 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSMutableArray<SJPageMenuItem *> *m = [NSMutableArray arrayWithCapacity:5];
-        for ( int i = 0 ; i < 5 ; ++ i  ) {
+        NSMutableArray<SJPageMenuItem *> *m = [NSMutableArray arrayWithCapacity:4];
+        for ( int i = 0 ; i < 4 ; ++ i  ) {
             [m addObject:[SJPageMenuItem.alloc initWithTitle:[NSString stringWithFormat:@"%d", i]]];
         }
         self.menuItems = m;
@@ -76,6 +76,7 @@
     
     _menuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
     _menuBar.distribution = SJPageMenuBarDistributionFillEqually;
+    _menuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
     _menuBar.dataSource = self;
     _menuBar.delegate = self;
     
@@ -137,7 +138,8 @@
 
 - (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
     SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    view.text = self.menuItems[index].title;
+    view.text = @[@"从前", @"有AAAAA", @"座", @"灵剑山"][index];
+    view.font = [UIFont systemFontOfSize:18];
     return view;
 }
 

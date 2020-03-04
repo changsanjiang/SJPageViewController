@@ -18,6 +18,12 @@ typedef enum : NSUInteger {
     SJPageMenuBarDistributionFillEqually,
 } SJPageMenuBarDistribution;
 
+typedef enum : NSUInteger {
+    SJPageMenuBarScrollIndicatorLayoutModeSpecifiedWidth,
+    SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth,
+    SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewWidth,
+} SJPageMenuBarScrollIndicatorLayoutMode;
+
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuBar : UIView
 @property (nonatomic, weak, nullable) id<SJPageMenuBarDataSource> dataSource;
@@ -46,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGSize scrollIndicatorSize;                   // default is `CGSize(12, 2)`.
 @property (nonatomic) CGFloat scrollIndicatorBottomInset;           // default is `3.0`.
 @property (nonatomic, strong, null_resettable) UIColor *scrollIndicatorTintColor;
+@property (nonatomic) SJPageMenuBarScrollIndicatorLayoutMode scrollIndicatorLayoutMode;
 
 @property (nonatomic) CGFloat centerlineOffset;                     // default is `0`.
 @end
