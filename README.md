@@ -196,18 +196,13 @@ ____
     pageMenuBar.scrollIndicatorSize = CGSizeMake(12, 2);
 ```
 
-4. 实现 `SJPageMenuBarDataSource` 数据源方法:
+4. 添加`item`:
 
 ```Objective-C
-- (NSInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)menuBar {
-    return 5;
-}
-
-/// 返回itemView, 可返回自定义视图
-- (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
-    SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    view.font = [UIFont boldSystemFontOfSize:25];
-    view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山"][index];
-    return view;
-}
+    var views = [SJPageMenuItemView]()
+    for index in 0...5 {
+        let itemView = SJPageMenuItemView.init(frame: .zero)
+        itemView.text = "标题"
+    }
+    self.pageMenuBar.itemViews = views
 ```
