@@ -50,7 +50,7 @@
 		7729ACC023F000840072E2E8 /* SJViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SJViewController2.swift; sourceTree = "<group>"; };
 		7729ACC223F001330072E2E8 /* SJViewController3.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SJViewController3.swift; sourceTree = "<group>"; };
 		7729ACC423F0036E0072E2E8 /* SJViewController4.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SJViewController4.swift; sourceTree = "<group>"; };
-		7729ACC623F00BC90072E2E8 /* SJPageViewController.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = SJPageViewController.podspec; path = ../SJPageViewController.podspec; sourceTree = "<group>"; };
+		7729ACC623F00BC90072E2E8 /* SJPageViewController.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; name = SJPageViewController.podspec; path = ../SJPageViewController.podspec; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		7799B94223EFE99C00486A86 /* SJViewController0.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SJViewController0.swift; sourceTree = "<group>"; };
 		7799B94423EFED8A00486A86 /* SJDemoTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SJDemoTableViewController.swift; sourceTree = "<group>"; };
 		7799B94623EFF02900486A86 /* SJViewController1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SJViewController1.swift; sourceTree = "<group>"; };

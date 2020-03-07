@@ -39,10 +39,6 @@ open class SJPageViewController: UIViewController {
     
     open weak var delegate: SJPageViewControllerDelegate?
     
-    open var numberOfViewControllers: Int {
-        return self.dataSource?.numberOfViewControllers(in: self) ?? 0
-    }
-    
     open func reload() {
         if self.isViewLoaded {
             NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(_reload), object: nil)
@@ -52,9 +48,11 @@ open class SJPageViewController: UIViewController {
     
     open func setViewController(at index: Int) {
         if isSafeIndex(index) {
-            if collectionView.bounds.width != 0 {
-                let offset = CGFloat(index) * collectionView.bounds.size.width
-                collectionView.setContentOffset(.init(x: offset, y: 0), animated: false)
+            UIView.performWithoutAnimation {
+                if collectionView.bounds.width != 0 {
+                    let offset = CGFloat(index) * collectionView.bounds.size.width
+                    collectionView.setContentOffset(.init(x: offset, y: 0), animated: false)
+                }
             }
             self.focusedIndex = index
         }
@@ -86,6 +84,10 @@ open class SJPageViewController: UIViewController {
             }
         }
         return false
+    }
+    
+    open var numberOfViewControllers: Int {
+        return self.dataSource?.numberOfViewControllers(in: self) ?? 0
     }
     
     open private(set) var focusedIndex = NSNotFound {
@@ -121,6 +123,10 @@ open class SJPageViewController: UIViewController {
     
     open var cachedViewControllers: [UIViewController]? {
         return self.viewControllers.values.reversed()
+    }
+    
+    open var panGestureRecognizer: UIPanGestureRecognizer {
+        return self.collectionView.panGestureRecognizer
     }
     
     @objc public enum HeaderMode: Int {
@@ -418,6 +424,10 @@ extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDele
                             scrollView.sj_unlock()
                         }
                     }
+                    
+                    if focusedIndex == indexPath.item && !collectionView.isDecelerating && !collectionView.isDragging {
+                        _insertHeaderViewForFocusedViewController()
+                    }
                 }
             }
         }
@@ -445,8 +455,10 @@ extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDele
 
 extension SJPageViewController: SJPageCollectionViewDelegate {
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        _updateFocusedIndex()
-        _callScrollInRange()
+        if scrollView.isDragging || scrollView.isDecelerating {
+            _updateFocusedIndex()
+            _callScrollInRange()
+        }
         _insertHeaderViewForRootViewController()
     }
     

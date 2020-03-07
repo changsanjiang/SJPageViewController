@@ -13,6 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 @protocol SJPageMenuItemView <NSObject>
+@property (nonatomic, getter=isFocusedMenuItem) BOOL focusedMenuItem;
 @property (nonatomic, strong, null_resettable) UIColor *tintColor;
 - (CGSize)sizeThatFits:(CGSize)size;
 - (void)sizeToFit;

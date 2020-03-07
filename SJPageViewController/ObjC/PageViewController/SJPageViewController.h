@@ -56,6 +56,7 @@ UIKIT_EXTERN SJPageViewControllerOptionsKey const SJPageViewControllerOptionInte
 @property (nonatomic, readonly, nullable) __kindof UIView *headerView;
 @property (nonatomic, readonly) CGFloat heightForHeaderPinToVisibleBounds;
 @property (nonatomic, readonly) CGFloat heightForHeaderBounds;
+@property (nonatomic, readonly) UIPanGestureRecognizer *panGestureRecognizer;
 @end
 
 

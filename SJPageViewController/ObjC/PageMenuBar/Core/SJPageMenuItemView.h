@@ -10,7 +10,9 @@
 #import "SJPageMenuItemViewDefines.h"
 
 NS_ASSUME_NONNULL_BEGIN
-@interface SJPageMenuItemView : UILabel<SJPageMenuItemView>
-
+@interface SJPageMenuItemView : UIView<SJPageMenuItemView>
+@property (nonatomic, strong, null_resettable) UIFont *font;
+@property (nonatomic, copy, nullable) NSString *text;
+@property (nonatomic, copy, nullable) NSAttributedString *attributedText;
 @end
 NS_ASSUME_NONNULL_END

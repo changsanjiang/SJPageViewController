@@ -91,10 +91,12 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (void)setViewControllerAtIndex:(NSInteger)index {
     if ( [self _isSafeIndex:index] ) {
-        if ( self.collectionView.bounds.size.width != 0 ) {
-            CGFloat offset = index * self.collectionView.bounds.size.width;
-            [self.collectionView setContentOffset:CGPointMake(offset, 0) animated:NO];
-        }
+        [UIView performWithoutAnimation:^{
+            if ( self.collectionView.bounds.size.width != 0 ) {
+                CGFloat offset = index * self.collectionView.bounds.size.width;
+                [self.collectionView setContentOffset:CGPointMake(offset, 0) animated:NO];
+            }            
+        }];
         self.focusedIndex = index;
     }
 }
@@ -129,6 +131,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (nullable NSArray<__kindof UIViewController *> *)cachedViewControllers {
     return self.viewControllers.allValues;
+}
+
+- (UIPanGestureRecognizer *)panGestureRecognizer {
+    return self.collectionView.panGestureRecognizer;
 }
 
 #pragma mark -
@@ -173,8 +179,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 // SJPageCollectionView
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    [self _updateFocusedIndex];
-    [self _callScrollInRange];
+    if ( scrollView.isDragging || scrollView.isDecelerating ) {
+        [self _updateFocusedIndex];
+        [self _callScrollInRange];
+    }
     [self _insertHeaderViewForRootViewController];
 }
 
@@ -399,6 +407,10 @@ static NSString *const kReuseIdentifierForCell = @"1";
                     [pageItem.scrollView setContentOffset:contentOffset animated:NO];
                     [pageItem.scrollView sj_unlock];
                 }
+            }
+            
+            if ( self.focusedIndex == idx && !_collectionView.isDecelerating && !_collectionView.isDragging ) {
+                [self _insertHeaderViewForFocusedViewController];
             }
         }
     }

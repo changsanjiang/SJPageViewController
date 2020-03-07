@@ -11,7 +11,7 @@
 #import <SJPageViewController/SJPageMenuItemView.h>
 #import <Masonry/Masonry.h>
 
-@interface SJPageMenuBarDemoViewController ()<SJPageMenuBarDataSource, SJPageMenuBarDelegate>
+@interface SJPageMenuBarDemoViewController ()<SJPageMenuBarDelegate>
 @property (nonatomic, strong) SJPageMenuBar *pageMenuBar0;
 @property (nonatomic, strong) SJPageMenuBar *pageMenuBar1;
 @property (nonatomic, strong) SJPageMenuBar *pageMenuBar2;
@@ -32,7 +32,6 @@
 
 - (void)_demo0 {
     SJPageMenuBar *pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    pageMenuBar.dataSource = self;
     pageMenuBar.delegate = self;
     [self.view addSubview:pageMenuBar];
     [pageMenuBar mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -56,12 +55,13 @@
     pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeSpecifiedWidth;
     // 指定宽度为`12`, 高度为`2`
     pageMenuBar.scrollIndicatorSize = CGSizeMake(12, 2);
+    
+    [self _setItemViewsToPageMenuBar:pageMenuBar];
 }
 
 
 - (void)_demo1 {
     SJPageMenuBar *pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    pageMenuBar.dataSource = self;
     pageMenuBar.delegate = self;
     [self.view addSubview:pageMenuBar];
     [pageMenuBar mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -80,11 +80,12 @@
     pageMenuBar.showsScrollIndicator = YES;
     // 线宽的布局模式, 这里设置为根据item内容宽度布局
     pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
+    
+    [self _setItemViewsToPageMenuBar:pageMenuBar];
 }
 
 - (void)_demo2 {
     SJPageMenuBar *pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    pageMenuBar.dataSource = self;
     pageMenuBar.delegate = self;
     [self.view addSubview:pageMenuBar];
     [pageMenuBar mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -103,12 +104,13 @@
     pageMenuBar.showsScrollIndicator = YES;
     // 线宽的布局模式, 这里设置为根据item的布局宽度来布局
     pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewLayoutWidth;
+    
+    [self _setItemViewsToPageMenuBar:pageMenuBar];
 }
 
 
 - (void)_demo3 {
     SJPageMenuBar *pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    pageMenuBar.dataSource = self;
     pageMenuBar.delegate = self;
     [self.view addSubview:pageMenuBar];
     [pageMenuBar mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -132,20 +134,18 @@
     pageMenuBar.showsScrollIndicator = YES;
     // 线宽的布局模式, 这里设置为根据item的布局宽度来布局
     pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewLayoutWidth;
+    
+    [self _setItemViewsToPageMenuBar:pageMenuBar];
 }
 
-
-#pragma mark -
-
-- (NSInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)menuBar {
-    return 5;
-}
-
-/// 返回itemView, 可返回自定义视图
-- (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
-    SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    view.font = [UIFont boldSystemFontOfSize:25];
-    view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山"][index];
-    return view;
+- (void)_setItemViewsToPageMenuBar:(SJPageMenuBar *)menuBar {
+            NSMutableArray<SJPageMenuItemView *> *m = [NSMutableArray arrayWithCapacity:5];
+    for ( int i = 0 ; i < 5 ; ++ i  ) {
+        SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
+        view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山"][i];
+        view.font = [UIFont boldSystemFontOfSize:18];
+        [m addObject:view];
+    }
+    menuBar.itemViews = m;
 }
 @end

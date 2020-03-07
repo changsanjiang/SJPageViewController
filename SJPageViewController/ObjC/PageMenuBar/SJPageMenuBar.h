@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SJPageMenuItemViewDefines.h"
-@protocol SJPageMenuBarDataSource, SJPageMenuBarDelegate;
+@protocol SJPageMenuBarDelegate;
 typedef enum : NSUInteger {
     SJPageMenuBarDistributionEqualSpacing,
     
@@ -26,19 +26,18 @@ typedef enum : NSUInteger {
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuBar : UIView
-@property (nonatomic, weak, nullable) id<SJPageMenuBarDataSource> dataSource;
 @property (nonatomic, weak, nullable) id<SJPageMenuBarDelegate> delegate;
 
 @property (nonatomic, readonly) NSInteger focusedIndex;
 @property (nonatomic, readonly) NSInteger numberOfItems;
 
-- (void)reloadPageMenuBar;
+@property (nonatomic, copy, nullable) NSArray<UIView<SJPageMenuItemView> *> *itemViews;
+- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSInteger)index;
+
 - (void)reloadItemAtIndex:(NSInteger)index animated:(BOOL)animated;
 
 - (void)scrollToItemAtIndex:(NSInteger)index animated:(BOOL)animated;
-- (void)scrollInRange:(NSRange)range distaneProgress:(CGFloat)progress;
-
-- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSInteger)index;
+- (void)scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress;
 
 @property (nonatomic) SJPageMenuBarDistribution distribution;       // default is `SJPageMenuBarDistributionEqualSpacing`.
 @property (nonatomic) UIEdgeInsets contentInsets;                   // default is UIEdgeInsetsZero.
@@ -55,13 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJPageMenuBarScrollIndicatorLayoutMode scrollIndicatorLayoutMode;
 
 @property (nonatomic) CGFloat centerlineOffset;                     // default is `0`.
-@end
-
-
-@protocol SJPageMenuBarDataSource <NSObject>
-@required
-- (NSInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)menuBar;
-- (__kindof UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index;
 @end
 
 

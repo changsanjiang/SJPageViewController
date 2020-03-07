@@ -26,7 +26,6 @@ class SJViewController2: UIViewController {
         pageMenuBar = SJPageMenuBar.init(frame: .zero)
         pageMenuBar.distribution = .fillEqually
         pageMenuBar.scrollIndicatorLayoutMode = .equalItemViewContentWidth
-        pageMenuBar.dataSource = self
         pageMenuBar.delegate = self
 
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) { [weak self] in
@@ -34,13 +33,18 @@ class SJViewController2: UIViewController {
             for index in 0...5 {
                 self.items.append(SJPageMenuItem.init(title: String.init(index)))
             }
+            
+            var views = [SJPageMenuItemView]()
+            self.items.forEach {
+                let itemView = SJPageMenuItemView.init(frame: .zero)
+                itemView.text = $0.title
+                views.append(itemView)
+            }
+            
+            self.pageMenuBar.itemViews = views
             self.pageViewController.reload()
-            self.pageMenuBar.reload()
             self.pageMenuBar.scrollToItem(at: 4, animated: false)
-            // or
-            // self.pageViewController.setViewController(at: 4)
         }
-        
     }
 
     override func viewWillLayoutSubviews() {
@@ -78,19 +82,7 @@ extension SJViewController2: SJPageViewControllerDataSource {
 
 extension SJViewController2: SJPageViewControllerDelegate {
     func pageViewController(_ pageViewController: SJPageViewController, didScrollIn range: NSRange, distanceProgress progress: CGFloat) {
-        pageMenuBar.scroll(inRange: range, distaneProgress: progress)
-    }
-}
-
-extension SJViewController2: SJPageMenuBarDataSource {
-    func numberOfItems(in menuBar: SJPageMenuBar) -> Int {
-        return pageViewController.numberOfViewControllers
-    }
-    
-    func pageMenuBar(_ menuBar: SJPageMenuBar, viewForItemAt index: Int) -> SJPageMenuItemViewProtocol {
-        let menuItemView = SJPageMenuItemView.init(frame: .zero)
-        menuItemView.text = items[index].title
-        return menuItemView
+        pageMenuBar.scroll(inRange: range, distanceProgress: progress)
     }
 }
 

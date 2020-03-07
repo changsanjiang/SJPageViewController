@@ -12,28 +12,10 @@
 #import "SJDemoTableViewController.h"
 #import "SJPageMenuBar.h"
 #import "SJPageMenuItemView.h"
-
-@interface SJPageMenuItem : NSObject
-- (instancetype)initWithTitle:(NSString *)title;
-@property (nonatomic, copy, nullable) NSString *title;
-@end
-
-@implementation SJPageMenuItem
-- (instancetype)initWithTitle:(NSString *)title {
-    self = [super init];
-    if ( self ) {
-        _title = title;
-    }
-    return self;
-}
-@end
-
-
-
-@interface SJViewController5 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDataSource, SJPageMenuBarDelegate>
+ 
+@interface SJViewController5 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDelegate>
 @property (nonatomic, strong) SJPageViewController *pageViewController;
 @property (nonatomic, strong) SJPageMenuBar *menuBar;
-@property (nonatomic, strong) NSArray<SJPageMenuItem *> *menuItems;
 @end
 
 @implementation SJViewController5
@@ -47,16 +29,17 @@
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         __strong typeof(_self) self = _self;
         if ( !self ) return;
-        NSMutableArray<SJPageMenuItem *> *m = [NSMutableArray arrayWithCapacity:5];
+        NSMutableArray<SJPageMenuItemView *> *m = [NSMutableArray arrayWithCapacity:5];
         for ( int i = 0 ; i < 99 ; ++ i  ) {
-            [m addObject:[SJPageMenuItem.alloc initWithTitle:@[@"从前", @"有", @"99", @"座", @"灵剑山"][i % 5]]];
+            SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
+            view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山AAAAAAAAAA"][i % 5];
+            view.font = [UIFont boldSystemFontOfSize:18];
+            [m addObject:view];
         }
-        self.menuItems = m;
+        self.menuBar.itemViews = m;
         [self.pageViewController reloadPageViewController];
-        [self.menuBar reloadPageMenuBar];
-        [self.pageViewController setViewControllerAtIndex:4];
+        [self.menuBar scrollToItemAtIndex:4 animated:NO];
     });
-    
 }
 
 - (void)dealloc {
@@ -75,10 +58,8 @@
     _pageViewController.delegate = self;
     
     _menuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-//    _menuBar.distribution = SJPageMenuBarDistributionFillEqually;
     _menuBar.contentInsets = UIEdgeInsetsMake(0, 12, 0, 12);
     _menuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
-    _menuBar.dataSource = self;
     _menuBar.delegate = self;
     
     [self addChildViewController:_pageViewController];
@@ -92,7 +73,7 @@
 #pragma mark - Page View Controller
 
 - (NSUInteger)numberOfViewControllersInPageViewController:(SJPageViewController *)pageViewController {
-    return self.menuItems.count;
+    return self.menuBar.numberOfItems;
 }
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
@@ -120,25 +101,10 @@
 }
  
 - (void)pageViewController:(SJPageViewController *)pageViewController didScrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
-    [_menuBar scrollInRange:range distaneProgress:progress];
-} 
-
-- (void)pageViewController:(SJPageViewController *)pageViewController headerViewVisibleRectDidChange:(CGRect)visibleRect {
-    
+    [_menuBar scrollInRange:range distanceProgress:progress];
 }
 
 #pragma mark - Page Menu Bar
-
-- (NSInteger)numberOfItemsInPageMenuBar:(SJPageMenuBar *)menuBar {
-    return self.pageViewController.numberOfViewControllers;
-}
-
-- (UIView<SJPageMenuItemView> *)pageMenuBar:(SJPageMenuBar *)menuBar viewForItemAtIndex:(NSInteger)index {
-    SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-    view.text = self.menuItems[index].title;
-    view.font = [UIFont boldSystemFontOfSize:18];
-    return view;
-}
 
 - (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSInteger)index {
     if ( [_pageViewController isViewControllerVisibleAtIndex:index] ) return;
