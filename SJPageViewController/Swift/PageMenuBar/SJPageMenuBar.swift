@@ -28,12 +28,13 @@ open class SJPageMenuBar: UIView {
             }
             
             if let new = itemViews {
-                itemViews?.forEach({
+                new.forEach({
                     $0.sizeToFit()
                     self.scrollView.addSubview($0)
                 })
                 self.focusedIndex = new.count == 0 ? NSNotFound : 0
             }
+            remakeConstraints()
         }
     }
     
@@ -168,6 +169,9 @@ open class SJPageMenuBar: UIView {
             }
         }
     }
+    
+    /// scrollIndicator.size = scrollIndicatorSize + scrollIndicatorExpansionSize
+    open var scrollIndicatorExpansionSize = CGSize.zero
 
     open var scrollIndicatorBottomInsets: CGFloat = 3.0 {
         didSet {
@@ -281,6 +285,8 @@ private extension SJPageMenuBar {
     func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int) {
         remakeConstraintsForMenuItemViewsWithBeginIndex(safeIndex, zoomScale: {
             return $0 == focusedIndex ? maximumZoomScale : minimumZoomScale
+        }, transitionProgress: {
+            return $0 == focusedIndex ? 1 : 0;
         }, tintColor: {
             return $0 == focusedIndex ? focusedItemTintColor : itemTintColor
         }, centerlineOffset: {
@@ -320,6 +326,14 @@ private extension SJPageMenuBar {
                     return minimumZoomScale + length * progress
                 }
                 return minimumZoomScale
+            }, transitionProgress: {
+                if      ( $0 == left ) {
+                    return 1 - progress;
+                }
+                else if ( $0 == right ) {
+                    return progress;
+                }
+                return 0;
             }, tintColor: {
                 if      $0 == left {
                     return graidentColor(progress: 1 - progress)
@@ -364,7 +378,7 @@ private extension SJPageMenuBar {
         }
     }
 
-    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int, zoomScale: (Int) -> CGFloat, tintColor: (Int) -> UIColor, centerlineOffset: (Int) -> CGFloat) {
+    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int, zoomScale: (Int) -> CGFloat, transitionProgress: (Int) -> CGFloat, tintColor: (Int) -> UIColor, centerlineOffset: (Int) -> CGFloat) {
         if bounds.size.width == 0 || bounds.size.height == 0 {
             return
         }
@@ -384,6 +398,9 @@ private extension SJPageMenuBar {
             // zoomScale
             let scale = zoomScale(index)
             setZoomScale(scale, forMenuItemViewAt: index)
+            
+            // transitionProgress
+            curr.transitionProgress = transitionProgress(index)
             
             // tintColor
             let color = tintColor(index)
@@ -448,17 +465,20 @@ private extension SJPageMenuBar {
     }
     
     func sizeForScrollIndicator(at index: Int) -> CGSize {
+        var size = CGSize.zero
         if let view = viewForItem(at: index) {
             switch scrollIndicatorLayoutMode {
             case .specifiedWidth:
-                return scrollIndicatorSize
+                size = scrollIndicatorSize
             case .equalItemViewContentWidth:
-                return CGSize.init(width: view.sizeThatFits(CGSize.init(width: 1000, height: 1000)).width, height: scrollIndicatorSize.height)
+                size = CGSize.init(width: view.sizeThatFits(CGSize.init(width: 1000, height: 1000)).width, height: scrollIndicatorSize.height)
             case .equalItemViewLayoutWidth:
-                return CGSize.init(width: view.bounds.size.width, height: scrollIndicatorSize.height)
+                size = CGSize.init(width: view.bounds.size.width, height: scrollIndicatorSize.height)
             }
         }
-        return .zero
+        size.width += scrollIndicatorExpansionSize.width;
+        size.height += scrollIndicatorExpansionSize.height;
+        return size
     }
 }
 

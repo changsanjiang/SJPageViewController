@@ -49,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) BOOL showsScrollIndicator;                    // default is `YES`.
 @property (nonatomic) CGSize scrollIndicatorSize;                   // default is `CGSize(12, 2)`.
+@property (nonatomic) CGSize scrollIndicatorExpansionSize;          // default is .zero. scrollIndicator.size = scrollIndicatorSize + scrollIndicatorExpansionSize
 @property (nonatomic) CGFloat scrollIndicatorBottomInset;           // default is `3.0`.
 @property (nonatomic, strong, null_resettable) UIColor *scrollIndicatorTintColor;
 @property (nonatomic) SJPageMenuBarScrollIndicatorLayoutMode scrollIndicatorLayoutMode;

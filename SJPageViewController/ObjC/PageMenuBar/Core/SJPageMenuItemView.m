@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation SJPageMenuItemView
 @synthesize focusedMenuItem = _focusedMenuItem;
+@synthesize transitionProgress = _transitionProgress;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {

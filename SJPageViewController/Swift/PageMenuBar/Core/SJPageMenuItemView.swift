@@ -8,8 +8,9 @@
 import UIKit
 
 public protocol SJPageMenuItemViewProtocol : UIView {
-    var tintColor: UIColor? { set get }
     var isFocusedMenuItem : Bool { set get }
+    var tintColor: UIColor? { set get }
+    var transitionProgress: CGFloat { set get }
     func sizeThatFits(_ size: CGSize) -> CGSize
     func sizeToFit()
 }
@@ -25,6 +26,8 @@ open class SJPageMenuItemView : UIView, SJPageMenuItemViewProtocol {
     }
     
     open var isFocusedMenuItem : Bool = false
+    
+    open var transitionProgress: CGFloat = 0
         
     override open var tintColor: UIColor? {
         set {

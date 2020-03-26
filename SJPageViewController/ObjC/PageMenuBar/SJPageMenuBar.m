@@ -302,6 +302,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex {
     [self _remakeConstraintsForMenuItemViewWithBeginIndex:safeIndex zoomScale:^CGFloat(NSInteger index) {
         return self.focusedIndex == index ? self.maximumZoomScale : self.minimumZoomScale;
+    } transitionProgress:^CGFloat(NSInteger index) {
+        return self.focusedIndex == index ? 1 : 0;
     } tintColor:^UIColor * _Nonnull(NSInteger index) {
         return self.focusedIndex == index ? self.focusedItemTintColor : self.itemTintColor;
     } centerlineOffset:^CGFloat(NSInteger index) {
@@ -333,14 +335,18 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat minimumZoomScale = _minimumZoomScale;
         [self _remakeConstraintsForMenuItemViewWithBeginIndex:left zoomScale:^CGFloat(NSInteger index) {
             CGFloat zoomScaleLength = maximumZoomScale - minimumZoomScale;
-            // zoomScale
             if      ( index == left )
                 return maximumZoomScale - zoomScaleLength * progress;
             else if ( index == right )
                 return minimumZoomScale + zoomScaleLength * progress;
             return minimumZoomScale;
+        } transitionProgress:^CGFloat(NSInteger index) {
+            if      ( index == left )
+                return 1 - progress;
+            else if ( index == right )
+                return progress;
+            return 0;
         } tintColor:^UIColor * _Nonnull(NSInteger index) {
-            // tintColor
             if      ( index == left )
                 return [self _gradientColorWithProgress:1 - progress];
             else if ( index == right )
@@ -378,7 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex zoomScale:(CGFloat(^)(NSInteger index))zoomScaleBlock tintColor:(UIColor *(^)(NSInteger index))tintColorBlock centerlineOffset:(CGFloat(^)(NSInteger index))centerlineOffsetBlock {
+- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex zoomScale:(CGFloat(^)(NSInteger index))zoomScaleBlock transitionProgress:(CGFloat(^)(NSInteger index))transitionProgress tintColor:(UIColor *(^)(NSInteger index))tintColorBlock centerlineOffset:(CGFloat(^)(NSInteger index))centerlineOffsetBlock {
     if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
     CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
@@ -390,6 +396,9 @@ NS_ASSUME_NONNULL_BEGIN
         // zoomScale
         CGFloat zoomScale = zoomScaleBlock(index);
         [self _setZoomScale:zoomScale forMenuItemViewAtIndex:index];
+        
+        // transitionProgress
+        curr.transitionProgress = transitionProgress(index);
         
         // tintColor
         UIColor *tintColor = tintColorBlock(index);
@@ -506,6 +515,8 @@ struct color {
             size = CGSizeMake(self.itemViews[index].bounds.size.width, _scrollIndicatorSize.height);
             break;
     }
+    size.width += _scrollIndicatorExpansionSize.width;
+    size.height += _scrollIndicatorExpansionSize.height;
     return size;
 }
 @end
