@@ -119,7 +119,12 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( [self _isSafeIndex:idx] ) {
         if ( idx == _focusedIndex ) return YES;
         for ( NSIndexPath *indexPath in self.collectionView.indexPathsForVisibleItems ) {
-            if ( indexPath.item == idx ) return YES;
+            if ( indexPath.item == idx ) {
+                SJPageViewControllerItemCell *cell = (id)[self.collectionView cellForItemAtIndexPath:indexPath];
+                return cell.viewController != nil &&
+                CGRectContainsRect([cell convertRect:cell.bounds toView:self.view],
+                                   [_collectionView convertRect:_collectionView.bounds toView:self.view]);
+            }
         }
     }
     return NO;
