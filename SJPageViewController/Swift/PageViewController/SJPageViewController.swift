@@ -107,7 +107,6 @@ open class SJPageViewController: UIViewController {
     open private(set) var headerView: UIView?
     open private(set) var heightForHeaderBounds: CGFloat = 0.0 {
         didSet {
-            print(heightForHeaderBounds)
             if let scrollView = self.focusedViewController?.sj_lookupScrollView() {
                 setupContentInset(for: scrollView)
             }
@@ -199,6 +198,11 @@ open class SJPageViewController: UIViewController {
         }
     }
     
+    open override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setViewController(at: focusedIndex)
+    }
+    
     open override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         if previousBounds.equalTo(self.view.bounds) == false {
@@ -226,24 +230,23 @@ open class SJPageViewController: UIViewController {
             boundsObservation = nil
         }
         
-        if numberOfViewControllers != 0 {
-            headerView = dataSource?.viewForHeader(in: self)
-            hasHeader = headerView != nil
-        }
-        
-        if let headerView = headerView {
-            heightForHeaderBounds = headerView.bounds.height
-            boundsObservation = headerView.observe(\.bounds, changeHandler: { [weak self] (headerView, _) in
-                guard let self = self else { return }
-                self.heightForHeaderBounds = headerView.bounds.height
-            })
-        }
-        
         cleanPageItems()
         viewControllers.removeAll()
         collectionView.reloadData()
         
         if numberOfViewControllers != 0 {
+            // header view
+            headerView = dataSource?.viewForHeader(in: self)
+            hasHeader = headerView != nil
+            if let headerView = headerView {
+                heightForHeaderBounds = headerView.bounds.height
+                boundsObservation = headerView.observe(\.bounds, changeHandler: { [weak self] (headerView, _) in
+                    guard let self = self else { return }
+                    self.heightForHeaderBounds = headerView.bounds.height
+                })
+            }
+    
+            // set view controller
             var index = focusedIndex
             if index == NSNotFound {
                 index = 0

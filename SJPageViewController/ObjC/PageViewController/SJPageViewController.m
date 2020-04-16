@@ -82,6 +82,11 @@ static NSString *const kReuseIdentifierForCell = @"1";
     [self reloadPageViewController];
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self setViewControllerAtIndex:_focusedIndex];
+}
+
 - (void)reloadPageViewController {
     if ( self.isViewLoaded ) {
         [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(_reloadPageViewController) object:nil];
@@ -679,6 +684,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
     [self _cleanHeaderView];
     [self _cleanPageItems];
     [self.viewControllers removeAllObjects];
+    [self.collectionView reloadData];
     
     NSInteger numberOfViewControllers = self.numberOfViewControllers;
     if ( numberOfViewControllers != 0 ) {
@@ -686,11 +692,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         if ( _hasHeader ) {
             [_headerView addObserver:self forKeyPath:kBounds options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionInitial context:(void *)&kBounds];
         }
-    }
-    
-    [self.collectionView reloadData];
-    
-    if ( numberOfViewControllers != 0 ) {
+        
         NSInteger focusedIndex = _focusedIndex;
         if ( focusedIndex == NSNotFound )
             focusedIndex = 0;
