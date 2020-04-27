@@ -27,17 +27,22 @@ typedef enum : NSUInteger {
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuBar : UIView
 @property (nonatomic, weak, nullable) id<SJPageMenuBarDelegate> delegate;
-
-@property (nonatomic, readonly) NSInteger focusedIndex;
-@property (nonatomic, readonly) NSInteger numberOfItems;
-
-@property (nonatomic, copy, nullable) NSArray<UIView<SJPageMenuItemView> *> *itemViews;
-- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSInteger)index;
-
-- (void)reloadItemAtIndex:(NSInteger)index animated:(BOOL)animated;
-
-- (void)scrollToItemAtIndex:(NSInteger)index animated:(BOOL)animated;
+@property (nonatomic, readonly) NSUInteger focusedIndex;
+@property (nonatomic, readonly) NSUInteger numberOfItems;
+ 
+- (void)scrollToItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (void)scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress;
+ 
+
+- (void)insertItemAtIndex:(NSUInteger)index view:(__kindof UIView<SJPageMenuItemView> *)newView animated:(BOOL)animated;
+- (void)deleteItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
+- (void)reloadItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
+- (void)moveItemAtIndex:(NSUInteger)index toIndex:(NSUInteger)newIndex animated:(BOOL)animated;
+
+
+@property (nonatomic, copy, nullable) NSArray<__kindof UIView<SJPageMenuItemView> *> *itemViews;
+- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index;
+ 
 
 @property (nonatomic) SJPageMenuBarDistribution distribution;       // default is `SJPageMenuBarDistributionEqualSpacing`.
 @property (nonatomic) UIEdgeInsets contentInsets;                   // default is UIEdgeInsetsZero.
@@ -62,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJPageMenuBarDelegate <NSObject>
 @optional
-- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSInteger)index;
+- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index;
 @end
 
 

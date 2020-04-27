@@ -37,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuBar ()
 @property (nonatomic, strong, readonly) SJPageMenuBarScrollIndicator *scrollIndicator;
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;
-@property (nonatomic) NSInteger focusedIndex;
+@property (nonatomic) NSUInteger focusedIndex;
 @property (nonatomic) CGRect previousBounds;
 @end
 
@@ -65,11 +65,114 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (void)setItemViews:(nullable NSArray<UIView<SJPageMenuItemView> *> *)itemViews {
+- (NSUInteger)focusedIndex {
+    return self.numberOfItems != 0 ? _focusedIndex : NSNotFound;
+}
+
+- (NSUInteger)numberOfItems {
+    return _itemViews.count;
+}
+
+#pragma mark - scroll
+
+- (void)scrollToItemAtIndex:(NSUInteger)toIdx animated:(BOOL)animated {
+     if ( [self _isSafeIndex:toIdx] && _focusedIndex != toIdx ) {
+         NSUInteger previousIdx = self.focusedIndex;
+         [self _performWithAnimated:animated actions:^{
+             [self _remakeConstraintsWithBeginIndex:MIN(toIdx, previousIdx) focusedIndex:toIdx];
+             [self _setContentOffsetForScrollViewToIndex:toIdx];
+             self.focusedIndex = toIdx;
+         }];
+     }
+}
+
+- (void)scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
+    if ( [self _isSafeIndex:range.location] && [self _isSafeIndex:NSMaxRange(range)] ) {
+        [self _scrollInRange:range distanceProgress:progress];
+    }
+}
+
+#pragma mark - modification
+
+- (void)insertItemAtIndex:(NSUInteger)index view:(__kindof UIView<SJPageMenuItemView> *)newView animated:(BOOL)animated {
+    if ( newView == nil ) return;
+    
+    if ( [self _isSafeIndex:index] || index == self.numberOfItems ) {
+        NSMutableArray *views = [_itemViews mutableCopy];
+        [views insertObject:newView atIndex:index];
+        [self.scrollView insertSubview:newView atIndex:index];
+        _itemViews = views.copy;
+        [newView sizeToFit];
+
+        __auto_type preView = [self viewForItemAtIndex:index - 1];
+        CGRect frame = newView.frame;
+        frame.origin.x = CGRectGetMaxX(preView.frame) - frame.size.width;
+        frame.origin.y = (CGRectGetHeight(self.scrollView.bounds) - CGRectGetHeight(frame)) * 0.5;
+        newView.frame = frame;
+        newView.alpha = 0.001;
+        
+        [self _performWithAnimated:animated actions:^{
+            newView.alpha = 1;
+            NSUInteger focusedIndex = [self _fixedFocusedIndex];
+            [self _remakeConstraintsWithBeginIndex:index focusedIndex:focusedIndex];
+            self.focusedIndex = focusedIndex;
+        }];
+    }
+}
+
+- (void)deleteItemAtIndex:(NSUInteger)index animated:(BOOL)animated {
+    __auto_type view = [self viewForItemAtIndex:index];
+    if ( view != nil ) {
+        [self _performWithAnimated:animated actions:^{
+            NSMutableArray *views = [self->_itemViews mutableCopy];
+            [views removeObjectAtIndex:index];
+            self->_itemViews = views.copy;
+            view.alpha = 0.001;
+            NSUInteger focusedIndex = [self _fixedFocusedIndex];
+            [self _remakeConstraintsWithBeginIndex:index != 0 ? (index - 1) : 0 focusedIndex:focusedIndex];
+            [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:focusedIndex];
+            self.focusedIndex = focusedIndex;
+        } completion:^(BOOL finished) {
+            // remove
+            [view removeFromSuperview];
+            view.alpha = 1;
+        }];
+    }
+}
+
+- (void)reloadItemAtIndex:(NSUInteger)index animated:(BOOL)animated {
+    UIView<SJPageMenuItemView> *view = [self viewForItemAtIndex:index];
+    if ( view != nil ) {
+        [self _performWithAnimated:animated actions:^{
+            [view sizeToFit];
+            [self _remakeConstraintsWithBeginIndex:index focusedIndex:self.focusedIndex];
+        }];
+    }
+}
+
+- (void)moveItemAtIndex:(NSUInteger)index toIndex:(NSUInteger)newIndex animated:(BOOL)animated {
+    if ( index == newIndex ) return;
+    if ( [self _isSafeIndex:index] && [self _isSafeIndex:newIndex] ) {
+        [self _performWithAnimated:animated actions:^{
+            NSMutableArray *views = [self->_itemViews mutableCopy];
+            [views exchangeObjectAtIndex:index withObjectAtIndex:newIndex];
+            self->_itemViews = views.copy;
+            [self.scrollView exchangeSubviewAtIndex:index withSubviewAtIndex:newIndex];
+            if      ( index == self.focusedIndex ) self.focusedIndex = newIndex;
+            else if ( newIndex == self.focusedIndex ) self.focusedIndex = index;
+            [self _remakeConstraintsWithBeginIndex:MIN(index, newIndex) focusedIndex:self.focusedIndex];
+            [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
+        }];
+    }
+}
+
+#pragma mark - configuration
+
+- (void)setItemViews:(nullable NSArray<__kindof UIView<SJPageMenuItemView> *> *)itemViews {
     if ( _itemViews != nil ) [_itemViews makeObjectsPerformSelector:@selector(removeFromSuperview)];
     _itemViews = itemViews.copy;
     if ( itemViews.count != 0 ) {
-        for ( NSInteger index = 0 ; index < itemViews.count ; ++ index ) {
+        for ( NSUInteger index = 0 ; index < itemViews.count ; ++ index ) {
             __auto_type itemView = itemViews[index];
             [itemView sizeToFit];
             [self.scrollView addSubview:itemView];
@@ -79,44 +182,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self _remakeConstraints];
 }
 
-- (NSInteger)numberOfItems {
-    return _itemViews.count;
-}
-
-- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSInteger)index {
+- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index {
     if ( [self _isSafeIndex:index] ) {
         return _itemViews[index];
     }
     return nil;
-}
-
-- (void)reloadItemAtIndex:(NSInteger)index animated:(BOOL)animated {
-    UIView<SJPageMenuItemView> *view = [self viewForItemAtIndex:index];
-    if ( view != nil ) {
-        [UIView animateWithDuration:animated ? 0.25 : 0 animations:^{
-            [view sizeToFit];
-            [self _remakeConstraintsForMenuItemViewWithBeginIndex:index];
-        }];
-    }
-}
-
-- (void)scrollToItemAtIndex:(NSInteger)toIdx animated:(BOOL)animated {
-     if ( [self _isSafeIndex:toIdx] && _focusedIndex != toIdx ) {
-         NSInteger previousIdx = self.focusedIndex;
-         self.focusedIndex = toIdx;
-         if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
-         [UIView animateWithDuration:animated ? 0.25 : 0.0 animations:^{
-             [self _remakeConstraintsForMenuItemViewWithBeginIndex:previousIdx < toIdx ? previousIdx : toIdx];
-             [self _remakeConstraintsForScrollIndicator];
-             [self _setContentOffsetForScrollViewToIndex:toIdx];
-         }];
-     }
-}
-
-- (void)scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
-    if ( [self _isSafeIndex:range.location] && [self _isSafeIndex:NSMaxRange(range)] ) {
-        [self _scrollInRange:range distanceProgress:progress];
-    }
 }
 
 #pragma mark -
@@ -161,7 +231,7 @@ NS_ASSUME_NONNULL_BEGIN
     _scrollIndicator.hidden = !showsScrollIndicator;
 }
 
-- (void)setFocusedIndex:(NSInteger)focusedIndex {
+- (void)setFocusedIndex:(NSUInteger)focusedIndex {
     if ( focusedIndex != _focusedIndex ) {
         _focusedIndex = focusedIndex;
         
@@ -188,14 +258,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setScrollIndicatorSize:(CGSize)scrollIndicatorSize {
     if ( !CGSizeEqualToSize(scrollIndicatorSize, _scrollIndicatorSize) ) {
         _scrollIndicatorSize = scrollIndicatorSize;
-        [self _remakeConstraintsForScrollIndicator];
+        [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
     }
 }
 
 - (void)setScrollIndicatorBottomInset:(CGFloat)scrollIndicatorBottomInset {
     if ( scrollIndicatorBottomInset != _scrollIndicatorBottomInset ) {
         _scrollIndicatorBottomInset = scrollIndicatorBottomInset;
-        [self _remakeConstraintsForScrollIndicator];
+        [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
     }
 }
 
@@ -206,7 +276,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setScrollIndicatorLayoutMode:(SJPageMenuBarScrollIndicatorLayoutMode)scrollIndicatorLayoutMode {
     _scrollIndicatorLayoutMode = scrollIndicatorLayoutMode;
-    [self _remakeConstraintsForScrollIndicator];
+    [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
 }
 
 - (void)setCenterlineOffset:(CGFloat)centerlineOffset {
@@ -217,10 +287,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark -
-
-- (NSInteger)focusedIndex {
-    return self.numberOfItems != 0 ? _focusedIndex : NSNotFound;
-}
  
 - (UIColor *)itemTintColor {
     if ( _itemTintColor == nil ) {
@@ -308,45 +374,46 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (BOOL)_isSafeIndex:(NSInteger)index {
-    return (index >= 0 && index < self.numberOfItems);
+- (BOOL)_isSafeIndex:(NSUInteger)index {
+    return index < self.numberOfItems;
 }
 
 - (void)_remakeConstraints {
-    [self _remakeConstraintsWithBeginIndex:0];
+    [self _remakeConstraintsWithBeginIndex:0 focusedIndex:_focusedIndex];
 }
 
-- (void)_remakeConstraintsWithBeginIndex:(NSInteger)index {
+- (void)_remakeConstraintsWithBeginIndex:(NSUInteger)index focusedIndex:(NSUInteger)focusedIndex {
+    if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     if ( [self _isSafeIndex:index] ) {
-        [self _remakeConstraintsForMenuItemViewWithBeginIndex:index];
-        [self _remakeConstraintsForScrollIndicator];
+        [self _remakeConstraintsForMenuItemViewWithBeginIndex:index focusedIndex:focusedIndex];
+        [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:focusedIndex];
     }
 }
 
-- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex {
-    [self _remakeConstraintsForMenuItemViewWithBeginIndex:safeIndex zoomScale:^CGFloat(NSInteger index) {
-        return self.focusedIndex == index ? self.maximumZoomScale : self.minimumZoomScale;
-    } transitionProgress:^CGFloat(NSInteger index) {
-        return self.focusedIndex == index ? 1 : 0;
-    } tintColor:^UIColor * _Nonnull(NSInteger index) {
-        return self.focusedIndex == index ? self.focusedItemTintColor : self.itemTintColor;
-    } centerlineOffset:^CGFloat(NSInteger index) {
-        return self.focusedIndex == index ? 0 : self.centerlineOffset;;
+- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSUInteger)safeIndex focusedIndex:(NSUInteger)focusedIndex {
+    [self _remakeConstraintsForMenuItemViewWithBeginIndex:safeIndex zoomScale:^CGFloat(NSUInteger index) {
+        return focusedIndex == index ? self.maximumZoomScale : self.minimumZoomScale;
+    } transitionProgress:^CGFloat(NSUInteger index) {
+        return focusedIndex == index ? 1 : 0;
+    } tintColor:^UIColor * _Nonnull(NSUInteger index) {
+        return focusedIndex == index ? self.focusedItemTintColor : self.itemTintColor;
+    } centerlineOffset:^CGFloat(NSUInteger index) {
+        return focusedIndex == index ? 0 : self.centerlineOffset;;
     }];
 }
 
-- (void)_remakeConstraintsForScrollIndicator {
+- (void)_remakeConstraintsForScrollIndicatorWithFocusedIndex:(NSInteger)focusedIndex {
     if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
-    CGSize size = [self _sizeForScrollIndicatorAtIndex:_focusedIndex];
+    CGSize size = [self _sizeForScrollIndicatorAtIndex:focusedIndex];
     CGRect frame = (CGRect){0, 0, size};
     frame.origin.y = self.bounds.size.height - _scrollIndicatorBottomInset - _scrollIndicatorSize.height;
-    frame.origin.x = [self viewForItemAtIndex:_focusedIndex].center.x - frame.size.width * 0.5;
+    frame.origin.x = [self viewForItemAtIndex:focusedIndex].center.x - frame.size.width * 0.5;
     _scrollIndicator.frame = frame;
 }
 
 - (void)_scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
-    NSInteger left = range.location;
-    NSInteger right = NSMaxRange(range);
+    NSUInteger left = range.location;
+    NSUInteger right = NSMaxRange(range);
     
     if      ( left == right || progress <= 0 ) {
         [self scrollToItemAtIndex:left animated:YES];
@@ -357,26 +424,26 @@ NS_ASSUME_NONNULL_BEGIN
     else {
         CGFloat maximumZoomScale = _maximumZoomScale;
         CGFloat minimumZoomScale = _minimumZoomScale;
-        [self _remakeConstraintsForMenuItemViewWithBeginIndex:left zoomScale:^CGFloat(NSInteger index) {
+        [self _remakeConstraintsForMenuItemViewWithBeginIndex:left zoomScale:^CGFloat(NSUInteger index) {
             CGFloat zoomScaleLength = maximumZoomScale - minimumZoomScale;
             if      ( index == left )
                 return maximumZoomScale - zoomScaleLength * progress;
             else if ( index == right )
                 return minimumZoomScale + zoomScaleLength * progress;
             return minimumZoomScale;
-        } transitionProgress:^CGFloat(NSInteger index) {
+        } transitionProgress:^CGFloat(NSUInteger index) {
             if      ( index == left )
                 return 1 - progress;
             else if ( index == right )
                 return progress;
             return 0;
-        } tintColor:^UIColor * _Nonnull(NSInteger index) {
+        } tintColor:^UIColor * _Nonnull(NSUInteger index) {
             if      ( index == left )
                 return [self _gradientColorWithProgress:1 - progress];
             else if ( index == right )
                 return [self _gradientColorWithProgress:progress];
             return self.itemTintColor;
-        } centerlineOffset:^CGFloat(NSInteger index) {
+        } centerlineOffset:^CGFloat(NSUInteger index) {
             if      ( index == left )
                 return self.centerlineOffset * progress;
             else if ( index == right )
@@ -408,14 +475,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSInteger)safeIndex zoomScale:(CGFloat(^)(NSInteger index))zoomScaleBlock transitionProgress:(CGFloat(^)(NSInteger index))transitionProgress tintColor:(UIColor *(^)(NSInteger index))tintColorBlock centerlineOffset:(CGFloat(^)(NSInteger index))centerlineOffsetBlock {
+- (void)_remakeConstraintsForMenuItemViewWithBeginIndex:(NSUInteger)safeIndex  zoomScale:(CGFloat(^)(NSUInteger index))zoomScaleBlock transitionProgress:(CGFloat(^)(NSUInteger index))transitionProgress tintColor:(UIColor *(^)(NSUInteger index))tintColorBlock centerlineOffset:(CGFloat(^)(NSUInteger index))centerlineOffsetBlock {
     if ( self.bounds.size.height == 0 || self.bounds.size.width == 0 ) return;
     CGFloat contentLayoutHeight = self.bounds.size.height - self.contentInsets.top - self.contentInsets.bottom;
     CGFloat contentLayoutWidth = self.bounds.size.width - _contentInsets.left - _contentInsets.right;
     CGFloat itemWidth = contentLayoutWidth / self.numberOfItems;
     CGFloat itemSpacing = _distribution == SJPageMenuBarDistributionEqualSpacing ? _itemSpacing : 0;
     UIView<SJPageMenuItemView> *prev = [self viewForItemAtIndex:safeIndex - 1];
-    for (NSInteger index = safeIndex ; index < _itemViews.count ; ++ index ) {
+    for (NSUInteger index = safeIndex ; index < _itemViews.count ; ++ index ) {
         __auto_type curr = _itemViews[index];
         // zoomScale
         CGFloat zoomScale = zoomScaleBlock(index);
@@ -458,7 +525,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.scrollView setContentSize:CGSizeMake(CGRectGetMaxX(self.itemViews.lastObject.frame), self.bounds.size.height)];
 }
 
-- (void)_setContentOffsetForScrollViewToIndex:(NSInteger)safeIndex {
+- (void)_setContentOffsetForScrollViewToIndex:(NSUInteger)safeIndex {
     if ( _distribution == SJPageMenuBarDistributionFillEqually ) {
         return;
     }
@@ -480,7 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
     _scrollView.contentOffset = CGPointMake(centerX, 0);
 }
 
-- (void)_setZoomScale:(CGFloat)zoomScale forMenuItemViewAtIndex:(NSInteger)safeIndex {
+- (void)_setZoomScale:(CGFloat)zoomScale forMenuItemViewAtIndex:(NSUInteger)safeIndex {
     __auto_type view = self.itemViews[safeIndex];
     view.transform = CGAffineTransformMakeScale(zoomScale, zoomScale);
     view.sj_pageZoomScale = zoomScale;
@@ -490,7 +557,7 @@ struct color {
     CGFloat red;
     CGFloat green;
     CGFloat blue;
-    CGFloat alpah;
+    CGFloat alpha;
 };
 
 // progress [0,1],  0 为 itemTintColor, 1 为 focusedTintColor, 相互转换
@@ -498,19 +565,19 @@ struct color {
     if ( [self.focusedItemTintColor isEqual:self.itemTintColor] ) return self.itemTintColor;
     
     struct color tintColor, focusedTintColor;
-    [self.itemTintColor getRed:&tintColor.red green:&tintColor.green blue:&tintColor.blue alpha:&tintColor.alpah];
-    [self.focusedItemTintColor getRed:&focusedTintColor.red green:&focusedTintColor.green blue:&focusedTintColor.blue alpha:&focusedTintColor.alpah];
+    [self.itemTintColor getRed:&tintColor.red green:&tintColor.green blue:&tintColor.blue alpha:&tintColor.alpha];
+    [self.focusedItemTintColor getRed:&focusedTintColor.red green:&focusedTintColor.green blue:&focusedTintColor.blue alpha:&focusedTintColor.alpha];
     
     return [UIColor colorWithRed:tintColor.red + (focusedTintColor.red - tintColor.red) * progress
                             green:tintColor.green + (focusedTintColor.green - tintColor.green) * progress
                             blue:tintColor.blue + (focusedTintColor.blue - tintColor.blue) * progress
-                           alpha:tintColor.alpah + (focusedTintColor.alpah - tintColor.alpah) * progress];
+                           alpha:tintColor.alpha + (focusedTintColor.alpha - tintColor.alpha) * progress];
 }
 
 
 - (void)_resetTintColorForMenuItemViews {
     [self.itemViews enumerateObjectsUsingBlock:^(UIView<SJPageMenuItemView> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        obj.tintColor = idx == self.focusedIndex ? self.focusedItemTintColor : self.itemTintColor;
+        obj.tintColor = (idx == self.focusedIndex) ? self.focusedItemTintColor : self.itemTintColor;
     }];
 }
 
@@ -519,7 +586,8 @@ struct color {
     if ( self.gestureHandler.singleTapHandler != nil ) self.gestureHandler.singleTapHandler(self, location);
 }
 
-- (CGSize)_sizeForScrollIndicatorAtIndex:(NSInteger)index {
+- (CGSize)_sizeForScrollIndicatorAtIndex:(NSUInteger)index {
+    if ( self.numberOfItems == 0 ) return CGSizeZero;
     CGSize size = CGSizeZero;
     switch ( _scrollIndicatorLayoutMode ) {
         case SJPageMenuBarScrollIndicatorLayoutModeSpecifiedWidth:
@@ -537,6 +605,24 @@ struct color {
     size.width += _scrollIndicatorExpansionSize.width;
     size.height += _scrollIndicatorExpansionSize.height;
     return size;
+}
+
+- (void)_performWithAnimated:(BOOL)animated actions:(void (^)(void))actions {
+    [self _performWithAnimated:animated actions:actions completion:nil];
+}
+
+- (void)_performWithAnimated:(BOOL)animated actions:(void (^)(void))actions completion:(void(^_Nullable)(BOOL finished))completion {
+    animated ? [UIView animateWithDuration:0.25 animations:actions completion:completion] : actions();
+}
+
+- (NSUInteger)_fixedFocusedIndex {
+    if ( self.numberOfItems == 0 && self.focusedIndex != NSNotFound ) {
+        return NSNotFound;
+    }
+    else if ( self.focusedIndex >= self.numberOfItems ) {
+        return self.numberOfItems - 1;
+    }
+    return _focusedIndex;
 }
 @end
 NS_ASSUME_NONNULL_END

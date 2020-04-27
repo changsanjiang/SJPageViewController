@@ -627,16 +627,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     return rect;
 }
 
-- (NSInteger)_indexOfScrollIndicatorInScrollView:(UIScrollView *)scrollView {
-    __auto_type subviews = scrollView.subviews;
-    for ( NSInteger i = 0 ; i < subviews.count ; ++ i ) {
-        if ( [subviews[i] isKindOfClass:NSClassFromString(@"_UIScrollViewScrollIndicator")] ) {
-            return i;
-        }
-    }
-    return NSNotFound;
-}
-
 - (void)_cleanPageItems {
     for ( UIViewController *vc in self.viewControllers.allValues ) {
         SJPageItem *item = vc.sj_pageItem;

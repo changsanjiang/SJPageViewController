@@ -31,6 +31,9 @@
 		7786E65823EDD85200931805 /* SJViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65623EDD85200931805 /* SJViewController2.m */; };
 		778BAD9323F2626400B59D0B /* SJViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = 778BAD9223F2626400B59D0B /* SJViewController5.m */; };
 		779778802456C47300B47148 /* UIViewController+SJRotationControlExtended.m in Sources */ = {isa = PBXBuildFile; fileRef = 7797787E2456C47300B47148 /* UIViewController+SJRotationControlExtended.m */; };
+		779778842456F96F00B47148 /* SJViewController6.m in Sources */ = {isa = PBXBuildFile; fileRef = 779778822456F96F00B47148 /* SJViewController6.m */; };
+		779778852456F96F00B47148 /* SJViewController6.xib in Resources */ = {isa = PBXBuildFile; fileRef = 779778832456F96F00B47148 /* SJViewController6.xib */; };
+		779778882457145F00B47148 /* SJViewController7.m in Sources */ = {isa = PBXBuildFile; fileRef = 779778872457145F00B47148 /* SJViewController7.m */; };
 		7799B93F23EFE00A00486A86 /* SJViewController4.m in Sources */ = {isa = PBXBuildFile; fileRef = 7799B93D23EFE00900486A86 /* SJViewController4.m */; };
 		77F65DA523F2A77C009E7BBC /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F65DA423F2A77C009E7BBC /* SJTestViewController.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
@@ -88,6 +91,11 @@
 		778BAD9223F2626400B59D0B /* SJViewController5.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5.m; sourceTree = "<group>"; };
 		7797787E2456C47300B47148 /* UIViewController+SJRotationControlExtended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+SJRotationControlExtended.m"; sourceTree = "<group>"; };
 		7797787F2456C47300B47148 /* UIViewController+SJRotationControlExtended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SJRotationControlExtended.h"; sourceTree = "<group>"; };
+		779778812456F96F00B47148 /* SJViewController6.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController6.h; sourceTree = "<group>"; };
+		779778822456F96F00B47148 /* SJViewController6.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController6.m; sourceTree = "<group>"; };
+		779778832456F96F00B47148 /* SJViewController6.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SJViewController6.xib; sourceTree = "<group>"; };
+		779778862457145F00B47148 /* SJViewController7.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController7.h; sourceTree = "<group>"; };
+		779778872457145F00B47148 /* SJViewController7.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController7.m; sourceTree = "<group>"; };
 		7799B93D23EFE00900486A86 /* SJViewController4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController4.m; sourceTree = "<group>"; };
 		7799B93E23EFE00900486A86 /* SJViewController4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController4.h; sourceTree = "<group>"; };
 		77F65DA323F2A77C009E7BBC /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
@@ -249,6 +257,11 @@
 				7758B470240FF47A00F4772E /* SJPageMenuBarDemoViewController.m */,
 				7786E65023EDD51D00931805 /* SJDemoTableViewController.h */,
 				7786E65123EDD51D00931805 /* SJDemoTableViewController.m */,
+				779778812456F96F00B47148 /* SJViewController6.h */,
+				779778822456F96F00B47148 /* SJViewController6.m */,
+				779778832456F96F00B47148 /* SJViewController6.xib */,
+				779778862457145F00B47148 /* SJViewController7.h */,
+				779778872457145F00B47148 /* SJViewController7.m */,
 			);
 			path = Demo;
 			sourceTree = "<group>";
@@ -336,6 +349,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				779778852456F96F00B47148 /* SJViewController6.xib in Resources */,
 				873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */,
 				71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */,
 				6003F5A9195388D20070C39A /* Images.xcassets in Resources */,
@@ -406,7 +420,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				779778802456C47300B47148 /* UIViewController+SJRotationControlExtended.m in Sources */,
+				779778882457145F00B47148 /* SJViewController7.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
+				779778842456F96F00B47148 /* SJViewController6.m in Sources */,
 				7786E65823EDD85200931805 /* SJViewController2.m in Sources */,
 				7799B93F23EFE00A00486A86 /* SJViewController4.m in Sources */,
 				7758B4742412094300F4772E /* SJTestViewControllerd.m in Sources */,

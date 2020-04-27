@@ -15,6 +15,8 @@
 #import "SJViewController4.h"
 #import "SJViewController5.h"
 #import "SJPageMenuBarDemoViewController.h"
+#import "SJViewController6.h"
+#import "SJViewController7.h"
 
 static NSString * const kCellId = @"1";
 
@@ -50,7 +52,7 @@ static NSString * const kCellId = @"1";
         return 1;
     else if ( section == 1 )
         return 5;
-    return 1;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -86,8 +88,19 @@ static NSString * const kCellId = @"1";
                 break;
         }
     }
-    else
-        cell.textLabel.text = [NSString stringWithFormat:@"PageMenuBar Demo"];
+    else {
+        switch ( indexPath.row ) {
+            case 0:
+                cell.textLabel.text = [NSString stringWithFormat:@"PageMenuBar Demo1"];
+                break;
+            case 1:
+                cell.textLabel.text = [NSString stringWithFormat:@"PageMenuBar Demo2"];
+                break;
+            case 2:
+                cell.textLabel.text = [NSString stringWithFormat:@"PageMenuBar Demo3"];
+                break;
+        }
+    }
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -123,7 +136,20 @@ static NSString * const kCellId = @"1";
         }
     }
     else {
-        [self.navigationController pushViewController:SJPageMenuBarDemoViewController.new animated:YES];
+        switch ( indexPath.row ) {
+            case 0: {
+                [self.navigationController pushViewController:SJPageMenuBarDemoViewController.new animated:YES];
+            }
+                break;
+            case 1: {
+                [self.navigationController pushViewController:SJViewController6.new animated:YES];
+            }
+                break;
+            case 2: {
+                [self.navigationController pushViewController:SJViewController7.new animated:YES];
+            }
+                break;
+        }
     }
 }
 
