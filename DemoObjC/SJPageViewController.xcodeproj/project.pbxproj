@@ -30,6 +30,7 @@
 		7786E65523EDD7B300931805 /* SJViewController1.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65423EDD7B300931805 /* SJViewController1.m */; };
 		7786E65823EDD85200931805 /* SJViewController2.m in Sources */ = {isa = PBXBuildFile; fileRef = 7786E65623EDD85200931805 /* SJViewController2.m */; };
 		778BAD9323F2626400B59D0B /* SJViewController5.m in Sources */ = {isa = PBXBuildFile; fileRef = 778BAD9223F2626400B59D0B /* SJViewController5.m */; };
+		779778802456C47300B47148 /* UIViewController+SJRotationControlExtended.m in Sources */ = {isa = PBXBuildFile; fileRef = 7797787E2456C47300B47148 /* UIViewController+SJRotationControlExtended.m */; };
 		7799B93F23EFE00A00486A86 /* SJViewController4.m in Sources */ = {isa = PBXBuildFile; fileRef = 7799B93D23EFE00900486A86 /* SJViewController4.m */; };
 		77F65DA523F2A77C009E7BBC /* SJTestViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 77F65DA423F2A77C009E7BBC /* SJTestViewController.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
@@ -85,6 +86,8 @@
 		7786E65723EDD85200931805 /* SJViewController2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController2.h; sourceTree = "<group>"; };
 		778BAD9123F2626400B59D0B /* SJViewController5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJViewController5.h; sourceTree = "<group>"; };
 		778BAD9223F2626400B59D0B /* SJViewController5.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJViewController5.m; sourceTree = "<group>"; };
+		7797787E2456C47300B47148 /* UIViewController+SJRotationControlExtended.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+SJRotationControlExtended.m"; sourceTree = "<group>"; };
+		7797787F2456C47300B47148 /* UIViewController+SJRotationControlExtended.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SJRotationControlExtended.h"; sourceTree = "<group>"; };
 		7799B93D23EFE00900486A86 /* SJViewController4.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SJViewController4.m; sourceTree = "<group>"; };
 		7799B93E23EFE00900486A86 /* SJViewController4.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SJViewController4.h; sourceTree = "<group>"; };
 		77F65DA323F2A77C009E7BBC /* SJTestViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewController.h; sourceTree = "<group>"; };
@@ -174,6 +177,8 @@
 				6003F5A6195388D20070C39A /* SJViewController.m */,
 				7758B4722412094300F4772E /* SJTestViewControllerd.h */,
 				7758B4732412094300F4772E /* SJTestViewControllerd.m */,
+				7797787F2456C47300B47148 /* UIViewController+SJRotationControlExtended.h */,
+				7797787E2456C47300B47148 /* UIViewController+SJRotationControlExtended.m */,
 				7786E64C23EDD34600931805 /* Demo */,
 				71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */,
 				6003F5A8195388D20070C39A /* Images.xcassets */,
@@ -357,10 +362,14 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SJPageViewController_Example/Pods-SJPageViewController_Example-resources.sh",
 				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
+				"${PODS_ROOT}/SJBaseVideoPlayer/SJBaseVideoPlayer/ResourceLoader/SJBaseVideoPlayerResources.bundle",
+				"${PODS_ROOT}/SJVideoPlayer/SJVideoPlayer/ResourceLoader/SJVideoPlayer.bundle",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJBaseVideoPlayerResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/SJVideoPlayer.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -396,6 +405,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				779778802456C47300B47148 /* UIViewController+SJRotationControlExtended.m in Sources */,
 				6003F59E195388D20070C39A /* SJAppDelegate.m in Sources */,
 				7786E65823EDD85200931805 /* SJViewController2.m in Sources */,
 				7799B93F23EFE00A00486A86 /* SJViewController4.m in Sources */,

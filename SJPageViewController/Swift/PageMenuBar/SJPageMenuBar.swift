@@ -11,6 +11,10 @@ public protocol SJPageMenuBarDelegate: NSObjectProtocol {
     func pageMenuBar(_ bar: SJPageMenuBar, focusedIndexDidChange index: Int)
 }
 
+public protocol SJPageMenuBarGestureHandlerProtocol {
+    var singleTapHandler: ((SJPageMenuBar, CGPoint) -> ())? { get set }
+}
+
 open class SJPageMenuBar: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -77,6 +81,21 @@ open class SJPageMenuBar: UIView {
 
     
     open weak var delegate: SJPageMenuBarDelegate?
+    open lazy var gestureHandler: SJPageMenuBarGestureHandlerProtocol = {
+       var handler = SJPageMenuBarGestureHandler()
+        handler.singleTapHandler = { (bar, location) in
+            if let itemViews = bar.itemViews {
+                for index in 0..<itemViews.count {
+                    let view = itemViews[index]
+                    if view.frame.contains(.init(x: location.x, y: view.frame.origin.y)) {
+                        bar.scrollToItem(at: index, animated: true)
+                        return
+                    }
+                }
+            }
+        }
+        return handler
+    }()
     
     open private(set) var focusedIndex: Int = 0 {
         didSet {
@@ -254,14 +273,8 @@ open class SJPageMenuBar: UIView {
     
     @objc private func handleTap(_ tap: UITapGestureRecognizer) {
         let location = tap.location(in: scrollView)
-        if let itemViews = itemViews {
-            for index in 0..<itemViews.count {
-                let view = itemViews[index]
-                if view.frame.contains(.init(x: location.x, y: view.frame.origin.y)) {
-                    scrollToItem(at: index, animated: true)
-                    return
-                }
-            }
+        if let handler = self.gestureHandler.singleTapHandler {
+            handler(self, location)
         }
     }
 }
@@ -519,6 +532,10 @@ private class SJPageMenuBarScrollIndicator: UIView {
         super.layoutSubviews()
         layer.cornerRadius = bounds.size.height * 0.5
     }
+}
+
+private class SJPageMenuBarGestureHandler: SJPageMenuBarGestureHandlerProtocol {
+    var singleTapHandler: ((SJPageMenuBar, CGPoint) -> ())?
 }
 
 private var kPageZoomScale = "PageZoomScale";

@@ -1,6 +1,39 @@
 PODS:
   - Masonry (1.1.0)
   - MJRefresh (3.1.17)
+  - Reachability (3.2)
+  - SJBaseVideoPlayer (3.2.6):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/AVPlayer (= 3.2.6)
+    - SJBaseVideoPlayer/Common (= 3.2.6)
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJBaseVideoPlayer/AVPlayer (3.2.6):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/Common
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJBaseVideoPlayer/Common (3.2.6):
+    - Masonry
+    - Reachability
+    - SJBaseVideoPlayer/ResourceLoader
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
+  - SJBaseVideoPlayer/ResourceLoader (3.2.6):
+    - Masonry
+    - Reachability
+    - SJUIKit/AttributesFactory (>= 0.0.0.38)
+    - SJUIKit/ObserverHelper
+    - SJUIKit/Queues
+    - SJUIKit/SQLite3
   - SJPageViewController/ObjC (0.0.7):
     - SJPageViewController/ObjC/PageMenuBar (= 0.0.7)
     - SJPageViewController/ObjC/PageViewController (= 0.0.7)
@@ -10,16 +43,49 @@ PODS:
   - SJPageViewController/ObjC/PageViewController (0.0.7):
     - SJPageViewController/ObjC/PageViewController/Core (= 0.0.7)
   - SJPageViewController/ObjC/PageViewController/Core (0.0.7)
+  - SJUIKit/AttributesFactory (0.0.0.42):
+    - SJUIKit/AttributesFactory/Deprecated (= 0.0.0.42)
+    - SJUIKit/AttributesFactory/UIKitText (= 0.0.0.42)
+  - SJUIKit/AttributesFactory/Deprecated (0.0.0.42)
+  - SJUIKit/AttributesFactory/UIKitText (0.0.0.42)
+  - SJUIKit/ObserverHelper (0.0.0.42)
+  - SJUIKit/Queues (0.0.0.42)
+  - SJUIKit/SQLite3 (0.0.0.42):
+    - SJUIKit/SQLite3/Core (= 0.0.0.42)
+    - SJUIKit/SQLite3/Protocol (= 0.0.0.42)
+  - SJUIKit/SQLite3/Core (0.0.0.42):
+    - SJUIKit/SQLite3/Protocol
+  - SJUIKit/SQLite3/Protocol (0.0.0.42)
+  - SJVideoPlayer (3.2.4):
+    - SJBaseVideoPlayer (>= 3.2.5)
+    - SJVideoPlayer/Common (= 3.2.4)
+    - SJVideoPlayer/ControlLayers (= 3.2.4)
+    - SJVideoPlayer/ResourceLoader (= 3.2.4)
+  - SJVideoPlayer/Common (3.2.4):
+    - Masonry
+    - SJBaseVideoPlayer (>= 3.2.5)
+    - SJUIKit/AttributesFactory
+    - SJVideoPlayer/ResourceLoader
+  - SJVideoPlayer/ControlLayers (3.2.4):
+    - SJBaseVideoPlayer (>= 3.2.5)
+    - SJVideoPlayer/Common
+  - SJVideoPlayer/ResourceLoader (3.2.4):
+    - SJBaseVideoPlayer (>= 3.2.5)
 
 DEPENDENCIES:
   - Masonry
   - MJRefresh (= 3.1.17)
   - SJPageViewController/ObjC (from `../`)
+  - SJVideoPlayer
 
 SPEC REPOS:
   trunk:
     - Masonry
     - MJRefresh
+    - Reachability
+    - SJBaseVideoPlayer
+    - SJUIKit
+    - SJVideoPlayer
 
 EXTERNAL SOURCES:
   SJPageViewController:
@@ -28,8 +94,12 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: ee5b68f639775462faba4db0fd243baf4d42c2cf
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  SJBaseVideoPlayer: 6d12484e40ae56aeb7cd33d4c8588adb7e113798
   SJPageViewController: fa3d5fc63210a0a88cd3619f811d182758d0b12b
+  SJUIKit: 1356488a2488a9aafeddaf6a098006277c0eb9b8
+  SJVideoPlayer: acee9fab2b384fc87ed7636c05977d8dd3cdb4ee
 
-PODFILE CHECKSUM: 86d14a4b412b19d07149f998a45c65ee6c16aae7
+PODFILE CHECKSUM: a5f2fc1a653bc98e9fce665ab7449c4191e8f560
 
 COCOAPODS: 1.9.1
