@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SJPageMenuItemViewDefines.h"
-@protocol SJPageMenuBarDelegate;
+@protocol SJPageMenuBarDelegate, SJPageMenuBarGestureHandler;
 typedef enum : NSUInteger {
     SJPageMenuBarDistributionEqualSpacing,
     
@@ -55,11 +55,18 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) SJPageMenuBarScrollIndicatorLayoutMode scrollIndicatorLayoutMode;
 
 @property (nonatomic) CGFloat centerlineOffset;                     // default is `0`.
+
+@property (nonatomic, strong, null_resettable) id<SJPageMenuBarGestureHandler> gestureHandler;
 @end
 
 
 @protocol SJPageMenuBarDelegate <NSObject>
 @optional
 - (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSInteger)index;
+@end
+
+
+@protocol SJPageMenuBarGestureHandler <NSObject>
+@property (nonatomic, copy, nullable) void(^singleTapHandler)(SJPageMenuBar *bar, CGPoint location); // 单击手势的处理, 默认为滚动到点击的位置
 @end
 NS_ASSUME_NONNULL_END

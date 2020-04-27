@@ -25,6 +25,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 @end
 
+@interface SJPageMenuBarGestureHandler : NSObject<SJPageMenuBarGestureHandler>
+
+@end
+
+@implementation SJPageMenuBarGestureHandler
+@synthesize singleTapHandler = _singleTapHandler;
+@end
+
 
 @interface SJPageMenuBar ()
 @property (nonatomic, strong, readonly) SJPageMenuBarScrollIndicator *scrollIndicator;
@@ -282,6 +290,22 @@ NS_ASSUME_NONNULL_BEGIN
     return _scrollView;
 }
 
+- (id<SJPageMenuBarGestureHandler>)gestureHandler {
+    if ( _gestureHandler == nil ) {
+        _gestureHandler = SJPageMenuBarGestureHandler.alloc.init;
+        // 默认实现为: 点击之后滚动过去
+        _gestureHandler.singleTapHandler = ^(SJPageMenuBar * _Nonnull bar, CGPoint location) {
+            [bar.itemViews enumerateObjectsUsingBlock:^(UIView<SJPageMenuItemView> * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
+                if ( CGRectContainsPoint(view.frame, CGPointMake(location.x, view.frame.origin.y)) ) {
+                    [bar scrollToItemAtIndex:idx animated:YES];
+                    *stop = YES;
+                }
+            }];
+        };
+    }
+    return _gestureHandler;
+}
+
 #pragma mark -
 
 - (BOOL)_isSafeIndex:(NSInteger)index {
@@ -492,12 +516,7 @@ struct color {
 
 - (void)_handleTap:(UITapGestureRecognizer *)tap {
     CGPoint location = [tap locationInView:tap.view];
-    [self.itemViews enumerateObjectsUsingBlock:^(UIView<SJPageMenuItemView> * _Nonnull view, NSUInteger idx, BOOL * _Nonnull stop) {
-        if ( CGRectContainsPoint(view.frame, CGPointMake(location.x, view.frame.origin.y)) ) {
-            [self scrollToItemAtIndex:idx animated:YES];
-            *stop = YES;
-        }
-    }];
+    if ( self.gestureHandler.singleTapHandler != nil ) self.gestureHandler.singleTapHandler(self, location);
 }
 
 - (CGSize)_sizeForScrollIndicatorAtIndex:(NSInteger)index {

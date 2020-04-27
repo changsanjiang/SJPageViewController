@@ -1,15 +1,15 @@
 PODS:
   - Masonry (1.1.0)
   - MJRefresh (3.1.17)
-  - SJPageViewController/ObjC (0.0.4):
-    - SJPageViewController/ObjC/PageMenuBar (= 0.0.4)
-    - SJPageViewController/ObjC/PageViewController (= 0.0.4)
-  - SJPageViewController/ObjC/PageMenuBar (0.0.4):
-    - SJPageViewController/ObjC/PageMenuBar/Core (= 0.0.4)
-  - SJPageViewController/ObjC/PageMenuBar/Core (0.0.4)
-  - SJPageViewController/ObjC/PageViewController (0.0.4):
-    - SJPageViewController/ObjC/PageViewController/Core (= 0.0.4)
-  - SJPageViewController/ObjC/PageViewController/Core (0.0.4)
+  - SJPageViewController/ObjC (0.0.7):
+    - SJPageViewController/ObjC/PageMenuBar (= 0.0.7)
+    - SJPageViewController/ObjC/PageViewController (= 0.0.7)
+  - SJPageViewController/ObjC/PageMenuBar (0.0.7):
+    - SJPageViewController/ObjC/PageMenuBar/Core (= 0.0.7)
+  - SJPageViewController/ObjC/PageMenuBar/Core (0.0.7)
+  - SJPageViewController/ObjC/PageViewController (0.0.7):
+    - SJPageViewController/ObjC/PageViewController/Core (= 0.0.7)
+  - SJPageViewController/ObjC/PageViewController/Core (0.0.7)
 
 DEPENDENCIES:
   - Masonry
@@ -28,8 +28,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: ee5b68f639775462faba4db0fd243baf4d42c2cf
-  SJPageViewController: a79cf4899a2c5207ff371f827912bc5c9d84dfd6
+  SJPageViewController: fa3d5fc63210a0a88cd3619f811d182758d0b12b
 
 PODFILE CHECKSUM: 86d14a4b412b19d07149f998a45c65ee6c16aae7
 
-COCOAPODS: 1.9.0
+COCOAPODS: 1.9.1
