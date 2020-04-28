@@ -82,7 +82,7 @@
     }
 }
  
-- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSInteger)index {
+- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index {
     if ( ![self.pageViewController isViewControllerVisibleAtIndex:index] ) {
         [self.pageViewController setViewControllerAtIndex:index];
     }

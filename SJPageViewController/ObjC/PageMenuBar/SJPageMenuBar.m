@@ -35,7 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 @interface SJPageMenuBar ()
-@property (nonatomic, strong, readonly) SJPageMenuBarScrollIndicator *scrollIndicator;
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;
 @property (nonatomic) NSUInteger focusedIndex;
 @property (nonatomic) CGRect previousBounds;
@@ -65,15 +64,21 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (NSUInteger)focusedIndex {
-    return self.numberOfItems != 0 ? _focusedIndex : NSNotFound;
+- (void)setFocusedIndex:(NSUInteger)focusedIndex {
+    if ( focusedIndex != _focusedIndex ) {
+        _focusedIndex = focusedIndex;
+        
+        [_itemViews enumerateObjectsUsingBlock:^(UIView<SJPageMenuItemView> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            obj.focusedMenuItem = idx == focusedIndex;
+        }];
+        
+        if ( [self.delegate respondsToSelector:@selector(pageMenuBar:focusedIndexDidChange:)] ) {
+            [self.delegate pageMenuBar:self focusedIndexDidChange:focusedIndex];
+        }
+    }
 }
 
-- (NSUInteger)numberOfItems {
-    return _itemViews.count;
-}
-
-#pragma mark - scroll
+#pragma mark -
 
 - (void)scrollToItemAtIndex:(NSUInteger)toIdx animated:(BOOL)animated {
      if ( [self _isSafeIndex:toIdx] && _focusedIndex != toIdx ) {
@@ -92,13 +97,36 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - modification
+#pragma mark -
+
+- (void)setItemViews:(nullable NSArray<__kindof UIView<SJPageMenuItemView> *> *)itemViews {
+    if ( _itemViews != nil ) [_itemViews makeObjectsPerformSelector:@selector(removeFromSuperview)];
+    _itemViews = itemViews.copy;
+    for ( NSUInteger index = 0 ; index < itemViews.count ; ++ index ) {
+        __auto_type itemView = itemViews[index];
+        [itemView sizeToFit];
+        [self.scrollView addSubview:itemView];
+    }
+    NSUInteger focusedIndex = (itemViews.count == 0) ? NSNotFound : 0;
+    [self _remakeConstraintsWithBeginIndex:0 focusedIndex:focusedIndex];
+    self.focusedIndex = focusedIndex;
+}
+
+- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index {
+    return [self _isSafeIndex:index] ? _itemViews[index] : nil;
+}
+
+- (NSUInteger)numberOfItems {
+    return _itemViews.count;
+}
+
+#pragma mark -
 
 - (void)insertItemAtIndex:(NSUInteger)index view:(__kindof UIView<SJPageMenuItemView> *)newView animated:(BOOL)animated {
     if ( newView == nil ) return;
     
     if ( [self _isSafeIndex:index] || index == self.numberOfItems ) {
-        NSMutableArray *views = [_itemViews mutableCopy];
+        NSMutableArray *views = _itemViews != nil ? [_itemViews mutableCopy] : NSMutableArray.array;
         [views insertObject:newView atIndex:index];
         [self.scrollView insertSubview:newView atIndex:index];
         _itemViews = views.copy;
@@ -158,37 +186,15 @@ NS_ASSUME_NONNULL_BEGIN
             [views exchangeObjectAtIndex:index withObjectAtIndex:newIndex];
             self->_itemViews = views.copy;
             [self.scrollView exchangeSubviewAtIndex:index withSubviewAtIndex:newIndex];
-            if      ( index == self.focusedIndex ) self.focusedIndex = newIndex;
-            else if ( newIndex == self.focusedIndex ) self.focusedIndex = index;
-            [self _remakeConstraintsWithBeginIndex:MIN(index, newIndex) focusedIndex:self.focusedIndex];
-            [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
+            NSInteger focusedIndex = self.focusedIndex;
+            if      ( index == self.focusedIndex ) focusedIndex = newIndex;
+            else if ( newIndex == self.focusedIndex ) focusedIndex = index;
+            [self _remakeConstraintsWithBeginIndex:MIN(index, newIndex) focusedIndex:focusedIndex];
+            self.focusedIndex = focusedIndex;
         }];
     }
 }
-
-#pragma mark - configuration
-
-- (void)setItemViews:(nullable NSArray<__kindof UIView<SJPageMenuItemView> *> *)itemViews {
-    if ( _itemViews != nil ) [_itemViews makeObjectsPerformSelector:@selector(removeFromSuperview)];
-    _itemViews = itemViews.copy;
-    if ( itemViews.count != 0 ) {
-        for ( NSUInteger index = 0 ; index < itemViews.count ; ++ index ) {
-            __auto_type itemView = itemViews[index];
-            [itemView sizeToFit];
-            [self.scrollView addSubview:itemView];
-        }
-    }
-    self.focusedIndex = (itemViews.count == 0) ? NSNotFound : 0;
-    [self _remakeConstraints];
-}
-
-- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index {
-    if ( [self _isSafeIndex:index] ) {
-        return _itemViews[index];
-    }
-    return nil;
-}
-
+ 
 #pragma mark -
 
 - (void)setDistribution:(SJPageMenuBarDistribution)distribution {
@@ -231,20 +237,6 @@ NS_ASSUME_NONNULL_BEGIN
     _scrollIndicator.hidden = !showsScrollIndicator;
 }
 
-- (void)setFocusedIndex:(NSUInteger)focusedIndex {
-    if ( focusedIndex != _focusedIndex ) {
-        _focusedIndex = focusedIndex;
-        
-        [_itemViews enumerateObjectsUsingBlock:^(UIView<SJPageMenuItemView> * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            obj.focusedMenuItem = idx == focusedIndex;
-        }];
-        
-        if ( [self.delegate respondsToSelector:@selector(pageMenuBar:focusedIndexDidChange:)] ) {
-            [self.delegate pageMenuBar:self focusedIndexDidChange:focusedIndex];
-        }
-    }
-}
-
 - (void)setItemTintColor:(nullable UIColor *)itemTintColor {
     _itemTintColor = itemTintColor;
     [self _resetTintColorForMenuItemViews];
@@ -258,6 +250,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setScrollIndicatorSize:(CGSize)scrollIndicatorSize {
     if ( !CGSizeEqualToSize(scrollIndicatorSize, _scrollIndicatorSize) ) {
         _scrollIndicatorSize = scrollIndicatorSize;
+        [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
+    }
+}
+
+- (void)setScrollIndicatorExpansionSize:(CGSize)scrollIndicatorExpansionSize {
+    if ( !CGSizeEqualToSize(scrollIndicatorExpansionSize, _scrollIndicatorExpansionSize) ) {
+        _scrollIndicatorExpansionSize = scrollIndicatorExpansionSize;
         [self _remakeConstraintsForScrollIndicatorWithFocusedIndex:self.focusedIndex];
     }
 }
@@ -335,7 +334,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 @synthesize scrollIndicator = _scrollIndicator;
-- (UIView *)scrollIndicator {
+- (UIView<SJPageMenuBarScrollIndicator> *)scrollIndicator {
     if ( _scrollIndicator == nil ) {
         _scrollIndicator = [SJPageMenuBarScrollIndicator.alloc initWithFrame:CGRectZero];
         _scrollIndicator.backgroundColor = self.scrollIndicatorTintColor;
@@ -408,7 +407,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGRect frame = (CGRect){0, 0, size};
     frame.origin.y = self.bounds.size.height - _scrollIndicatorBottomInset - _scrollIndicatorSize.height;
     frame.origin.x = [self viewForItemAtIndex:focusedIndex].center.x - frame.size.width * 0.5;
-    _scrollIndicator.frame = frame;
+    self.scrollIndicator.frame = frame;
 }
 
 - (void)_scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
@@ -468,7 +467,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         CGFloat maxOffset = rightView.center.x - leftView.center.x;
         CGFloat currOffset = leftView.center.x + maxOffset * progress - indicatorWidth * 0.5;
-        CGRect frame = _scrollIndicator.frame;
+        CGRect frame = self.scrollIndicator.frame;
         frame.size.width = indicatorWidth;
         frame.origin.x = currOffset;
         _scrollIndicator.frame = frame;
@@ -616,7 +615,7 @@ struct color {
 }
 
 - (NSUInteger)_fixedFocusedIndex {
-    if ( self.numberOfItems == 0 && self.focusedIndex != NSNotFound ) {
+    if ( self.numberOfItems == 0 ) {
         return NSNotFound;
     }
     else if ( self.focusedIndex >= self.numberOfItems ) {

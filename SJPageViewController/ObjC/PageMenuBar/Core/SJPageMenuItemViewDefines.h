@@ -19,5 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)sizeThatFits:(CGSize)size;
 - (void)sizeToFit;
 @end
+
+@protocol SJPageMenuBarScrollIndicator <NSObject>
+
+@end
 NS_ASSUME_NONNULL_END
 #endif /* SJPageMenuItemViewDefines_h */

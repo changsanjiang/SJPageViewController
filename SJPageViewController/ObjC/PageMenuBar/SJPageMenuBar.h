@@ -8,7 +8,8 @@
 
 #import <UIKit/UIKit.h>
 #import "SJPageMenuItemViewDefines.h"
-@protocol SJPageMenuBarDelegate, SJPageMenuBarGestureHandler;
+@protocol SJPageMenuBarDelegate, SJPageMenuBarGestureHandler, SJPageMenuBarScrollIndicator;
+
 typedef enum : NSUInteger {
     SJPageMenuBarDistributionEqualSpacing,
     
@@ -28,21 +29,18 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuBar : UIView
 @property (nonatomic, weak, nullable) id<SJPageMenuBarDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger focusedIndex;
-@property (nonatomic, readonly) NSUInteger numberOfItems;
  
 - (void)scrollToItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (void)scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress;
  
+@property (nonatomic, copy, nullable) NSArray<__kindof UIView<SJPageMenuItemView> *> *itemViews;
+@property (nonatomic, readonly) NSUInteger numberOfItems;
+- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index;
 
 - (void)insertItemAtIndex:(NSUInteger)index view:(__kindof UIView<SJPageMenuItemView> *)newView animated:(BOOL)animated;
 - (void)deleteItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (void)reloadItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (void)moveItemAtIndex:(NSUInteger)index toIndex:(NSUInteger)newIndex animated:(BOOL)animated;
-
-
-@property (nonatomic, copy, nullable) NSArray<__kindof UIView<SJPageMenuItemView> *> *itemViews;
-- (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index;
- 
 
 @property (nonatomic) SJPageMenuBarDistribution distribution;       // default is `SJPageMenuBarDistributionEqualSpacing`.
 @property (nonatomic) UIEdgeInsets contentInsets;                   // default is UIEdgeInsetsZero.
@@ -62,6 +60,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) CGFloat centerlineOffset;                     // default is `0`.
 
 @property (nonatomic, strong, null_resettable) id<SJPageMenuBarGestureHandler> gestureHandler;
+@property (nonatomic, strong, null_resettable) UIView<SJPageMenuBarScrollIndicator> *scrollIndicator;
 @end
 
 
@@ -73,5 +72,5 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJPageMenuBarGestureHandler <NSObject>
 @property (nonatomic, copy, nullable) void(^singleTapHandler)(SJPageMenuBar *bar, CGPoint location); // 单击手势的处理, 默认为滚动到点击的位置
-@end
+@end  
 NS_ASSUME_NONNULL_END

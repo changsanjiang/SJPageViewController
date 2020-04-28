@@ -15,6 +15,10 @@ public protocol SJPageMenuBarGestureHandlerProtocol {
     var singleTapHandler: ((SJPageMenuBar, CGPoint) -> ())? { get set }
 }
 
+public protocol SJPageMenuBarScrollIndicatorProtocol: UIView {
+    
+}
+
 open class SJPageMenuBar: UIView {
     public override init(frame: CGRect) {
         super.init(frame: frame)
@@ -24,51 +28,32 @@ open class SJPageMenuBar: UIView {
     required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-     
-    open var itemViews: [SJPageMenuItemView]? {
+    
+    open weak var delegate: SJPageMenuBarDelegate?
+    
+    // MARK: -
+    
+    open private(set) var focusedIndex: Int = 0 {
         didSet {
-            if let old = oldValue {
-                old.forEach { $0.removeFromSuperview() }
-            }
-            
-            if let new = itemViews {
-                new.forEach({
-                    $0.sizeToFit()
-                    self.scrollView.addSubview($0)
+            if ( focusedIndex != oldValue ) {
+                itemViews?.sj_forEach({ (index, view, _) in
+                    view.isFocusedMenuItem = focusedIndex == index
                 })
-                self.focusedIndex = new.count == 0 ? NSNotFound : 0
-            }
-            remakeConstraints()
-        }
-    }
-    
-    open func viewForItem(at index: Int) -> SJPageMenuItemViewProtocol? {
-        if isSafeIndex(index) {
-            return itemViews![index]
-        }
-        return nil
-    }
-    
-    open func reloadItem(at index: Int, animated: Bool) {
-        if let view = viewForItem(at: index) {
-            UIView.animate(withDuration: animated ? 0.25 : 0.0) {
-                view.sizeToFit()
-                self.remakeConstraintsForMenuItemViewsWithBeginIndex(index)
+                
+                delegate?.pageMenuBar(self, focusedIndexDidChange: focusedIndex)
             }
         }
     }
-    
+
+    // MARK: -
+
     open func scrollToItem(at index: Int, animated: Bool) {
         if isSafeIndex(index) && focusedIndex != index {
             let previousIdx = focusedIndex
-            focusedIndex = index
-            if self.bounds.size.width == 0 || self.bounds.size.height == 0 {
-                return
-            }
-            UIView.animate(withDuration: animated ? 0.25 : 0.0, animations: {
-                self.remakeConstraints(previousIdx < index ? previousIdx : index)
-                self.remakeConstraintsForScrollIndicator()
+            perform(animated: animated, actions: {
+                self.remakeConstraints(min(previousIdx, index), index)
                 self.setContentOffsetForScrollViewToIndex(index)
+                self.focusedIndex = index
             })
         }
     }
@@ -78,42 +63,34 @@ open class SJPageMenuBar: UIView {
             _scroll(inRange: range, distanceProgress: progress)
         }
     }
+    
+    // MARK: -
 
-    
-    open weak var delegate: SJPageMenuBarDelegate?
-    open lazy var gestureHandler: SJPageMenuBarGestureHandlerProtocol = {
-       var handler = SJPageMenuBarGestureHandler()
-        handler.singleTapHandler = { (bar, location) in
-            if let itemViews = bar.itemViews {
-                for index in 0..<itemViews.count {
-                    let view = itemViews[index]
-                    if view.frame.contains(.init(x: location.x, y: view.frame.origin.y)) {
-                        bar.scrollToItem(at: index, animated: true)
-                        return
-                    }
-                }
-            }
+    private var itemViews: [SJPageMenuItemViewProtocol]?
+
+    open func setItemViews(_ views: [SJPageMenuItemViewProtocol]?) {
+        itemViews?.forEach { $0.removeFromSuperview() }
+        itemViews = views != nil ? Array(views!) : nil
+        itemViews?.forEach {
+            scrollView.addSubview($0)
+            $0.sizeToFit()
         }
-        return handler
-    }()
-    
-    open private(set) var focusedIndex: Int = 0 {
-        didSet {
-            if let views = itemViews {
-                for index in 0..<views.count {
-                    views[index].isFocusedMenuItem = focusedIndex == index
-                }
-            }
-            
-            if focusedIndex != NSNotFound {
-                self.delegate?.pageMenuBar(self, focusedIndexDidChange: focusedIndex)
-            }
-        }
+        
+        let focusedIndex = itemViews?.count == 0 ? NSNotFound : 0
+        remakeConstraints(0, focusedIndex)
+        self.focusedIndex = focusedIndex
     }
+    
+    open func viewForItem(at index: Int) -> SJPageMenuItemViewProtocol? {
+        return isSafeIndex(index) ? itemViews?[index] : nil
+    }
+    
     open var numberOfItems: Int {
         return itemViews?.count ?? 0
     }
-    
+
+    // MARK: -
+     
     open var distribution = Distribution.equalSpacing {
         didSet {
             if ( oldValue != distribution ) {
@@ -177,26 +154,26 @@ open class SJPageMenuBar: UIView {
     
     open var scrollIndicatorLayoutMode = ScrollIndicatorLayoutMode.specifiedWidth {
         didSet {
-            remakeConstraintsForScrollIndicator()
+            remakeConstraintsForScrollIndicator(focusedIndex)
         }
     }
 
     open var scrollIndicatorSize = CGSize.init(width: 12, height: 2) {
         didSet {
-            if oldValue.equalTo(scrollIndicatorSize) {
-                remakeConstraintsForScrollIndicator()
-            }
+            remakeConstraintsForScrollIndicator(focusedIndex)
         }
     }
     
     /// scrollIndicator.size = scrollIndicatorSize + scrollIndicatorExpansionSize
-    open var scrollIndicatorExpansionSize = CGSize.zero
+    open var scrollIndicatorExpansionSize = CGSize.zero {
+        didSet {
+            remakeConstraintsForScrollIndicator(focusedIndex)
+        }
+    }
 
     open var scrollIndicatorBottomInsets: CGFloat = 3.0 {
         didSet {
-            if oldValue != scrollIndicatorBottomInsets {
-                remakeConstraintsForScrollIndicator()
-            }
+            remakeConstraintsForScrollIndicator(focusedIndex)
         }
     }
 
@@ -214,6 +191,26 @@ open class SJPageMenuBar: UIView {
         }
     }
     
+    open var gestureHandler: SJPageMenuBarGestureHandlerProtocol = {
+        var handler = SJPageMenuBarGestureHandler()
+        handler.singleTapHandler = { (bar, location) in
+            bar.itemViews?.sj_forEach({ (index, view, stop) in
+                if view.frame.contains(.init(x: location.x, y: view.frame.origin.y)) {
+                    bar.scrollToItem(at: index, animated: true)
+                    stop = true
+                }
+            })
+        }
+        return handler
+    }()
+    
+    open var scrollIndicator: SJPageMenuBarScrollIndicatorProtocol {
+        set { _scrollIndicator = newValue }
+        get { return _scrollIndicator }
+    }
+    
+    // MARK: -
+
     public enum Distribution {
         case equalSpacing
         case fillEqually
@@ -240,11 +237,13 @@ open class SJPageMenuBar: UIView {
         }
         return scrollView
     }()
-    private lazy var scrollIndicator: SJPageMenuBarScrollIndicator = {
+
+    private lazy var _scrollIndicator: SJPageMenuBarScrollIndicatorProtocol = {
         var scrollIndicator = SJPageMenuBarScrollIndicator.init(frame: .zero)
         scrollIndicator.backgroundColor = scrollIndicatorTintColor
         return scrollIndicator
     }()
+    
     private var previousBounds = CGRect.zero
     
     private func setupViews() {
@@ -279,23 +278,112 @@ open class SJPageMenuBar: UIView {
     }
 }
 
+
+public extension SJPageMenuBar {
+    func insertItem(at index: Int, view newView: UIView & SJPageMenuItemViewProtocol, animated: Bool) {
+        if ( isSafeIndex(index) || index == self.numberOfItems ) {
+            if ( itemViews == nil ) { itemViews = Array() }
+            itemViews?.insert(newView, at: index)
+            scrollView.insertSubview(newView, at: index)
+            newView.sizeToFit()
+            
+            let preView = viewForItem(at: index - 1)
+            var frame = newView.frame
+            frame.origin.x = preView?.frame.maxX ?? 0 - frame.size.width
+            frame.origin.y = (scrollView.bounds.height - frame.height) * 0.5
+            
+            newView.frame = frame
+            newView.alpha = 0.001
+            
+            perform(animated: animated) {
+                newView.alpha = 1
+                let focusedIndex = self.fixedFocusedIndex()
+                self.remakeConstraints(index, focusedIndex)
+                self.focusedIndex = focusedIndex
+            }
+        }
+    }
+
+    func deleteItem(at index: Int, animated: Bool) {
+        if let view = viewForItem(at: index) {
+            perform(animated: animated, actions: {
+                view.alpha = 0.001
+                self.itemViews?.remove(at: index)
+                
+                let focusedIndex = self.fixedFocusedIndex()
+                self.remakeConstraints(index != 0 ? (index - 1) : 0, focusedIndex)
+                self.remakeConstraintsForScrollIndicator(focusedIndex)
+                self.focusedIndex = focusedIndex
+            }) { (_) in
+                view.removeFromSuperview()
+                view.alpha = 1
+            }
+        }
+    }
+
+    func reloadItem(at index: Int, animated: Bool) {
+        if let view = viewForItem(at: index) {
+            perform(animated: animated) {
+                view.sizeToFit()
+                self.remakeConstraints(index, self.focusedIndex)
+            }
+        }
+    }
+    
+    func moveItem(at index: Int, to newIndex: Int, animated: Bool) {
+        if ( index == newIndex ) { return }
+        if ( isSafeIndex(index) && isSafeIndex(newIndex) ) {
+            perform(animated: animated) {
+                self.itemViews?.swapAt(index, newIndex)
+                var focusedIndex = self.focusedIndex
+                if      ( index == self.focusedIndex ) {
+                    focusedIndex = newIndex
+                }
+                else if ( newIndex == self.focusedIndex ) {
+                    focusedIndex = index
+                }
+                self.remakeConstraints(min(index, newIndex), focusedIndex)
+                self.focusedIndex = focusedIndex
+            }
+        }
+    }
+}
+
+
 private extension SJPageMenuBar {
     func isSafeIndex(_ index: Int) -> Bool {
         return index >= 0 &&
                index < numberOfItems
     }
+    
+    func fixedFocusedIndex() -> Int {
+        if ( numberOfItems == 0 ) {
+            return NSNotFound;
+        }
+        else if ( focusedIndex >= numberOfItems ) {
+            return numberOfItems - 1
+        }
+        return focusedIndex
+    }
 }
 
 private extension SJPageMenuBar {
     
-    func remakeConstraints(_ beginIndex: Int = 0) {
+    func remakeConstraints() {
+        remakeConstraints(0, focusedIndex)
+    }
+    
+    func remakeConstraints(_ beginIndex: Int, _ focusedIndex: Int) {
+        if self.bounds.size.width == 0 || self.bounds.size.height == 0 {
+            return
+        }
         if isSafeIndex(beginIndex) {
-            remakeConstraintsForMenuItemViewsWithBeginIndex(beginIndex)
-            remakeConstraintsForScrollIndicator()
+            remakeConstraintsForMenuItemViewsWithBeginIndex(beginIndex, focusedIndex)
+            remakeConstraintsForScrollIndicator(focusedIndex)
         }
     }
     
-    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int) {
+    func remakeConstraintsForMenuItemViewsWithBeginIndex(_ safeIndex: Int, _ focusedIndex: Int) {
         remakeConstraintsForMenuItemViewsWithBeginIndex(safeIndex, zoomScale: {
             return $0 == focusedIndex ? maximumZoomScale : minimumZoomScale
         }, transitionProgress: {
@@ -307,7 +395,7 @@ private extension SJPageMenuBar {
         })
     }
     
-    func remakeConstraintsForScrollIndicator() {
+    func remakeConstraintsForScrollIndicator(_ focusedIndex: Int) {
         if bounds.size.width == 0 || bounds.size.height == 0 {
             return
         }
@@ -349,10 +437,10 @@ private extension SJPageMenuBar {
                 return 0;
             }, tintColor: {
                 if      $0 == left {
-                    return graidentColor(progress: 1 - progress)
+                    return gradientColor(progress: 1 - progress)
                 }
                 else if $0 == right {
-                    return graidentColor(progress: progress)
+                    return gradientColor(progress: progress)
                 }
                 return itemTintColor
             }, centerlineOffset: {
@@ -478,6 +566,7 @@ private extension SJPageMenuBar {
     }
     
     func sizeForScrollIndicator(at index: Int) -> CGSize {
+        if ( self.numberOfItems == 0 ) { return .zero }
         var size = CGSize.zero
         if let view = viewForItem(at: index) {
             switch scrollIndicatorLayoutMode {
@@ -504,7 +593,7 @@ private extension SJPageMenuBar {
         var alpha: CGFloat = 0.0;
     }
     
-    func graidentColor(progress: CGFloat) -> UIColor {
+    func gradientColor(progress: CGFloat) -> UIColor {
         if focusedItemTintColor.isEqual(itemTintColor) {
             return itemTintColor
         }
@@ -518,16 +607,23 @@ private extension SJPageMenuBar {
     }
     
     func resetTintColorForMenuItemViews() {
-        if let itemViews = itemViews {
-            for index in 0..<itemViews.count {
-                let view = itemViews[index]
-                view.tintColor = index == focusedIndex ? focusedItemTintColor : itemTintColor
-            }
+        itemViews?.sj_forEach { (index, view, _) in
+            view.tintColor = index == focusedIndex ? focusedItemTintColor : itemTintColor
         }
     }
 }
+
+private extension SJPageMenuBar {
+    func perform(animated: Bool, actions: @escaping (() -> Void)) {
+        perform(animated: animated, actions: actions, completion: nil)
+    }
+    
+    func perform(animated: Bool, actions: @escaping (() -> Void), completion: ((Bool) -> Void)?) {
+        animated ? UIView.animate(withDuration: 0.25, animations: actions, completion: completion) : actions();
+    }
+}
  
-private class SJPageMenuBarScrollIndicator: UIView {
+private class SJPageMenuBarScrollIndicator: UIView, SJPageMenuBarScrollIndicatorProtocol {
     override func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = bounds.size.height * 0.5
@@ -547,6 +643,15 @@ fileprivate extension UIView {
     }
 }
 
+fileprivate extension Array {
+    func sj_forEach(_ body: (Int, Element, inout Bool) throws -> Void) rethrows {
+        var stop = false
+        for index in 0..<count {
+            if ( stop ) { break }
+            try body(index, self[index], &stop)
+        }
+    }
+}
 
 extension SJPageMenuBarDelegate {
     func pageMenuBar(_ bar: SJPageMenuBar, focusedIndexDidChange index: Int) {

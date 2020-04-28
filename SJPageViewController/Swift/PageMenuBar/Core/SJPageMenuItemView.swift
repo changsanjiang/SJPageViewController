@@ -89,3 +89,16 @@ open class SJPageMenuItemView : UIView, SJPageMenuItemViewProtocol {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
+public extension SJPageMenuItemView {
+    convenience init(text: String, font: UIFont = .boldSystemFont(ofSize: 20), frame: CGRect = .zero) {
+        self.init(frame: frame)
+        self.font = font
+        self.text = text
+    }
+    
+    convenience init(attributedText: NSAttributedString?, frame: CGRect = .zero) {
+        self.init(frame: frame)
+        self.attributedText = attributedText
+    }
+}

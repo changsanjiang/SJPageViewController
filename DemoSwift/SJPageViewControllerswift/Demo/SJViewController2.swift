@@ -41,7 +41,7 @@ class SJViewController2: UIViewController {
                 views.append(itemView)
             }
             
-            self.pageMenuBar.itemViews = views
+            self.pageMenuBar.setItemViews(views)
             self.pageViewController.reload()
             self.pageMenuBar.scrollToItem(at: 4, animated: false)
         }

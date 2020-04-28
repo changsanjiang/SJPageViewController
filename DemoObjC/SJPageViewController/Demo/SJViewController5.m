@@ -155,7 +155,7 @@
 
 #pragma mark - Page Menu Bar
 
-- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSInteger)index {
+- (void)pageMenuBar:(SJPageMenuBar *)bar focusedIndexDidChange:(NSUInteger)index {
     if ( [_pageViewController isViewControllerVisibleAtIndex:index] ) return;
     [_pageViewController setViewControllerAtIndex:index];
 }
