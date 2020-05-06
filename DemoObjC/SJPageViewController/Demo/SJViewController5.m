@@ -166,8 +166,8 @@
                 make.textColor(UIColor.whiteColor);
             }] duration:-1];
 
-            // 暂停时, 禁止自动旋转
-            player.rotationManager.disabledAutorotation = player.isPaused;
+            // 处于小屏时, 暂停状态下禁止自动旋转
+            player.rotationManager.disabledAutorotation = !player.isFullScreen && player.isPaused;
             
             // 播放器处于播放中时, 纠正`pageHeaderView`的位置
             if ( player.isPlaying ) {
