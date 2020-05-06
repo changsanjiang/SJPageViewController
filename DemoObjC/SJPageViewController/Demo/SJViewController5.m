@@ -33,21 +33,21 @@
     [self _setupViews];
     
     /// 模拟网络延迟 请求数据
-    __weak typeof(self) _self = self;
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        __strong typeof(_self) self = _self;
-        if ( !self ) return;
-        NSMutableArray<SJPageMenuItemView *> *m = [NSMutableArray arrayWithCapacity:5];
-        for ( int i = 0 ; i < 99 ; ++ i  ) {
-            SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
-            view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山AAAAAAAAAA"][i % 5];
-            view.font = [UIFont boldSystemFontOfSize:18];
-            [m addObject:view];
-        }
-        self.pageMenuBar.itemViews = m;
-        [self.pageViewController reloadPageViewController];
-        [self.pageMenuBar scrollToItemAtIndex:4 animated:NO];
-    });
+//    __weak typeof(self) _self = self;
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        __strong typeof(_self) self = _self;
+//        if ( !self ) return;
+//    });
+    NSMutableArray<SJPageMenuItemView *> *m = [NSMutableArray arrayWithCapacity:5];
+    for ( int i = 0 ; i < 99 ; ++ i  ) {
+        SJPageMenuItemView *view = [SJPageMenuItemView.alloc initWithFrame:CGRectZero];
+        view.text = @[@"从前", @"有", @"99", @"座", @"灵剑山AAAAAAAAAA"][i % 5];
+        view.font = [UIFont boldSystemFontOfSize:18];
+        [m addObject:view];
+    }
+    self.pageMenuBar.itemViews = m;
+    [self.pageViewController reloadPageViewController];
+    [self.pageMenuBar scrollToItemAtIndex:4 animated:NO];
 }
 
 - (BOOL)shouldAutorotate {
@@ -85,7 +85,7 @@
 #pragma mark -
 
 - (void)_setupViews {
-    self.view.backgroundColor = UIColor.blackColor;
+    self.view.backgroundColor = UIColor.whiteColor;
     
     _pageViewController = [SJPageViewController pageViewControllerWithOptions:@{SJPageViewControllerOptionInterPageSpacingKey:@(3)}];
     _pageViewController.dataSource = self;
@@ -197,12 +197,12 @@
         if (@available(iOS 11.0, *)) {
             topMargin = UIApplication.sharedApplication.keyWindow.safeAreaInsets.top;
         }
-        CGFloat width = self.view.bounds.size.width;
+        CGFloat width = UIApplication.sharedApplication.keyWindow.bounds.size.width;
         CGFloat playerViewHeight = width * 9 / 16.0;
         CGFloat menuBarHeight = 49;
         CGFloat pageHeaderViewHeight = topMargin + playerViewHeight + menuBarHeight;
         _pageHeaderView.frame   = CGRectMake(0, 0, width, pageHeaderViewHeight);
-        _player.view.frame  = CGRectMake(0, topMargin, width, playerViewHeight);
+        _player.view.frame      = CGRectMake(0, topMargin, width, playerViewHeight);
         _pageMenuBar.frame      = CGRectMake(0, CGRectGetMaxY(_player.view.frame), width, menuBarHeight);
     }
     return _pageHeaderView;

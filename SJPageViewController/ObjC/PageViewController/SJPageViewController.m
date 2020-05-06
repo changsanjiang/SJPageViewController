@@ -585,7 +585,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         CGFloat horizontalOffset = _collectionView.contentOffset.x;
         CGRect frame = [_headerView.superview convertRect:_headerView.frame toView:self.view];
         CGFloat lastItemOffset = ( self.numberOfViewControllers - 1 ) * self.collectionView.bounds.size.width;
-        if ( horizontalOffset <= 0 ) {
+        if      ( horizontalOffset <= 0 ) {
             frame.origin.x = -horizontalOffset;
         }
         else if ( horizontalOffset >= lastItemOffset ) {
@@ -594,6 +594,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         else {
             frame.origin.x = 0;
         }
+        frame.size = CGSizeMake(self.view.bounds.size.width, self.heightForHeaderBounds);
         _headerView.frame = frame;
         if ( _headerView.superview != self.view ) {
             [self.view insertSubview:_headerView aboveSubview:_collectionView];
@@ -606,6 +607,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         // 停止滑动时, 将 headerView 恢复到 child scrollView 中
         UIScrollView *childScrollView = self.focusedViewController.sj_pageItem.scrollView;
         CGRect frame = [_headerView.superview convertRect:_headerView.frame toView:childScrollView];
+        frame.size = CGSizeMake(self.view.bounds.size.width, self.heightForHeaderBounds);
         _headerView.frame = frame;
         [childScrollView addSubview:_headerView];
     }
@@ -695,14 +697,24 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)_remakeConstraints {
+    CGRect bounds = self.view.bounds;
 #ifdef SJDEBUG
     self.view.clipsToBounds = NO;
     // 扩大两倍 用于调试
-    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]) * 2, self.view.bounds.size.height);
+    self.collectionView.frame = CGRectMake(0, 0, (bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]) * 2, bounds.size.height);
 #else
-    self.collectionView.frame = CGRectMake(0, 0, (self.view.bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]), self.view.bounds.size.height);
+    self.collectionView.frame = CGRectMake(0, 0, (bounds.size.width + [_options[SJPageViewControllerOptionInterPageSpacingKey] doubleValue]), bounds.size.height);
 #endif
 
+    if ( _hasHeader ) {
+        CGRect frame = _headerView.frame;
+        CGFloat width = bounds.size.width;
+        if ( frame.size.width != width ) {
+            frame.size.width = width;
+            _headerView.frame = frame;
+        }
+    }
+    
     [self setViewControllerAtIndex:self.focusedIndex];
 }
 
