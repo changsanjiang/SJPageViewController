@@ -289,9 +289,12 @@ private extension SJPageViewController {
     
     func convertHeaderViewFrame(to view: UIView?) -> CGRect {
         if let headerView = headerView, let superview = headerView.superview, let view = view {
-            return superview.convert(headerView.frame, to: view)
+            var frame = superview.convert(headerView.frame, to: view)
+            frame.size.width = self.view.bounds.width
+            frame.size.height = self.heightForHeaderBounds
+            return frame
         }
-        return .zero
+        return .init(x: 0, y: 0, width: self.view.bounds.size.width, height: self.heightForHeaderBounds)
     }
     
     func removePageChildViewController(_ childController: UIViewController?) {
