@@ -105,7 +105,7 @@
     
     _topView = [SJTopView.alloc initWithFrame:CGRectZero];
     _topView.delegate = self;
-    _topView.alpha = 0;
+    _topView.hidden = YES;
     [self.view addSubview:self.topView];
     [_topView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.left.right.offset(0);
@@ -143,33 +143,33 @@
     
     if ( _player == nil ) {
         _player = SJVideoPlayer.player;
-        _player.defaultEdgeControlLayer.hiddenBackButtonWhenOrientationIsPortrait = YES;
+        _player.defaultEdgeControlLayer.hiddenBackButtonWhenOrientationIsPortrait = YES; // 竖屏时, 隐藏返回按钮, 显示我们自己的返回按钮(self.backButton)
         _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:[NSURL URLWithString:@"https://dh2.v.netease.com/2017/cg/fxtpty.mp4"] startPosition:10];
         __weak typeof(self) _self = self;
+        _player.shouldTriggerRotation = ^BOOL(__kindof SJBaseVideoPlayer * _Nonnull player) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return NO;
+            if ( player.isPlaying ) return YES;
+            if ( player.isFullScreen ) return YES;
+            return self.topView.isHidden; // 竖屏时, topView显示后, 禁止旋转
+        };
         _player.rotationObserver.rotationDidStartExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            self.backButton.hidden = YES; // 旋转开始的时候, 隐藏我们自己的返回按钮
-            // 处于小屏时, 暂停状态下禁止自动旋转
-            self.player.rotationManager.disabledAutorotation = !self.player.isFullScreen && self.player.isPaused;
+            self.backButton.hidden = YES; // 开始旋转的时候, 隐藏我们自己的返回按钮
         };
         _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            self.backButton.hidden = NO; // 旋转完的时候, 恢复
+            self.backButton.hidden = NO; // 完成旋转的时候, 显示我们自己的返回按钮
         };
-        
         _player.playbackObserver.timeControlStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            // 提示
             [player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
-                make.append(player.isPaused ? @"已暂停" : @"正在播放中");
+                make.append(player.isPaused ? @"已暂停" : @"正在播放中"); // 提示
                 make.textColor(UIColor.whiteColor);
             }] duration:-1];
-
-            // 处于小屏时, 暂停状态下禁止自动旋转
-            player.rotationManager.disabledAutorotation = !player.isFullScreen && player.isPaused;
             
             // 播放器处于播放中时, 纠正`pageHeaderView`的位置
             if ( player.isPlaying ) {
@@ -218,16 +218,16 @@
 }
 
 - (void)pageViewController:(SJPageViewController *)pageViewController headerViewVisibleRectDidChange:(CGRect)visibleRect {
-    CGFloat alpha = 0;
+    CGFloat progress = 0;
     if ( _player.isPaused ) {
         /// pageHeaderView的高度
         CGFloat pageHeaderViewHeight = pageViewController.heightForHeaderBounds;
         /// 在顶部固定时的高度
         CGFloat pinnedHeight = pageViewController.heightForHeaderPinToVisibleBounds;
         /// 设置导航栏透明度
-        alpha = 1 - (visibleRect.size.height - pinnedHeight) / (pageHeaderViewHeight - pinnedHeight);
+        progress = 1 - (visibleRect.size.height - pinnedHeight) / (pageHeaderViewHeight - pinnedHeight);
     }
-    _topView.alpha = alpha;
+    _topView.hidden = progress < 0.99;
 }
 
 #pragma mark - Page Menu Bar
