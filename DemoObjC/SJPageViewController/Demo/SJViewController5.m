@@ -151,14 +151,12 @@
             if ( !self ) return;
             self.backButton.hidden = YES; // 旋转开始的时候, 隐藏我们自己的返回按钮
             // 处于小屏时, 暂停状态下禁止自动旋转
-            self.player.rotationManager.disabledAutorotation = !player.isFullScreen && player.isPaused;
+            self.player.rotationManager.disabledAutorotation = !self.player.isFullScreen && self.player.isPaused;
         };
         _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
             self.backButton.hidden = NO; // 旋转完的时候, 恢复
-            // 处于小屏时, 暂停状态下禁止自动旋转
-            self.player.rotationManager.disabledAutorotation = !player.isFullScreen && player.isPaused;
         };
         
         _player.playbackObserver.timeControlStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
