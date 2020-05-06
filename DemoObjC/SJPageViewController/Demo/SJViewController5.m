@@ -12,13 +12,17 @@
 #import "SJDemoTableViewController.h"
 #import "SJPageMenuBar.h"
 #import "SJPageMenuItemView.h"
+#import "SJTopView.h"
 
 #import <SJVideoPlayer/SJVideoPlayer.h>
 #import <SJUIKit/NSAttributedString+SJMake.h>
  
-@interface SJViewController5 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDelegate>
+@interface SJViewController5 ()<SJPageViewControllerDelegate, SJPageViewControllerDataSource, SJPageMenuBarDelegate, SJTopViewDelegate>
+@property (nonatomic, strong) UIButton *backButton;
+@property (nonatomic, strong) SJTopView *topView;
 @property (nonatomic, strong) SJPageViewController *pageViewController;
-@property (nonatomic, strong) SJPageMenuBar *menuBar;
+@property (nonatomic, strong) UIView *pageHeaderView;
+@property (nonatomic, strong) SJPageMenuBar *pageMenuBar;
 @property (nonatomic, strong) SJVideoPlayer *player;
 @end
 
@@ -40,9 +44,9 @@
             view.font = [UIFont boldSystemFontOfSize:18];
             [m addObject:view];
         }
-        self.menuBar.itemViews = m;
+        self.pageMenuBar.itemViews = m;
         [self.pageViewController reloadPageViewController];
-        [self.menuBar scrollToItemAtIndex:4 animated:NO];
+        [self.pageMenuBar scrollToItemAtIndex:4 animated:NO];
     });
 }
 
@@ -50,10 +54,32 @@
     return NO;
 }
 
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    [self.navigationController setNavigationBarHidden:YES animated:YES];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    [self.navigationController setNavigationBarHidden:NO animated:YES];
+}
+
+- (UIStatusBarStyle)preferredStatusBarStyle {
+    return UIStatusBarStyleLightContent;
+}
+
 - (void)dealloc {
 #ifdef DEBUG
     NSLog(@"%d \t %s", (int)__LINE__, __func__);
 #endif
+}
+
+- (void)backButtonWasTapped {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+ 
+- (void)playButtonWasTapped:(SJTopView *)bar {
+    [_player play];
 }
 
 #pragma mark -
@@ -65,10 +91,10 @@
     _pageViewController.dataSource = self;
     _pageViewController.delegate = self;
     
-    _menuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    _menuBar.contentInsets = UIEdgeInsetsMake(0, 12, 0, 12);
-    _menuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
-    _menuBar.delegate = self;
+    _pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
+    _pageMenuBar.contentInsets = UIEdgeInsetsMake(0, 12, 0, 12);
+    _pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
+    _pageMenuBar.delegate = self;
     
     [self addChildViewController:_pageViewController];
     [self.view addSubview:_pageViewController.view];
@@ -76,12 +102,30 @@
         make.edges.offset(0);
     }];
     
+    
+    _topView = [SJTopView.alloc initWithFrame:CGRectZero];
+    _topView.delegate = self;
+    _topView.alpha = 0;
+    [self.view addSubview:self.topView];
+    [_topView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.right.offset(0);
+    }];
+    
+    _backButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [_backButton addTarget:self action:@selector(backButtonWasTapped) forControlEvents:UIControlEventTouchUpInside];
+    [_backButton setImage:SJVideoPlayerSettings.commonSettings.backBtnImage forState:UIControlStateNormal];
+    [self.view addSubview:_backButton];
+    
+    [_backButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.left.bottom.equalTo(self.topView.contentView);
+        make.width.equalTo(self.topView.contentView.mas_height);
+    }];
 }
  
 #pragma mark - Page View Controller
 
 - (NSUInteger)numberOfViewControllersInPageViewController:(SJPageViewController *)pageViewController {
-    return self.menuBar.numberOfItems;
+    return self.pageMenuBar.numberOfItems;
 }
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
@@ -92,65 +136,96 @@
     return SJPageViewControllerHeaderModePinnedToTop;
 }
 
-// 添加`player.view`和`menuBar`到 headerView 中
+// 添加`player.view`和`pageMenuBar`到 pageHeaderView 中
 - (nullable __kindof UIView *)viewForHeaderInPageViewController:(SJPageViewController *)pageViewController {
-    UIView *headerView = [UIView.alloc initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 210 + 40)];
-    headerView.backgroundColor = UIColor.redColor;
+    _pageHeaderView = [UIView.alloc initWithFrame:CGRectZero];
+    _pageHeaderView.backgroundColor = UIColor.blackColor;
     
     if ( _player == nil ) {
         _player = SJVideoPlayer.player;
+        _player.defaultEdgeControlLayer.hiddenBackButtonWhenOrientationIsPortrait = YES;
         _player.URLAsset = [SJVideoPlayerURLAsset.alloc initWithURL:[NSURL URLWithString:@"https://dh2.v.netease.com/2017/cg/fxtpty.mp4"] startPosition:10];
         __weak typeof(self) _self = self;
+        _player.rotationObserver.rotationDidStartExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.backButton.hidden = YES; // 旋转开始的时候, 隐藏我们自己的返回按钮
+        };
+        _player.rotationObserver.rotationDidEndExeBlock = ^(id<SJRotationManager>  _Nonnull mgr) {
+            __strong typeof(_self) self = _self;
+            if ( !self ) return;
+            self.backButton.hidden = NO; // 旋转完的时候, 恢复
+        };
+        
         _player.playbackObserver.timeControlStatusDidChangeExeBlock = ^(__kindof SJBaseVideoPlayer * _Nonnull player) {
             __strong typeof(_self) self = _self;
             if ( !self ) return;
-            
+            // 提示
             [player.prompt show:[NSAttributedString sj_UIKitText:^(id<SJUIKitTextMakerProtocol>  _Nonnull make) {
                 make.append(player.isPaused ? @"已暂停" : @"正在播放中");
                 make.textColor(UIColor.whiteColor);
             }] duration:-1];
+
+            // 暂停时, 禁止自动旋转
+            player.rotationManager.disabledAutorotation = player.isPaused;
             
-            // 播放器处于播放中时, 纠正`headerView`的位置
+            // 播放器处于播放中时, 纠正`pageHeaderView`的位置
             if ( player.isPlaying ) {
                 SJDemoTableViewController *tableViewController = self.pageViewController.focusedViewController;
-                UIView *headerView = self.pageViewController.headerView;
+                UIView *pageHeaderView = self.pageViewController.headerView;
                 UITableView *tableView = tableViewController.tableView;
                 CGPoint offset = tableView.contentOffset;
-                CGRect rect = [headerView convertRect:headerView.bounds toView:tableView.superview];
+                CGRect rect = [pageHeaderView convertRect:pageHeaderView.bounds toView:tableView.superview];
                 offset.y += rect.origin.y;
                 // 加个动画, 顺畅一些
                 [UIView animateWithDuration:0.4 animations:^{
-                    CGRect frame = headerView.frame;
+                    CGRect frame = pageHeaderView.frame;
                     frame.origin.y -= rect.origin.y;
-                    headerView.frame = frame;
+                    pageHeaderView.frame = frame;
                     [tableViewController.tableView setContentOffset:offset animated:NO];
                 }];
             }
         };
     }
     
-    [headerView addSubview:_player.view];
-    [headerView addSubview:_menuBar];
+    [_pageHeaderView addSubview:_player.view];
+    [_pageHeaderView addSubview:_pageMenuBar];
     
-    [_player.view mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.offset(0);
-        make.bottom.equalTo(self.menuBar.mas_top);
-    }];
-    [_menuBar mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.bottom.right.offset(0);
-        make.height.offset(40);
-    }];
-    return headerView;
+    CGFloat topMargin = 20;
+    if (@available(iOS 11.0, *)) {
+        topMargin = UIApplication.sharedApplication.keyWindow.safeAreaInsets.top;
+    }
+    CGFloat width = self.view.bounds.size.width;
+    CGFloat playerViewHeight = width * 9 / 16.0;
+    CGFloat menuBarHeight = 49;
+    CGFloat pageHeaderViewHeight = topMargin + playerViewHeight + menuBarHeight;
+    _pageHeaderView.frame   = CGRectMake(0, 0, width, pageHeaderViewHeight);
+    _player.view.frame  = CGRectMake(0, topMargin, width, playerViewHeight);
+    _pageMenuBar.frame      = CGRectMake(0, CGRectGetMaxY(_player.view.frame), width, menuBarHeight);
+    return _pageHeaderView;
 }
 
 // 钉在顶部的高度
-//  - 播放器处于暂停时, 只钉住40的高度, 保留`menuBar`. 处于播放器中时, 保留整个`headerView`的高度
+//  - 播放器处于暂停时, 只钉住49的高度, 保留`pageMenuBar`. 处于播放器中时, 保留整个`pageHeaderView`的高度
 - (CGFloat)heightForHeaderPinToVisibleBoundsWithPageViewController:(SJPageViewController *)pageViewController {
-    return _player.isPaused ? 40 : 210 + 40;
+    return _player.isPaused ? (_pageMenuBar.bounds.size.height + _topView.bounds.size.height) : _pageHeaderView.bounds.size.height;
 }
  
 - (void)pageViewController:(SJPageViewController *)pageViewController didScrollInRange:(NSRange)range distanceProgress:(CGFloat)progress {
-    [_menuBar scrollInRange:range distanceProgress:progress];
+    [_pageMenuBar scrollInRange:range distanceProgress:progress];
+}
+
+- (void)pageViewController:(SJPageViewController *)pageViewController headerViewVisibleRectDidChange:(CGRect)visibleRect {
+    CGFloat alpha = 0;
+    if ( _player.isPaused ) {
+        /// pageHeaderView的高度
+        CGFloat pageHeaderViewHeight = pageViewController.heightForHeaderBounds;
+        /// 在顶部固定时的高度
+        CGFloat pinnedHeight = pageViewController.heightForHeaderPinToVisibleBounds;
+        /// 设置导航栏透明度
+        alpha = 1 - (visibleRect.size.height - pinnedHeight) / (pageHeaderViewHeight - pinnedHeight);
+    }
+    _topView.alpha = alpha;
 }
 
 #pragma mark - Page Menu Bar

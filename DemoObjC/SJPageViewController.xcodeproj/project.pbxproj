@@ -22,6 +22,7 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
+		7728A4262462700E0077B94F /* SJTopView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7728A4252462700E0077B94F /* SJTopView.m */; };
 		7758B471240FF47A00F4772E /* SJPageMenuBarDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7758B470240FF47A00F4772E /* SJPageMenuBarDemoViewController.m */; };
 		7758B4742412094300F4772E /* SJTestViewControllerd.m in Sources */ = {isa = PBXBuildFile; fileRef = 7758B4732412094300F4772E /* SJTestViewControllerd.m */; };
 		7780233123EE843D00255BDD /* SJViewController00.m in Sources */ = {isa = PBXBuildFile; fileRef = 7780233023EE843D00255BDD /* SJViewController00.m */; };
@@ -73,6 +74,8 @@
 		6003F5BB195388D20070C39A /* Tests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Tests.m; sourceTree = "<group>"; };
 		606FC2411953D9B200FFA9A0 /* Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Tests-Prefix.pch"; sourceTree = "<group>"; };
 		71719F9E1E33DC2100824A3D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		7728A4242462700E0077B94F /* SJTopView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTopView.h; sourceTree = "<group>"; };
+		7728A4252462700E0077B94F /* SJTopView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJTopView.m; sourceTree = "<group>"; };
 		7758B46F240FF47A00F4772E /* SJPageMenuBarDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJPageMenuBarDemoViewController.h; sourceTree = "<group>"; };
 		7758B470240FF47A00F4772E /* SJPageMenuBarDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SJPageMenuBarDemoViewController.m; sourceTree = "<group>"; };
 		7758B4722412094300F4772E /* SJTestViewControllerd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SJTestViewControllerd.h; sourceTree = "<group>"; };
@@ -253,6 +256,8 @@
 				7799B93D23EFE00900486A86 /* SJViewController4.m */,
 				778BAD9123F2626400B59D0B /* SJViewController5.h */,
 				778BAD9223F2626400B59D0B /* SJViewController5.m */,
+				7728A4242462700E0077B94F /* SJTopView.h */,
+				7728A4252462700E0077B94F /* SJTopView.m */,
 				7758B46F240FF47A00F4772E /* SJPageMenuBarDemoViewController.h */,
 				7758B470240FF47A00F4772E /* SJPageMenuBarDemoViewController.m */,
 				7786E65023EDD51D00931805 /* SJDemoTableViewController.h */,
@@ -429,6 +434,7 @@
 				7786E64F23EDD36200931805 /* SJViewController0.m in Sources */,
 				7786E65223EDD51D00931805 /* SJDemoTableViewController.m in Sources */,
 				77F65DA523F2A77C009E7BBC /* SJTestViewController.m in Sources */,
+				7728A4262462700E0077B94F /* SJTopView.m in Sources */,
 				7758B471240FF47A00F4772E /* SJPageMenuBarDemoViewController.m in Sources */,
 				6003F59A195388D20070C39A /* main.m in Sources */,
 				778BAD9323F2626400B59D0B /* SJViewController5.m in Sources */,

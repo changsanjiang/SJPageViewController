@@ -175,8 +175,9 @@ static NSString *const kReuseIdentifierForCell = @"1";
 }
 
 - (void)setDelegate:(nullable id<SJPageViewControllerDelegate>)delegate {
-    _delegate = delegate;
-    if ( delegate != nil ) {
+    if ( delegate != _delegate ) {
+        _delegate = delegate;
+        
         _isResponse_focusedIndexDidChange = [delegate respondsToSelector:@selector(pageViewController:focusedIndexDidChange:)];
         _isResponse_willDisplayViewController = [delegate respondsToSelector:@selector(pageViewController:willDisplayViewController:atIndex:)];
         _isResponse_didEndDisplayingViewController = [delegate respondsToSelector:@selector(pageViewController:didEndDisplayingViewController:atIndex:)];
@@ -238,7 +239,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         for ( UIViewController *vc in self.viewControllers.allValues ) {
             SJPageItem *pageItem = vc.sj_pageItem;
             if ( childScrollView == pageItem.scrollView ) {
-                pageItem.conentOffset = childScrollView.contentOffset;
+                pageItem.contentOffset = childScrollView.contentOffset;
                 break;
             }
         }
@@ -300,6 +301,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
         }
         
         _headerView.frame = frame;
+        if ( modeForHeader == SJPageViewControllerHeaderModeAspectFill ) [_headerView layoutIfNeeded];
         
         CGFloat indictorTopInset = heightForHeaderBounds;
         if ( y <= -heightForHeaderBounds ) indictorTopInset = -y;
@@ -410,7 +412,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
             
             if ( [pageItem.scrollView sj_locked] == NO ) {
                 CGFloat intersection = self.heightForIntersectionBounds;
-                CGPoint contentOffset = pageItem.conentOffset;
+                CGPoint contentOffset = pageItem.contentOffset;
                 contentOffset.y += pageItem.intersection - intersection;
                 if ( !CGPointEqualToPoint(pageItem.scrollView.contentOffset, contentOffset) ) {
                     [pageItem.scrollView sj_lock];
@@ -435,7 +437,7 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( _hasHeader ) {
         SJPageItem *pageItem = viewController.sj_pageItem;
         pageItem.intersection = self.heightForIntersectionBounds;
-        pageItem.conentOffset = pageItem.scrollView.contentOffset;
+        pageItem.contentOffset = pageItem.scrollView.contentOffset;
     }
 
     if ( _isResponse_didEndDisplayingViewController ) {
