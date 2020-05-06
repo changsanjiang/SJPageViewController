@@ -138,9 +138,6 @@
 
 // 添加`player.view`和`pageMenuBar`到 pageHeaderView 中
 - (nullable __kindof UIView *)viewForHeaderInPageViewController:(SJPageViewController *)pageViewController {
-    _pageHeaderView = [UIView.alloc initWithFrame:CGRectZero];
-    _pageHeaderView.backgroundColor = UIColor.blackColor;
-    
     if ( _player == nil ) {
         _player = SJVideoPlayer.player;
         _player.defaultEdgeControlLayer.hiddenBackButtonWhenOrientationIsPortrait = YES; // 竖屏时, 隐藏返回按钮, 显示我们自己的返回按钮(self.backButton)
@@ -190,20 +187,24 @@
         };
     }
     
-    [_pageHeaderView addSubview:_player.view];
-    [_pageHeaderView addSubview:_pageMenuBar];
-    
-    CGFloat topMargin = 20;
-    if (@available(iOS 11.0, *)) {
-        topMargin = UIApplication.sharedApplication.keyWindow.safeAreaInsets.top;
+    if ( _pageHeaderView == nil ) {
+        _pageHeaderView = [UIView.alloc initWithFrame:CGRectZero];
+        _pageHeaderView.backgroundColor = UIColor.blackColor;
+        [_pageHeaderView addSubview:_player.view];
+        [_pageHeaderView addSubview:_pageMenuBar];
+     
+        CGFloat topMargin = 20;
+        if (@available(iOS 11.0, *)) {
+            topMargin = UIApplication.sharedApplication.keyWindow.safeAreaInsets.top;
+        }
+        CGFloat width = self.view.bounds.size.width;
+        CGFloat playerViewHeight = width * 9 / 16.0;
+        CGFloat menuBarHeight = 49;
+        CGFloat pageHeaderViewHeight = topMargin + playerViewHeight + menuBarHeight;
+        _pageHeaderView.frame   = CGRectMake(0, 0, width, pageHeaderViewHeight);
+        _player.view.frame  = CGRectMake(0, topMargin, width, playerViewHeight);
+        _pageMenuBar.frame      = CGRectMake(0, CGRectGetMaxY(_player.view.frame), width, menuBarHeight);
     }
-    CGFloat width = self.view.bounds.size.width;
-    CGFloat playerViewHeight = width * 9 / 16.0;
-    CGFloat menuBarHeight = 49;
-    CGFloat pageHeaderViewHeight = topMargin + playerViewHeight + menuBarHeight;
-    _pageHeaderView.frame   = CGRectMake(0, 0, width, pageHeaderViewHeight);
-    _player.view.frame  = CGRectMake(0, topMargin, width, playerViewHeight);
-    _pageMenuBar.frame      = CGRectMake(0, CGRectGetMaxY(_player.view.frame), width, menuBarHeight);
     return _pageHeaderView;
 }
 
