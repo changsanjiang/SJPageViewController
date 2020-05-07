@@ -45,9 +45,17 @@
         view.font = [UIFont boldSystemFontOfSize:18];
         [m addObject:view];
     }
+    
     self.pageMenuBar.itemViews = m;
     [self.pageViewController reloadPageViewController];
     [self.pageMenuBar scrollToItemAtIndex:4 animated:NO];
+    
+    
+    
+    // 左侧淡入
+    self.pageMenuBar.enableFadeIn = YES;
+    // 右侧淡出
+    self.pageMenuBar.enableFadeOut = YES;
 }
 
 - (BOOL)shouldAutorotate {
@@ -92,7 +100,7 @@
     _pageViewController.delegate = self;
     
     _pageMenuBar = [SJPageMenuBar.alloc initWithFrame:CGRectZero];
-    _pageMenuBar.contentInsets = UIEdgeInsetsMake(0, 12, 0, 12);
+    _pageMenuBar.contentInsets = UIEdgeInsetsMake(0, 16, 0, 16);
     _pageMenuBar.scrollIndicatorLayoutMode = SJPageMenuBarScrollIndicatorLayoutModeEqualItemViewContentWidth;
     _pageMenuBar.delegate = self;
     

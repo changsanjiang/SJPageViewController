@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SJPageMenuBar ()
 @property (nonatomic, strong, readonly) UIScrollView *scrollView;
+@property (nonatomic, strong, nullable) CAGradientLayer *fadeMaskLayer;
 @property (nonatomic) NSUInteger focusedIndex;
 @property (nonatomic) CGRect previousBounds;
 @end
@@ -45,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize itemTintColor = _itemTintColor;
 @synthesize focusedItemTintColor = _focusedItemTintColor;
 @synthesize scrollIndicatorTintColor = _scrollIndicatorTintColor;
+@synthesize fadeTintColor = _fadeTintColor;
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
@@ -285,6 +287,27 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setEnableFadeIn:(BOOL)enableFadeIn {
+    if ( enableFadeIn != _enableFadeIn ) {
+        _enableFadeIn = enableFadeIn;
+        [self _resetFadeMask];
+    }
+}
+
+- (void)setEnableFadeOut:(BOOL)enableFadeOut {
+    if ( enableFadeOut != _enableFadeOut ) {
+        _enableFadeOut = enableFadeOut;
+        [self _resetFadeMask];
+    }
+}
+
+- (void)setFadeTintColor:(nullable UIColor *)fadeTintColor {
+    if ( ![fadeTintColor isEqual:_fadeTintColor] ) {
+        _fadeTintColor = fadeTintColor;
+        [self _resetFadeMask];
+    }
+}
+
 #pragma mark -
  
 - (UIColor *)itemTintColor {
@@ -312,6 +335,13 @@ NS_ASSUME_NONNULL_BEGIN
     return _scrollIndicatorTintColor;
 }
 
+- (UIColor *)fadeTintColor {
+    if ( _fadeTintColor == nil ) {
+        _fadeTintColor = UIColor.whiteColor;
+    }
+    return _fadeTintColor;
+}
+
 #pragma mark -
  
 - (void)_setupViews {
@@ -328,6 +358,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ( !CGRectEqualToRect(self.previousBounds, bounds) ) {
         self.previousBounds = bounds;
         _scrollView.frame = bounds;
+        [self _resetFadeMask];
         [self _remakeConstraints];
         [self _setContentOffsetForScrollViewToIndex:_focusedIndex];
     }
@@ -622,6 +653,54 @@ struct color {
         return self.numberOfItems - 1;
     }
     return _focusedIndex;
+}
+
+- (void)_resetFadeMask {
+    if ( self.enableFadeIn || self.enableFadeOut ) {
+        CGRect bounds = self.bounds;
+        if ( bounds.size.width == 0 ) return;
+        CGFloat width = 16;
+        CGFloat widthCenti = width / bounds.size.width;
+        
+        NSMutableArray<NSNumber *> *locations = [NSMutableArray arrayWithCapacity:4];
+        NSMutableArray<UIColor *> *colors = [NSMutableArray arrayWithCapacity:4];
+        if ( self.enableFadeIn ) {
+            [locations addObjectsFromArray: @[@0.0, @(widthCenti)]];
+            [colors addObjectsFromArray:@[
+                (__bridge id)self.fadeTintColor.CGColor,
+                (__bridge id)[self.fadeTintColor colorWithAlphaComponent:0].CGColor,
+            ]];
+    
+            [locations addObjectsFromArray:@[@(widthCenti), @(1 - widthCenti)]];
+            [colors addObjectsFromArray:@[
+                (__bridge id)UIColor.clearColor.CGColor,
+                (__bridge id)UIColor.clearColor.CGColor,
+            ]];
+        }
+        
+        if ( self.enableFadeOut ) {
+            [locations addObjectsFromArray:@[@(1 - widthCenti), @1.0]];
+            [colors addObjectsFromArray:@[
+                (__bridge id)[self.fadeTintColor colorWithAlphaComponent:0].CGColor,
+                (__bridge id)self.fadeTintColor.CGColor,
+            ]];
+        }
+        
+        if ( _fadeMaskLayer == nil ) {
+            _fadeMaskLayer = CAGradientLayer.layer;
+            _fadeMaskLayer.startPoint = CGPointMake(0, 0);
+            _fadeMaskLayer.endPoint = CGPointMake(1, 0);
+            _fadeMaskLayer.frame = self.bounds;
+        }
+        _fadeMaskLayer.locations = locations;
+        _fadeMaskLayer.colors = colors;
+        _fadeMaskLayer.frame = bounds;
+        if ( _fadeMaskLayer.superlayer != self.layer ) [self.layer addSublayer:_fadeMaskLayer];
+    }
+    else if ( _fadeMaskLayer != nil ) {
+        [_fadeMaskLayer removeFromSuperlayer];
+        _fadeMaskLayer = nil;
+    }
 }
 @end
 NS_ASSUME_NONNULL_END
