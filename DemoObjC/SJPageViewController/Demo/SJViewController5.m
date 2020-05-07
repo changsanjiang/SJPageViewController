@@ -49,13 +49,6 @@
     self.pageMenuBar.itemViews = m;
     [self.pageViewController reloadPageViewController];
     [self.pageMenuBar scrollToItemAtIndex:4 animated:NO];
-    
-    
-    
-    // 左侧淡入
-    self.pageMenuBar.enableFadeIn = YES;
-    // 右侧淡出
-    self.pageMenuBar.enableFadeOut = YES;
 }
 
 - (BOOL)shouldAutorotate {

@@ -62,9 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, null_resettable) id<SJPageMenuBarGestureHandler> gestureHandler;
 @property (nonatomic, strong, null_resettable) UIView<SJPageMenuBarScrollIndicator> *scrollIndicator;
 
-@property (nonatomic) BOOL enableFadeIn;                                ///< enable fade in on the left. default is `NO`.
-@property (nonatomic) BOOL enableFadeOut;                               ///< enable fade out on the right. default is `NO`.
-@property (nonatomic, strong, null_resettable) UIColor *fadeTintColor;  ///< default is `white`.
+@property (nonatomic, getter=isEnabledFadeIn) BOOL enabledFadeIn;        ///< enable fade in on the left. default is `NO`.
+@property (nonatomic, getter=isEnabledFadeOut) BOOL enabledFadeOut;      ///< enable fade out on the right. default is `NO`.
 @end
 
 
