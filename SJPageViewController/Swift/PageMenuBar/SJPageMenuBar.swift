@@ -209,6 +209,24 @@ open class SJPageMenuBar: UIView {
         get { return _scrollIndicator }
     }
     
+    /// enable fade in on the left. default is `NO`.
+    open var isEnabledFadeIn: Bool = false {
+        didSet {
+            if ( oldValue != isEnabledFadeIn ) {
+                resetFadeMask()
+            }
+        }
+    }
+    
+    /// enable fade out on the right. default is `NO`.
+    open var isEnabledFadeOut: Bool = false {
+        didSet {
+            if ( oldValue != isEnabledFadeOut ) {
+                resetFadeMask()
+            }
+        }
+    }
+    
     // MARK: -
 
     public enum Distribution {
@@ -246,6 +264,8 @@ open class SJPageMenuBar: UIView {
     
     private var previousBounds = CGRect.zero
     
+    private var fadeMaskLayer: CAGradientLayer?
+    
     private func setupViews() {
         if #available(iOS 13.0, *) {
             backgroundColor = .systemGroupedBackground
@@ -265,6 +285,7 @@ open class SJPageMenuBar: UIView {
         if ( previousBounds.equalTo(bounds) == false ) {
             previousBounds = bounds
             scrollView.frame = bounds
+            resetFadeMask()
             remakeConstraints()
             setContentOffsetForScrollViewToIndex(focusedIndex)
         }
@@ -623,6 +644,70 @@ private extension SJPageMenuBar {
     }
 }
  
+
+private extension SJPageMenuBar {
+    func resetFadeMask() {
+        if ( isEnabledFadeIn || isEnabledFadeOut ) {
+            if ( bounds.size.width == 0 ) { return; }
+            CATransaction.begin()
+            CATransaction.setDisableActions(true)
+  
+            if ( fadeMaskLayer == nil ) {
+                fadeMaskLayer = CAGradientLayer()
+                fadeMaskLayer?.startPoint = .zero
+                fadeMaskLayer?.endPoint = .init(x: 1, y: 0)
+                fadeMaskLayer?.frame = bounds
+            }
+            
+            let width: CGFloat = 16.0
+            let widthCenti = width / bounds.size.width
+            
+            var locations = Array<NSNumber>()
+            var colors = Array<CGColor>()
+            if ( isEnabledFadeIn ) {
+                locations.append(NSNumber(value: Float(0)))
+                locations.append(NSNumber(value: Float(widthCenti)))
+
+                colors.append(UIColor.clear.cgColor)
+                colors.append(UIColor.white.cgColor)
+                
+                locations.append(locations.last!)
+                locations.append(NSNumber(value: Float(1 - widthCenti)))
+
+                colors.append(UIColor.white.cgColor)
+                colors.append(UIColor.white.cgColor)
+            }
+            
+            if ( isEnabledFadeOut ) {
+                if ( !isEnabledFadeIn ) {
+                    locations.append(NSNumber(value: Float(0)))
+                    locations.append(NSNumber(value: Float(1 - widthCenti)))
+
+                    colors.append(UIColor.white.cgColor)
+                    colors.append(UIColor.white.cgColor)
+                }
+                
+                locations.append(locations.last!)
+                locations.append(NSNumber(value: Float(1.0)))
+
+                colors.append(UIColor.white.cgColor)
+                colors.append(UIColor.clear.cgColor)
+            }
+            
+            fadeMaskLayer?.locations = locations
+            fadeMaskLayer?.colors = colors
+            fadeMaskLayer?.frame = bounds
+            CATransaction.commit()
+            
+            if ( self.layer.mask != fadeMaskLayer ) { self.layer.mask = fadeMaskLayer }
+        }
+        else if fadeMaskLayer != nil {
+            self.layer.mask = nil
+            fadeMaskLayer = nil
+        }
+    }
+}
+
 private class SJPageMenuBarScrollIndicator: UIView, SJPageMenuBarScrollIndicatorProtocol {
     override func layoutSubviews() {
         super.layoutSubviews()

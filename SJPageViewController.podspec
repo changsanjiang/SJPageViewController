@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'SJPageViewController'
-  s.version          = '0.0.9'
+  s.version          = '0.0.10'
   s.summary          = 'SJPageViewController.'
 
 # This description is used to generate tags and improve search results.
