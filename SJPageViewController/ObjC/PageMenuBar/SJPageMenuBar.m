@@ -198,13 +198,6 @@ NS_ASSUME_NONNULL_BEGIN
  
 #pragma mark -
 
-- (void)setBackgroundColor:(nullable UIColor *)backgroundColor {
-    if ( ![backgroundColor isEqual:self.backgroundColor] ) {
-        [super setBackgroundColor:backgroundColor];
-        [self _resetMask];
-    }
-}
-
 - (void)setDistribution:(SJPageMenuBarDistribution)distribution {
     if ( distribution != _distribution ) {
         _distribution = distribution;
@@ -654,11 +647,6 @@ struct color {
         
         [CATransaction begin];
         [CATransaction setDisableActions:YES];
-//        if ( _fadeMaskLayer == nil ) _fadeMaskLayer = CALayer.layer;
-//        _fadeMaskLayer.frame = bounds;
-//        _fadeMaskLayer.backgroundColor = self.backgroundColor.CGColor;
-//
-//        CAGradientLayer *_fadeMaskLayer = _fadeMaskLayer.mask;
         if ( _fadeMaskLayer == nil ) {
             _fadeMaskLayer = CAGradientLayer.layer;
             _fadeMaskLayer.startPoint = CGPointMake(0, 0);
@@ -705,7 +693,7 @@ struct color {
         _fadeMaskLayer.frame = bounds;
         [CATransaction commit];
 
-        self.layer.mask = _fadeMaskLayer;
+        if ( self.layer.mask != _fadeMaskLayer ) self.layer.mask = _fadeMaskLayer;
     }
     else if ( _fadeMaskLayer != nil ) {
         self.layer.mask = nil;
