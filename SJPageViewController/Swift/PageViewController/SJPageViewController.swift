@@ -128,6 +128,18 @@ open class SJPageViewController: UIViewController {
         return self.collectionView.panGestureRecognizer
     }
     
+    open var contentOffset: CGPoint {
+        return self.collectionView.contentOffset
+    }
+    
+    open var isDragging: Bool {
+        return self.collectionView.isDragging
+    }
+    
+    open var isDecelerating: Bool {
+        return self.collectionView.isDecelerating
+    }
+    
     @objc public enum HeaderMode: Int {
         case tracking
         case pinnedToTop
@@ -329,6 +341,14 @@ public protocol SJPageViewControllerDelegate : NSObjectProtocol {
     
     func pageViewController(_ pageViewController: SJPageViewController, willDisplay viewController: UIViewController?, at index: Int)
     func pageViewController(_ pageViewController: SJPageViewController, didEndDisplaying viewController: UIViewController?, at index: Int)
+    
+    func pageViewControllerDidScroll(_ pageViewController: SJPageViewController)
+    
+    func pageViewControllerWillBeginDragging(_ pageViewController: SJPageViewController)
+    func pageViewControllerDidEndDragging(_ pageViewController: SJPageViewController, willDecelerate decelerate: Bool)
+    
+    func pageViewControllerWillBeginDecelerating(_ pageViewController: SJPageViewController)
+    func pageViewControllerDidEndDecelerating(_ pageViewController: SJPageViewController)
 }
 
 public extension SJPageViewControllerDataSource {
@@ -351,6 +371,14 @@ public extension SJPageViewControllerDelegate {
     
     func pageViewController(_ pageViewController: SJPageViewController, willDisplay viewController: UIViewController?, at index: Int) {}
     func pageViewController(_ pageViewController: SJPageViewController, didEndDisplaying viewController: UIViewController?, at index: Int) {}
+    
+    func pageViewControllerDidScroll(_ pageViewController: SJPageViewController) {}
+    
+    func pageViewControllerWillBeginDragging(_ pageViewController: SJPageViewController) {}
+    func pageViewControllerDidEndDragging(_ pageViewController: SJPageViewController, willDecelerate decelerate: Bool) {}
+    
+    func pageViewControllerWillBeginDecelerating(_ pageViewController: SJPageViewController) {}
+    func pageViewControllerDidEndDecelerating(_ pageViewController: SJPageViewController) {}
 }
 
 extension SJPageViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -466,16 +494,30 @@ extension SJPageViewController: SJPageCollectionViewDelegate {
             _callScrollInRange()
         }
         _insertHeaderViewForRootViewController()
+        
+        delegate?.pageViewControllerDidScroll(self)
+    }
+    
+    public func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        delegate?.pageViewControllerWillBeginDragging(self)
     }
     
     public func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if ( decelerate == false ) {
-            self.scrollViewDidEndDecelerating(scrollView)
+            _insertHeaderViewForFocusedViewController()
         }
+        
+        delegate?.pageViewControllerDidEndDragging(self, willDecelerate: decelerate)
+    }
+    
+    public func scrollViewWillBeginDecelerating(_ scrollView: UIScrollView) {
+        delegate?.pageViewControllerWillBeginDecelerating(self)
     }
     
     public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         _insertHeaderViewForFocusedViewController()
+        
+        delegate?.pageViewControllerDidEndDecelerating(self)
     }
     
     func collectionView(_ collectionView: SJPageCollectionView, gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
