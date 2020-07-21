@@ -205,7 +205,14 @@ open class SJPageMenuBar: UIView {
     }()
     
     open var scrollIndicator: SJPageMenuBarScrollIndicatorProtocol {
-        set { _scrollIndicator = newValue }
+        set {
+            _scrollIndicator.removeFromSuperview()
+            _scrollIndicator = newValue
+            addSubview(newValue)
+            if ( isSafeIndex(focusedIndex) ) {
+                remakeConstraintsForScrollIndicator(focusedIndex)
+            }
+        }
         get { return _scrollIndicator }
     }
     
