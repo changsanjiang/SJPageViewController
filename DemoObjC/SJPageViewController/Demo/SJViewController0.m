@@ -50,7 +50,7 @@
 
 - (UIViewController *)pageViewController:(SJPageViewController *)pageViewController viewControllerAtIndex:(NSInteger)index {
     SJDemoTableViewController *vc = SJDemoTableViewController.new;
-    vc.tableView.mj_header.ignoredScrollViewContentInsetTop = 200;
+    vc.tableView.mj_header.ignoredScrollViewContentInsetTop = 300;
     return vc;
 }
 
