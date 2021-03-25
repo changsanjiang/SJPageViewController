@@ -18,4 +18,12 @@
 - (BOOL)sj_locked {
     return [objc_getAssociatedObject(self, _cmd) boolValue];
 }
+
+- (__kindof UIResponder *_Nullable)sj_page_lookupResponderForClass:(Class)cls {
+    __kindof UIResponder *_Nullable cur = self;
+    while ( cur != nil && ![cur isKindOfClass:cls] ) {
+        cur = cur.nextResponder;
+    }
+    return cur;
+}
 @end

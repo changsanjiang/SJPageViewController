@@ -33,6 +33,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
     BOOL _isResponse_didScrollInRange;
     BOOL _isResponse_headerViewVisibleRectDidChange;
     
+    BOOL _isResponse_minimumBottomInsetForViewController;
+    BOOL _isResponse_maximumTopInsetForViewController;
     BOOL _isResponse_heightForHeaderPinToVisibleBounds;
     BOOL _isResponse_heightForHeaderBounds;
     BOOL _isResponse_modeForHeader;
@@ -185,8 +187,6 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( dataSource != _dataSource ) {
         _dataSource = dataSource;
         
-        _isResponse_heightForHeaderPinToVisibleBounds = [dataSource respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)];
-        _isResponse_modeForHeader = [dataSource respondsToSelector:@selector(modeForHeaderWithPageViewController:)];
         _isResponse_viewForHeader = [dataSource respondsToSelector:@selector(viewForHeaderInPageViewController:)];
         [self reloadPageViewController];
     }
@@ -196,6 +196,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( delegate != _delegate ) {
         _delegate = delegate;
         
+        _isResponse_heightForHeaderPinToVisibleBounds = [delegate respondsToSelector:@selector(heightForHeaderPinToVisibleBoundsWithPageViewController:)];
+        _isResponse_modeForHeader = [delegate respondsToSelector:@selector(modeForHeaderWithPageViewController:)];
         _isResponse_focusedIndexDidChange = [delegate respondsToSelector:@selector(pageViewController:focusedIndexDidChange:)];
         _isResponse_willDisplayViewController = [delegate respondsToSelector:@selector(pageViewController:willDisplayViewController:atIndex:)];
         _isResponse_didEndDisplayingViewController = [delegate respondsToSelector:@selector(pageViewController:didEndDisplayingViewController:atIndex:)];
@@ -206,6 +208,8 @@ static NSString *const kReuseIdentifierForCell = @"1";
         _isResponse_didEndDragging = [delegate respondsToSelector:@selector(pageViewControllerDidEndDragging:willDecelerate:)];
         _isResponse_willBeginDecelerating = [delegate respondsToSelector:@selector(pageViewControllerWillBeginDecelerating:)];
         _isResponse_didEndDecelerating = [delegate respondsToSelector:@selector(pageViewControllerDidEndDecelerating:)];
+        _isResponse_maximumTopInsetForViewController = [delegate respondsToSelector:@selector(pageViewController:maximumTopInsetForViewController:)];
+        _isResponse_minimumBottomInsetForViewController = [delegate respondsToSelector:@selector(pageViewController:minimumBottomInsetForViewController:)];
     }
 }
 
@@ -297,29 +301,31 @@ static NSString *const kReuseIdentifierForCell = @"1";
         CGFloat offset = childScrollView.contentOffset.y;
         CGRect frame = _headerView.frame;
 
-        CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
-        CGFloat heightForHeaderPinToVisibleBounds = self.heightForHeaderPinToVisibleBounds;
-        __auto_type modeForHeader = self.modeForHeader;
-        CGFloat topPinOffset = offset - heightForHeaderBounds + heightForHeaderPinToVisibleBounds;
+        CGFloat topInset = [self _maximumTopInsetForChildScrollView:childScrollView];
+        CGFloat headerHeight = self.heightForHeaderBounds;
+        CGFloat maxTopOffset = headerHeight + topInset;
+        CGFloat pinnedHeight = self.heightForHeaderPinToVisibleBounds;
+        __auto_type headerMode = self.modeForHeader;
+        CGFloat pinnedOffset = offset - headerHeight + pinnedHeight;
         CGFloat y = frame.origin.y;
         // 向上移动
         if ( newValue >= oldValue ) {
-            if ( y <= topPinOffset ) y = topPinOffset;
+            if ( y <= pinnedOffset ) y = pinnedOffset;
         }
         // 向下移动
         else {
             y += newValue - oldValue;
-            if ( y <= -heightForHeaderBounds ) y = -heightForHeaderBounds;
+            if ( y <= -maxTopOffset ) y = -maxTopOffset;
         }
         
-        switch ( modeForHeader ) {
+        switch ( headerMode ) {
             case SJPageViewControllerHeaderModeTracking: {
                 frame.origin.x = 0;
                 frame.origin.y = y;
             }
                 break;
             case SJPageViewControllerHeaderModePinnedToTop: {
-                if ( offset <= -heightForHeaderBounds ) {
+                if ( offset <= -maxTopOffset ) {
                     y = offset;
                 }
                 
@@ -328,33 +334,31 @@ static NSString *const kReuseIdentifierForCell = @"1";
             }
                 break;
             case SJPageViewControllerHeaderModeAspectFill: {
-                CGFloat extend = (-offset - heightForHeaderBounds);
-                if ( offset <= -heightForHeaderBounds ) {
+                CGFloat extend = 0;
+                if ( offset <= -maxTopOffset ) {
+                    extend = (-offset - maxTopOffset);
                     y = offset;
-                }
-                else {
-                    extend = 0;
                 }
                 
                 frame.origin.x = -extend * 0.5;
                 frame.origin.y = y;
                 frame.size.width = self.view.bounds.size.width + extend;
-                frame.size.height = heightForHeaderBounds + extend;
+                frame.size.height = headerHeight + extend;
             }
                 break;
         }
         
         _headerView.frame = frame;
-        if ( modeForHeader == SJPageViewControllerHeaderModeAspectFill ) [_headerView layoutIfNeeded];
+        if ( headerMode == SJPageViewControllerHeaderModeAspectFill ) [_headerView layoutIfNeeded];
         
-        CGFloat indictorTopInset = heightForHeaderBounds;
-        if ( y <= -heightForHeaderBounds ) indictorTopInset = -y;
+        CGFloat indictorTopInset = maxTopOffset;
+        if ( y <= -maxTopOffset ) indictorTopInset = -y;
         if ( childScrollView.scrollIndicatorInsets.top != indictorTopInset ) {
             childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(indictorTopInset, 0, 0, 0);
         }
         
         if ( _isResponse_headerViewVisibleRectDidChange ) {
-            CGFloat progress = 1 - ABS(y - offset) / heightForHeaderBounds;
+            CGFloat progress = 1 - ABS(y - offset) / maxTopOffset;
             if ( progress <= 0 ) progress = 0;
             else if ( progress >= 1 ) progress = 1;
             CGRect rect = (CGRect){0, 0, frame.size.width, frame.size.height * progress};
@@ -440,15 +444,18 @@ static NSString *const kReuseIdentifierForCell = @"1";
                     childScrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
                 }
                 CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
+                CGFloat topInset = [self _maximumTopInsetForChildScrollView:childScrollView];
+                CGFloat offset = heightForHeaderBounds + topInset;
                 if ( _headerView.superview == nil ) {
-                    _headerView.frame = CGRectMake(0, -heightForHeaderBounds, bounds.size.width, heightForHeaderBounds);
+                    _headerView.frame = CGRectMake(0, -offset, bounds.size.width, heightForHeaderBounds);
                     [childScrollView addSubview:_headerView];
                 }
-                childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(heightForHeaderBounds, 0, 0, 0);
+                childScrollView.scrollIndicatorInsets = UIEdgeInsetsMake(offset, 0, 0, 0);
                 [self _setupContentInsetForChildScrollView:childScrollView];
-                [childScrollView setContentOffset:CGPointMake(0, -heightForHeaderBounds) animated:NO];
+                [childScrollView setContentOffset:CGPointMake(0, -offset) animated:NO];
                 [childScrollView addObserver:self forKeyPath:kContentOffset options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:(void *)&kContentOffset];
                 [childScrollView.panGestureRecognizer addObserver:self forKeyPath:kState options:NSKeyValueObservingOptionNew context:(void *)&kState];
+                pageItem.contentOffset = CGPointMake(0, -topInset);
             }
             else {
                 [self _setupContentInsetForChildScrollView:childScrollView];
@@ -547,6 +554,22 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 #pragma mark -
 
+/// childScrollView.contentInset.top
+- (CGFloat)_maximumTopInsetForChildScrollView:(UIScrollView *)childScrollView {
+    if ( _isResponse_maximumTopInsetForViewController ) {
+        return [_delegate pageViewController:self maximumTopInsetForViewController:[childScrollView sj_page_lookupResponderForClass:UIViewController.class]];
+    }
+    return _maximumTopInset;
+}
+
+/// childScrollView.contentInset.bottom
+- (CGFloat)_minimumBottomInsetForChildScrollView:(UIScrollView *)childScrollView {
+    if ( _isResponse_minimumBottomInsetForViewController ) {
+        return [_delegate pageViewController:self minimumBottomInsetForViewController:[childScrollView sj_page_lookupResponderForClass:UIViewController.class]];
+    }
+    return _minimumBottomInset;
+}
+
 - (CGFloat)heightForIntersectionBounds {
     if ( _headerView != nil ) {
         CGRect rect = [_headerView convertRect:_headerView.bounds toView:self.view];
@@ -562,14 +585,14 @@ static NSString *const kReuseIdentifierForCell = @"1";
 
 - (CGFloat)heightForHeaderPinToVisibleBounds {
     if ( _isResponse_heightForHeaderPinToVisibleBounds ) {
-        return [self.dataSource heightForHeaderPinToVisibleBoundsWithPageViewController:self];
+        return [self.delegate heightForHeaderPinToVisibleBoundsWithPageViewController:self];
     }
     return 0;
 }
 
 - (SJPageViewControllerHeaderMode)modeForHeader {
     if ( _isResponse_modeForHeader )
-        return [self.dataSource modeForHeaderWithPageViewController:self];
+        return [self.delegate modeForHeaderWithPageViewController:self];
     return 0;
 }
 
@@ -699,19 +722,24 @@ static NSString *const kReuseIdentifierForCell = @"1";
     if ( !childScrollView ) return;
     CGFloat heightForHeaderBounds = self.heightForHeaderBounds;
     CGFloat heightForHeaderPinToVisibleBounds = self.heightForHeaderPinToVisibleBounds;
+
+    CGFloat minimumBottomInset = [self _minimumBottomInsetForChildScrollView:childScrollView];
+    CGFloat maximumTopInset = [self _maximumTopInsetForChildScrollView:childScrollView];
+    
     CGRect bounds = self.view.bounds;
     CGFloat boundsHeight = bounds.size.height;
     CGFloat contentHeight = childScrollView.contentSize.height;
-    CGFloat bottomInset = _minimumBottomInsetForChildScrollView;
+    
+    CGFloat topInset = heightForHeaderBounds + maximumTopInset;
+    CGFloat bottomInset = minimumBottomInset;
     if ( contentHeight < boundsHeight ) {
         bottomInset = ceil(boundsHeight - contentHeight - heightForHeaderPinToVisibleBounds);
     }
-    
-    if ( bottomInset < _minimumBottomInsetForChildScrollView ) bottomInset = _minimumBottomInsetForChildScrollView;
+    if ( bottomInset < minimumBottomInset ) bottomInset = minimumBottomInset;
     
     UIEdgeInsets insets = childScrollView.contentInset;
-    if ( insets.top != heightForHeaderBounds || insets.bottom != bottomInset ) {
-        insets.top = heightForHeaderBounds;
+    if ( insets.top != topInset || insets.bottom != bottomInset ) {
+        insets.top = topInset;
         insets.bottom = bottomInset;
         childScrollView.contentInset = insets;
     }
