@@ -7,14 +7,19 @@
 //
 
 #import "SJAppDelegate.h"
-#import <SJVideoPlayer/SJVideoPlayerSettings.h>
+#import <SJVideoPlayer/SJVideoPlayer.h>
 
 @implementation SJAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window.backgroundColor = UIColor.whiteColor;
-    [SJVideoPlayerSettings commonSettings];
+    
+    // load resources
+    SJVideoPlayer.updateResources(^(id<SJVideoPlayerControlLayerResources>  _Nonnull resources) {
+        
+    });
+    
     // Override point for customization after application launch.
     return YES;
 }

@@ -8,7 +8,6 @@
 
 #import "SJPageMenuBar.h"
 #import "SJPageMenuBarScrollIndicator.h"
-#import "SJPageMenuItemView.h"
 #import <objc/message.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,10 +45,19 @@ NS_ASSUME_NONNULL_BEGIN
 @synthesize itemTintColor = _itemTintColor;
 @synthesize focusedItemTintColor = _focusedItemTintColor;
 @synthesize scrollIndicatorTintColor = _scrollIndicatorTintColor;
+
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if ( self ) {
         [self _setupViews];
+    }
+    return self;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame itemViews:(nullable NSArray<UIView<SJPageMenuItemView> *> *)itemViews {
+    self = [self initWithFrame:frame];
+    if ( self ) {
+        self.itemViews = itemViews.copy;
     }
     return self;
 }
@@ -720,6 +728,48 @@ struct color {
         self.layer.mask = nil;
         _fadeMaskLayer = nil;
     }
+}
+@end
+NS_ASSUME_NONNULL_END
+
+#pragma mark - Extended
+
+#import "SJPageMenuItemView.h"
+
+NS_ASSUME_NONNULL_BEGIN
+@implementation SJPageMenuBar (SJExtended)
+- (instancetype)initWithFrame:(CGRect)frame titles:(nullable NSArray<NSString *> *)titles options:(nullable SJPageMenuItemViewOptions *)options {
+    self = [self initWithFrame:frame];
+    if ( self ) {
+        [self setItemViewsForTitles:titles options:options];
+    }
+    return self;
+}
+
+- (void)setItemViewsForTitles:(nullable NSArray<NSString *> *)titles options:(nullable SJPageMenuItemViewOptions *)options {
+    NSMutableArray<SJPageMenuItemView *> *m = nil;
+    if ( titles.count != 0 ) {
+        SJPageMenuItemViewOptions *ops = options ?: SJPageMenuItemViewOptions.defaultOptions;
+        m = [NSMutableArray arrayWithCapacity:titles.count];
+        for ( NSString *title in titles ) {
+            SJPageMenuItemView *itemView = [SJPageMenuItemView.alloc initWithText:title font:ops.font];
+            [m addObject:itemView];
+        }
+    }
+    self.itemViews = m.copy;
+}
+@end
+
+@implementation SJPageMenuItemViewOptions
++ (instancetype)defaultOptions {
+    return SJPageMenuItemViewOptions.alloc.init;
+}
+
+- (UIFont *)font {
+    if ( _font == nil ) {
+        _font = [UIFont systemFontOfSize:20];
+    }
+    return _font;
 }
 @end
 NS_ASSUME_NONNULL_END

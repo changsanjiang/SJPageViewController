@@ -27,14 +27,17 @@ typedef enum : NSUInteger {
 
 NS_ASSUME_NONNULL_BEGIN
 @interface SJPageMenuBar : UIView
+- (instancetype)initWithFrame:(CGRect)frame;
+- (instancetype)initWithFrame:(CGRect)frame itemViews:(nullable NSArray<UIView<SJPageMenuItemView> *> *)itemViews;
+
+@property (nonatomic, copy, nullable) NSArray<__kindof UIView<SJPageMenuItemView> *> *itemViews;
 @property (nonatomic, weak, nullable) id<SJPageMenuBarDelegate> delegate;
 @property (nonatomic, readonly) NSUInteger focusedIndex;
+@property (nonatomic, readonly) NSUInteger numberOfItems;
  
 - (void)scrollToItemAtIndex:(NSUInteger)index animated:(BOOL)animated;
 - (void)scrollInRange:(NSRange)range distanceProgress:(CGFloat)progress;
  
-@property (nonatomic, copy, nullable) NSArray<__kindof UIView<SJPageMenuItemView> *> *itemViews;
-@property (nonatomic, readonly) NSUInteger numberOfItems;
 - (nullable __kindof UIView<SJPageMenuItemView> *)viewForItemAtIndex:(NSUInteger)index;
 
 - (void)insertItemAtIndex:(NSUInteger)index view:(__kindof UIView<SJPageMenuItemView> *)newView animated:(BOOL)animated;
@@ -77,5 +80,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol SJPageMenuBarGestureHandler <NSObject>
 @property (nonatomic, copy, nullable) void(^singleTapHandler)(SJPageMenuBar *bar, CGPoint location); // 单击手势的处理, 默认为滚动到点击的位置
-@end  
+@end
+
+NS_ASSUME_NONNULL_END
+
+
+#pragma mark - Extended
+@class SJPageMenuItemViewOptions;
+
+NS_ASSUME_NONNULL_BEGIN
+@interface SJPageMenuBar (SJExtended)
+- (instancetype)initWithFrame:(CGRect)frame titles:(nullable NSArray<NSString *> *)titles options:(nullable SJPageMenuItemViewOptions *)options;
+
+- (void)setItemViewsForTitles:(nullable NSArray<NSString *> *)titles options:(nullable SJPageMenuItemViewOptions *)options;
+@end
+
+@interface SJPageMenuItemViewOptions : NSObject
++ (instancetype)defaultOptions;
+
+@property (nonatomic, strong, null_resettable) UIFont *font;
+@end
 NS_ASSUME_NONNULL_END

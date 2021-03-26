@@ -7,8 +7,7 @@
 //
 
 #import "SJTopView.h"
-#import <Masonry/Masonry.h>
-#import <SJVideoPlayer/SJVideoPlayerSettings.h>
+#import <Masonry/Masonry.h> 
 
 @interface SJTopView ()
 @property (nonatomic, strong) UIButton *playButton;

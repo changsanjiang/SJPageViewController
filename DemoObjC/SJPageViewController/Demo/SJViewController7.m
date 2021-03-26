@@ -9,7 +9,7 @@
 #import "SJViewController7.h"
 #import <SJPageViewController/SJPageMenuBar.h>
 #import <Masonry/Masonry.h>
-#import <SJVideoPlayer/SJVideoPlayerSettings.h>
+#import <SJVideoPlayer/SJVideoPlayer.h>
 
 @interface SJCustomPageMenuItemView : UIView<SJPageMenuItemView>
 @property (nonatomic, getter=isFocusedMenuItem) BOOL focusedMenuItem;
@@ -97,7 +97,7 @@
         _label.textColor = UIColor.whiteColor;
         [self addSubview:_label];
         
-        _deleteImageView = [UIImageView.alloc initWithImage:SJVideoPlayerSettings.commonSettings.floatSmallViewCloseImage];
+        _deleteImageView = [UIImageView.alloc initWithImage:SJVideoPlayerConfigurations.shared.resources.floatSmallViewCloseImage];
         _deleteImageView.bounds = CGRectMake(0, 0, _deleteImageView.image.size.width, _deleteImageView.image.size.height);
         [self addSubview:_deleteImageView];
     }

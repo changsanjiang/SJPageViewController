@@ -1,6 +1,6 @@
 {
   "name": "SJPageViewController",
-  "version": "0.0.7",
+  "version": "0.0.13",
   "summary": "SJPageViewController.",
   "description": "A container view controller that manages navigation between pages of content, where each page is managed by a child view controller.",
   "homepage": "https://github.com/changsanjiang/SJPageViewController",
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/changsanjiang/SJPageViewController.git",
-    "tag": "0.0.7"
+    "tag": "0.0.13"
   },
   "platforms": {
     "ios": "8.0"

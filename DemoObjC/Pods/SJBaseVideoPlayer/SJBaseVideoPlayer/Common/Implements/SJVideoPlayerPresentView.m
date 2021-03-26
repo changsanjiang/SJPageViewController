@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleSingleTap:(UITouch *)tap {
-    if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_SingleTap ] )
+    if ( ![self _isSupported:SJPlayerGestureTypeMask_SingleTap ] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -72,7 +72,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)handleDoubleTap:(UITouch *)tap {
-    if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_DoubleTap] )
+    if ( ![self _isSupported:SJPlayerGestureTypeMask_DoubleTap] )
         return;
     
     CGPoint location = [tap locationInView:self];
@@ -276,6 +276,9 @@ NS_ASSUME_NONNULL_BEGIN
     switch ( type ) {
         default: break;
         case SJPlayerGestureType_Pan: {
+            if ( ![self _isSupported:SJPlayerGestureTypeMask_Pan] )
+                return NO;
+
             CGPoint location = [_pan locationInView:self];
             if ( location.x > self.bounds.size.width * 0.5 ) {
                 _triggeredPosition = SJPanGestureTriggeredPosition_Right;
@@ -294,13 +297,10 @@ NS_ASSUME_NONNULL_BEGIN
                 _movingDirection = SJPanGestureMovingDirection_V;
             }
             
-            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan] )
+            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupported:SJPlayerGestureTypeMask_Pan_H] )
                 return NO;
             
-            if ( _movingDirection == SJPanGestureMovingDirection_H && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_H] )
-                return NO;
-            
-            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pan_V] )
+            if ( _movingDirection == SJPanGestureMovingDirection_V && ![self _isSupported:SJPlayerGestureTypeMask_Pan_V] )
                 return NO;
             
             if ( _longPress.state == UIGestureRecognizerStateChanged )
@@ -308,20 +308,20 @@ NS_ASSUME_NONNULL_BEGIN
         }
             break;
         case SJPlayerGestureType_Pinch: {
-            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_Pinch] )
+            if ( ![self _isSupported:SJPlayerGestureTypeMask_Pinch] )
                 return NO;
         }
             break;
         case SJPlayerGestureType_LongPress: {
-            if ( ![self _isSupporedGestureType:SJPlayerGestureTypeMask_LongPress] )
+            if ( ![self _isSupported:SJPlayerGestureTypeMask_LongPress] )
                 return NO;
         }
             break;
     }
     
-    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:gestureRecognizer.view]) )
+    if ( _gestureRecognizerShouldTrigger && !_gestureRecognizerShouldTrigger(self, type, [gestureRecognizer locationInView:self]) )
         return NO;
-    
+
     return YES;
 }
 
@@ -402,7 +402,7 @@ NS_ASSUME_NONNULL_BEGIN
     _numberOfTaps = 0;
 }
 
-- (BOOL)_isSupporedGestureType:(SJPlayerGestureTypeMask)type {
+- (BOOL)_isSupported:(SJPlayerGestureTypeMask)type {
     return _supportedGestureTypes & type;
 }
 @end

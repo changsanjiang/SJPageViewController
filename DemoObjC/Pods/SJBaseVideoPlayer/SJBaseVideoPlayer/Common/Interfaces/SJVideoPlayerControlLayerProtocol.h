@@ -106,6 +106,8 @@ SJPlaybackControlDelegate;
 ///
 - (void)videoPlayerPlaybackStatusDidChange:(__kindof SJBaseVideoPlayer *)videoPlayer;
 
+- (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer pictureInPictureStatusDidChange:(SJPictureInPictureStatus)status API_AVAILABLE(ios(14.0));
+
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer currentTimeDidChange:(NSTimeInterval)currentTime;
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer durationDidChange:(NSTimeInterval)duration;
 - (void)videoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer playableDurationDidChange:(NSTimeInterval)duration;
@@ -204,9 +206,9 @@ SJPlaybackControlDelegate;
 
 @protocol SJAppActivityControlDelegate <NSObject>
 @optional
-- (void)receivedApplicationWillResignActiveNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)receivedApplicationDidBecomeActiveNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)receivedApplicationWillEnterForegroundNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
-- (void)receivedApplicationDidEnterBackgroundNotification:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationWillEnterForegroundWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationDidBecomeActiveWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationWillResignActiveWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
+- (void)applicationDidEnterBackgroundWithVideoPlayer:(__kindof SJBaseVideoPlayer *)videoPlayer;
 @end
 #endif /* SJVideoPlayerControlLayerProtocol_h */
